@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siembra Segura — MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fondo:#F5F6F1;--fondo-chat:#EEF0EA;--texto:#17231C;--medio:#2E3A32;--suave:#4B5A50;
+  --borde:#DDE2D8;--borde2:#CBD2C6;--verde:#1E5A3C;--verde2:#123A26;
+  --bien:#14532D;--mal:#8F1B13;--agua:#1D4E89;--ambar:#8A4A05;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Figtree,system-ui,sans-serif;color:var(--texto);background:#DCE1D6;-webkit-font-smoothing:antialiased}
+h1,h2,p{margin:0}
+h1{font-size:26px;line-height:1.15;font-weight:800}
+h2{font-size:17px;font-weight:800}
+button,input{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #E9B949;outline-offset:2px}
+
+.app{max-width:430px;min-height:100vh;margin:0 auto;background:var(--fondo);position:relative}
+.pantalla{display:none;min-height:100vh;flex-direction:column}
+.pantalla.visible{display:flex}
+.contenido{padding:0 20px 16px;display:flex;flex-direction:column;gap:14px;flex-grow:1}
+.con-tabs{padding-bottom:96px}
+.pie{padding:16px 20px 24px;position:sticky;bottom:0;background:var(--fondo)}
+
+.barra{padding:16px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+.marca{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center}
+.marca b{font-size:19px;font-weight:800}
+.fila{display:flex;gap:8px;align-items:center}
+.entre{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.icono{width:44px;height:44px;border-radius:22px;border:none;background:transparent;color:var(--texto);display:flex;align-items:center;justify-content:center;margin-left:-10px}
+.icono.claro{color:#fff;margin-left:-12px}
+.escuchar{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--borde2);background:#fff;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:var(--texto)}
+
+.btn{width:100%;min-height:56px;border-radius:14px;border:none;background:var(--verde);color:#fff;font-size:18px;font-weight:700}
+.btn:hover{background:var(--verde2)}
+.btn.chico{min-height:48px;font-size:15px}
+.btn2{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--borde2);background:#fff;color:var(--texto);font-size:15px;font-weight:700}
+.btn3{width:100%;min-height:52px;border-radius:14px;border:2px solid var(--verde);background:#fff;color:var(--verde);font-size:16px;font-weight:800}
+
+.tarjeta{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.tarjeta.sin{padding:0;overflow:hidden;gap:0}
+.tarjeta.destacada{border:2px solid var(--verde)}
+.tarjeta.compacta{padding:12px 16px;gap:4px}
+.texto{font-size:15px;line-height:1.4;color:var(--medio)}
+.suave{font-size:14px;color:var(--suave)}
+.paso{font-size:12px;font-weight:600;color:var(--suave)}
+.pregunta{font-size:15px;font-weight:700}
+.sobre{font-size:13px;font-weight:800;letter-spacing:.4px;color:var(--suave)}
+.grande{font-size:24px;font-weight:800;line-height:1.15}
+.nota{font-size:12px;color:var(--suave)}
+.verde{color:var(--verde)}
+
+.mapa{position:relative;background:#DCE6D3}
+.mapa svg{display:block;width:100%;height:auto}
+.mapa span{position:absolute;left:12px;bottom:10px;background:#fff;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600}
+.datos{padding:14px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.datos p:first-child{font-size:12px;color:var(--suave)}
+.datos p:last-child{font-size:15px;font-weight:700;margin-top:2px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--borde2);background:#fff;color:var(--texto);font-size:15px;font-weight:600}
+.chip.activo{background:var(--verde);border-color:var(--verde);color:#fff}
+.prios{display:flex;flex-direction:column;gap:8px}
+.prio{min-height:52px;padding:0 16px;border-radius:14px;border:1px solid var(--borde2);background:#fff;color:var(--texto);font-size:16px;font-weight:700;text-align:left;display:flex;align-items:center;gap:10px}
+.prio.activo{border:2px solid var(--verde);background:#EAF2EC}
+.prio .marca-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--borde2);flex-shrink:0}
+.prio.activo .marca-radio{border:6px solid var(--verde)}
+
+.alerta{background:#FFF4E5;border:1px solid #F0C88A;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.alerta p{font-size:15px;line-height:1.4;color:#5C3203}
+
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:#E6EAE1;padding:4px;border-radius:12px}
+.seg button{min-height:48px;border:none;border-radius:9px;background:transparent;color:var(--medio);font-size:15px;font-weight:700}
+.seg button.activo{background:var(--verde);color:#fff}
+
+.riesgo{display:flex;flex-direction:column;gap:6px}
+.riesgo p{font-size:16px}
+.riesgo b{font-weight:800}
+.bien{color:var(--bien)}.mal{color:var(--mal)}.agua{color:var(--agua)}
+
+/* Clima */
+.hoy{background:var(--agua);color:#fff;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
+.hoy .t1{font-size:14px;opacity:.9}
+.hoy .t2{font-size:22px;font-weight:800}
+.hoy .t3{font-size:15px;margin-top:2px}
+.semana{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.dia{border-radius:10px;padding:8px 2px;background:#F0F3EE;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dia b{font-size:13px}
+.dia span{font-size:12px;color:var(--suave)}
+.dia.lluvia{background:#E3ECF7}
+.dia.fuerte{background:#C9DAF0}
+.dia.fuerte span{color:var(--agua);font-weight:800}
+.comp{display:flex;flex-direction:column;gap:12px}
+.comp-fila{display:flex;flex-direction:column;gap:6px}
+.comp-fila .entre p{font-size:15px;font-weight:700}
+.estado{font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px}
+.e-alto{background:#E3ECF7;color:var(--agua)}
+.e-calor{background:#FFF1DD;color:#7A3E00}
+.e-normal{background:#E3F1E8;color:#14532D}
+.barra-comp{height:10px;border-radius:5px;background:#E6EAE1;position:relative}
+.barra-comp i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.barra-comp .normal{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--texto)}
+.probs{display:flex;flex-direction:column;gap:8px}
+.prob{display:grid;grid-template-columns:118px 1fr 40px;gap:8px;align-items:center}
+.prob span{font-size:14px;font-weight:600}
+.prob b{font-size:15px;text-align:right}
+.pbar{height:12px;border-radius:6px;background:#E6EAE1;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:6px}
+.guia{font-size:13px;line-height:1.4;color:var(--suave);background:#EEF0EA;border-radius:12px;padding:10px 12px}
+.significa{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:10px 14px}
+.tarjeta .significa{border:none;padding:0;background:transparent}
+.significa summary{min-height:32px;display:flex;align-items:center;font-size:15px;font-weight:700;color:var(--verde);cursor:pointer}
+.significa p{font-size:14px;line-height:1.45;color:var(--medio);margin-top:6px}
+.opcion{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.opcion.reco{border:2px solid var(--verde)}
+.etiqueta{align-self:flex-start;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:#EEF0EA;color:var(--suave)}
+.opcion.reco .etiqueta{background:var(--verde);color:#fff}
+.opcion .nom{font-size:19px;font-weight:800;line-height:1.2}
+.met{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.met p:first-child{font-size:12px;color:var(--suave)}
+.met p:last-child{font-size:15px;font-weight:800;margin-top:2px}
+.ficha{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.ficha div p:first-child{font-size:13px;font-weight:800;color:var(--suave);letter-spacing:.3px}
+.ficha div p:last-child{font-size:14px;line-height:1.45;color:var(--medio);margin-top:2px}
+.leyenda{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px}
+.leyenda i{height:8px;border-radius:4px;background:transparent}
+.leyenda i.on{background:var(--agua)}
+.leyenda-txt{font-size:12px;color:var(--agua);font-weight:700;grid-column:1 / -1;margin-top:2px}
+.consejo{background:#EAF2EC;border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.4;color:var(--bien)}
+
+/* Detalle */
+.fecha{background:var(--verde);color:#fff;border-radius:16px;padding:16px;display:flex;gap:12px;align-items:center}
+.fecha p:first-child{font-size:14px;opacity:.9}
+.fecha p:last-child{font-size:22px;font-weight:800}
+.cal{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px 2px}
+.mes{font-size:12px;font-weight:700;color:var(--suave);text-align:center}
+.bloque{border-radius:8px;padding:8px 6px;font-size:14px;font-weight:800;overflow:hidden;white-space:nowrap}
+.maiz{background:#E9B949;color:#3D2A00}
+.frejol{background:#8BB37C;color:#14321E}
+.algodon{background:#C9CCD6;color:#22252E}
+.arroz{background:#D8CBA8;color:#3A2F12}
+.razones{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.razones li{font-size:15px;line-height:1.4}
+.dos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+
+/* Rotación */
+.salud{display:flex;align-items:center;gap:14px}
+.medidor{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;flex-grow:1}
+.medidor i{height:12px;border-radius:6px;background:#E6EAE1}
+.medidor i.on1{background:#C2410C}.medidor i.on2{background:#D99A1E}.medidor i.on3{background:#2E8B57}
+.salud-txt{font-size:22px;font-weight:800;min-width:96px}
+.linea{display:flex;flex-direction:column;gap:0}
+.camp{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--borde)}
+.camp:last-child{border-bottom:none}
+.camp .cuando{font-size:13px;color:var(--suave);font-weight:600}
+.camp .cultivo{border-radius:8px;padding:8px 10px;font-size:15px;font-weight:800}
+.tierra{font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.t-cansada{background:#FDE7DD;color:#8A2C06}
+.t-regular{background:#FFF1DD;color:#7A3E00}
+.t-buena{background:#E3F1E8;color:#14532D}
+.t-muy{background:#F9D5C7;color:#6E1F00}
+
+/* Avisos */
+.aviso-item{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;color:var(--texto)}
+.aviso-item .ic{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.aviso-item p{font-size:15px;line-height:1.4}
+.aviso-item .tit{font-size:16px;font-weight:800;margin-bottom:2px}
+.aviso-item small{display:block;font-size:12px;color:var(--suave);margin-top:4px}
+.ic-lluvia{background:#E3ECF7;color:var(--agua)}
+.ic-suelo{background:#E9E2D3;color:#5A4520}
+.ic-enfen{background:#FFF1DD;color:var(--ambar)}
+
+/* Chat ENFEN */
+#aviso-enfen{background:var(--fondo-chat)}
+.chat-cab{background:var(--verde);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.avatar{width:40px;height:40px;border-radius:20px;background:#fff;color:var(--verde);display:flex;align-items:center;justify-content:center}
+.chat-cab b{display:block;font-size:17px;font-weight:800}
+.chat-cab small{font-size:13px;opacity:.9}
+.chat{padding:16px;display:flex;flex-direction:column;gap:10px;flex-grow:1}
+.hora{align-self:center;font-size:12px;font-weight:700;color:var(--suave);background:#fff;padding:4px 10px;border-radius:8px}
+.burbuja{align-self:flex-start;max-width:320px;background:#fff;border-radius:4px 16px 16px 16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.burbuja p{font-size:16px;line-height:1.45}
+.burbuja.audio{flex-direction:row;align-items:center;gap:12px;padding:12px 14px}
+.play{width:44px;height:44px;border-radius:22px;border:none;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.entrada{padding:12px 16px 20px;display:flex;gap:10px;align-items:center;position:sticky;bottom:0;background:var(--fondo-chat)}
+.entrada input{flex-grow:1;min-height:48px;border-radius:24px;border:1px solid var(--borde2);padding:0 16px;font-size:15px;background:#fff}
+.mic{width:52px;height:52px;border-radius:26px;border:none;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Barra de pestañas */
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--borde);display:none;grid-template-columns:repeat(4,minmax(0,1fr));padding:6px 4px 10px;z-index:10}
+.tabs.visible{display:grid}
+.tab{min-height:56px;border:none;background:transparent;color:var(--suave);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:700;position:relative;border-radius:12px}
+.tab.activo{color:var(--verde);background:#EAF2EC}
+.tab .punto{position:absolute;top:6px;right:calc(50% - 18px);width:9px;height:9px;border-radius:50%;background:#C2410C;border:2px solid #fff}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ===== 0. INICIO: MI PARCELA + PRIORIDAD ===== -->
+<main class="pantalla visible" id="parcela">
+  <header class="barra">
+    <div class="marca">
+      <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V11"/><path d="M12 11c0-4 3-7 7-7 0 4-3 7-7 7z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/></svg></span>
+      <b>Siembra Segura</b>
+    </div>
+    <button class="escuchar" data-leer="parcela"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido">
+    <div>
+      <p class="suave">Hola, Doña Rosa</p>
+      <h1>Tu parcela</h1>
+    </div>
+
+    <div class="tarjeta sin">
+      <div class="mapa">
+        <svg viewBox="0 0 350 130" role="img" aria-label="Vista satelital de la parcela marcada">
+          <rect width="350" height="130" fill="#D4DFC9"/>
+          <path d="M0 35 L350 60" stroke="#C1CFB4" stroke-width="10"/>
+          <path d="M0 100 L350 112" stroke="#9FB7D1" stroke-width="6"/>
+          <rect x="20" y="68" width="70" height="26" fill="#C9D8BC"/>
+          <rect x="250" y="8" width="80" height="34" fill="#C9D8BC"/>
+          <polygon points="120,50 230,62 220,102 112,94" fill="#1E5A3C" fill-opacity="0.22" stroke="#1E5A3C" stroke-width="3"/>
+        </svg>
+        <span>Foto de satélite (NASA)</span>
+      </div>
+      <div class="datos">
+        <div><p>Valle</p><p>Medio Piura</p></div>
+        <div><p>Área</p><p>3.2 ha</p></div>
+        <div><p>Riego de</p><p>Poechos</p></div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <div class="entre"><h2>¿Qué sembraste la última campaña?</h2></div>
+      <p class="suave">Por el satélite creemos que fue <strong class="verde">Arroz</strong>. Si no es así, toca el correcto.</p>
+      <div class="chips" id="chips" role="radiogroup" aria-label="Cultivo de la última campaña">
+        <button class="chip activo" role="radio" aria-checked="true">Arroz</button>
+        <button class="chip" role="radio" aria-checked="false">Maíz</button>
+        <button class="chip" role="radio" aria-checked="false">Algodón</button>
+        <button class="chip" role="radio" aria-checked="false">Frejol</button>
+        <button class="chip" role="radio" aria-checked="false">Otro</button>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>¿Qué te importa más esta campaña?</h2>
+      <div class="prios" role="radiogroup" aria-label="Prioridad">
+        <button class="prio activo" data-prio="ganar" role="radio" aria-checked="true"><span class="marca-radio"></span>Ganar más</button>
+        <button class="prio" data-prio="agua" role="radio" aria-checked="false"><span class="marca-radio"></span>Cuidar mi agua</button>
+        <button class="prio" data-prio="tierra" role="radio" aria-checked="false"><span class="marca-radio"></span>Recuperar mi tierra</button>
+      </div>
+      <p class="nota">Puedes cambiarlo después.</p>
+    </div>
+
+    <div class="tarjeta">
+      <h2>¿Hay algo que no puedas hacer? <span class="suave" style="font-weight:600">(opcional)</span></h2>
+      <div class="chips" id="restricciones">
+        <button class="chip" data-res="comprador" aria-pressed="false">No tengo comprador para algodón</button>
+        <button class="chip" data-res="agua" aria-pressed="false">Tendré poca agua</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pie"><button class="btn" data-ir="clima">Empezar</button></footer>
+</main>
+
+<!-- ===== 1. CLIMA ===== -->
+<main class="pantalla" id="clima">
+  <header class="barra">
+    <div><p class="suave">Medio Piura</p><h1>Cómo viene tu valle</h1></div>
+    <button class="escuchar" data-leer="clima"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido con-tabs">
+    <div class="hoy">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.2"/><path d="M8 19v2"/><path d="M8 13v2"/><path d="M16 19v2"/><path d="M16 13v2"/><path d="M12 21v2"/><path d="M12 15v2"/></svg>
+      <div>
+        <p class="t1">Hoy, domingo</p>
+        <p class="t2">Lluvia moderada</p>
+        <p class="t3">70% de probabilidad · 12 mm · 31 °C</p>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Esta semana</h2>
+      <div class="semana" id="semana"></div>
+      <p class="texto">El <strong>miércoles</strong> se espera lluvia fuerte.</p>
+    </div>
+
+    <div class="consejo"><strong>Qué hacer:</strong> no siembres ni abones hasta el jueves. Tu suelo ya está muy húmedo.</div>
+
+    <button class="aviso-item" data-ir="recomendacion">
+      <span class="ic ic-lluvia"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>
+      <div>
+        <p class="tit">Hasta marzo: lluvias fuertes (70%)</p>
+        <p>Toca para ver qué te conviene sembrar.</p>
+      </div>
+    </button>
+
+    <div class="tarjeta">
+      <h2>Comparado con un año normal</h2>
+      <div class="comp">
+        <div class="comp-fila">
+          <div class="entre"><p>Lluvia del mes</p><span class="estado e-alto">3 veces más</span></div>
+          <div class="barra-comp"><i style="width:90%;background:var(--agua)"></i><span class="normal" style="left:30%"></span></div>
+        </div>
+        <div class="comp-fila">
+          <div class="entre"><p>Calor</p><span class="estado e-calor">2 °C más</span></div>
+          <div class="barra-comp"><i style="width:62%;background:#D99A1E"></i><span class="normal" style="left:50%"></span></div>
+        </div>
+        <div class="comp-fila">
+          <div class="entre"><p>Humedad de tu suelo</p><span class="estado e-alto">Muy húmedo</span></div>
+          <div class="barra-comp"><i style="width:85%;background:var(--agua)"></i><span class="normal" style="left:45%"></span></div>
+        </div>
+      </div>
+      <p class="nota">La raya negra marca lo normal para este mes. Datos de satélite NASA (lluvia y humedad del suelo) y pronóstico del día. Cifras de ejemplo.</p>
+      <details class="significa">
+        <summary>¿Qué significa?</summary>
+        <p><strong>Humedad del suelo:</strong> cuánta agua tiene tu tierra. La mide el satélite SMAP de la NASA.</p>
+        <p><strong>Lo normal:</strong> el promedio de los últimos 20 años para este mes en tu valle.</p>
+        <p><strong>Satélite vs tu chacra:</strong> el satélite mide toda la zona desde el espacio, así que puede diferir un poco de lo que ves en tu campo. Por eso te pedimos confirmar lo que sembraste: tu respuesta corrige al satélite.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<!-- ===== 2. QUÉ SEMBRAR ===== -->
+<main class="pantalla" id="recomendacion">
+  <header class="barra">
+    <h1>¿Qué me conviene sembrar?</h1>
+    <button class="escuchar" data-leer="recomendacion"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido con-tabs">
+    <div class="tarjeta">
+      <p class="sobre" style="color:var(--ambar)">CÓMO VIENE TU VALLE HASTA MARZO</p>
+      <p class="pregunta">Lo más probable: <span style="color:var(--agua)">lluvias fuertes</span></p>
+      <div class="probs">
+        <div class="prob"><span>Lluvias fuertes</span><div class="pbar"><i style="width:70%;background:var(--agua)"></i></div><b>70%</b></div>
+        <div class="prob"><span>Normal</span><div class="pbar"><i style="width:20%;background:#8BB37C"></i></div><b>20%</b></div>
+        <div class="prob"><span>Seco</span><div class="pbar"><i style="width:10%;background:#D99A1E"></i></div><b>10%</b></div>
+      </div>
+      <p class="nota">Calculado con datos de satélite de la NASA (mar, lluvia y suelo). Coincide con el ENFEN. Cifras de ejemplo.</p>
+    </div>
+
+    <div class="entre">
+      <p class="suave">Pensando en: <strong id="r-prio" class="verde"></strong></p>
+      <button class="chip" data-ir="parcela" style="min-height:40px;font-size:14px">Cambiar</button>
+    </div>
+
+    <div class="tarjeta destacada" aria-live="polite">
+      <p class="sobre verde" id="r-titulo">TE RECOMENDAMOS</p>
+      <p class="grande" id="r-nombre"></p>
+      <p class="texto" id="r-porque"></p>
+      <div class="riesgo">
+        <p><b class="bien">Si va bien:</b> ganas unos <span id="r-gana"></span></p>
+        <p><b class="mal">Si va mal:</b> pierdes hasta <span id="r-pierde"></span></p>
+        <p><b style="color:var(--medio)">Si al final no llueve tanto:</b> igual ganas unos <span id="r-normal"></span></p>
+        <p><b class="agua">Agua:</b> <span id="r-agua"></span></p>
+        <p><b class="verde">Tu tierra:</b> <span id="r-suelo"></span></p>
+      </div>
+      <p class="nota">Por hectárea. Cifras de ejemplo.</p>
+      <button class="btn chico" data-ir="detalle">¿Cuándo siembro?</button>
+    </div>
+
+    <div class="tarjeta compacta">
+      <p class="sobre">SI SIEMBRAS ARROZ OTRA VEZ</p>
+      <p class="texto" id="r-alt"></p>
+    </div>
+
+    <button class="btn3" data-ir="rotacion">Comparar con otras opciones</button>
+
+    <details class="significa">
+      <summary>Explorar otros escenarios</summary>
+      <p class="texto" style="margin:8px 0">¿Y si el año viene distinto a lo más probable?</p>
+      <div class="seg" role="radiogroup" aria-label="Ver otro escenario">
+        <button data-esc="nino" class="activo" role="radio" aria-checked="true">Con lluvias</button>
+        <button data-esc="normal" role="radio" aria-checked="false">Normal</button>
+        <button data-esc="seco" role="radio" aria-checked="false">Seco</button>
+      </div>
+    </details>
+
+    <p class="guia">Esta app es una guía. La decisión final es tuya: conversa estos resultados con tu técnico o la agencia agraria.</p>
+  </section>
+</main>
+
+<!-- ===== 2b. DETALLE: CUÁNDO SIEMBRO ===== -->
+<main class="pantalla" id="detalle">
+  <header class="barra">
+    <button class="icono" aria-label="Volver" data-ir="recomendacion"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="escuchar" data-leer="detalle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido">
+    <div>
+      <p class="suave" id="d-nombre"></p>
+      <h1>¿Cuándo siembro?</h1>
+    </div>
+    <div class="fecha">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+      <div><p>Decide antes del</p><p id="d-fecha"></p></div>
+    </div>
+    <div class="tarjeta">
+      <h2>Tu calendario</h2>
+      <div class="cal" id="d-cal"></div>
+      <div class="leyenda" id="d-leyenda"></div>
+      <p class="texto" id="d-indica"></p>
+      <p class="texto"><strong>De agosto a noviembre tu campo queda sin cultivo.</strong> Puedes sembrar un cultivo de cobertura (como frejol de palo o crotalaria) para proteger y abonar la tierra.</p>
+    </div>
+    <div class="tarjeta">
+      <h2>¿Por qué te lo recomendamos?</h2>
+      <ul class="razones" id="d-razones"></ul>
+    </div>
+    <div class="tarjeta" aria-live="polite">
+      <div id="d-preguntar">
+        <h2 style="margin-bottom:10px">Cuando siembres, cuéntanos qué fue</h2>
+        <div class="dos">
+          <button class="btn chico" id="d-siguio"></button>
+          <button class="btn2" id="d-otro">Sembré otra cosa</button>
+        </div>
+      </div>
+      <div id="d-gracias" hidden>
+        <h2 class="verde">¡Gracias!</h2>
+        <p class="texto" style="margin-top:6px">Con tu respuesta las recomendaciones del valle mejoran para todos.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== 3. ROTACIÓN ===== -->
+<main class="pantalla" id="rotacion">
+  <header class="barra">
+    <h1>Tu plan de rotación</h1>
+    <button class="escuchar" data-leer="rotacion"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido con-tabs">
+    <div class="tarjeta">
+      <p class="sobre">TU TIERRA HOY</p>
+      <div class="salud">
+        <p class="salud-txt" style="color:#8A2C06">Cansada</p>
+        <div class="medidor" aria-hidden="true"><i class="on1"></i><i></i><i></i></div>
+      </div>
+      <ul class="razones">
+        <li>Lleva 3 campañas seguidas de arroz.</li>
+        <li>El verdor de tus cultivos bajó en los últimos 5 años (satélite NASA).</li>
+        <li>Tiene poca materia orgánica.</li>
+      </ul>
+      <details class="significa">
+        <summary>¿Qué significa?</summary>
+        <p><strong>Verdor:</strong> el satélite Landsat de la NASA mide qué tan verde y fuerte está tu cultivo (índice NDVI). Si baja año tras año, la tierra se está cansando.</p>
+        <p><strong>Materia orgánica:</strong> restos de plantas que alimentan la tierra. Es un dato estimado (SoilGrids); un análisis de suelo lo confirmaría.</p>
+      </details>
+    </div>
+
+    <div>
+      <h2>Compara 3 opciones</h2>
+      <p class="suave" style="margin-top:2px">Pensando en <strong class="verde" id="c-prio"></strong> y en <span id="c-esc">un año con lluvias fuertes</span>. Por hectárea.</p>
+    </div>
+    <div id="comparar" style="display:flex;flex-direction:column;gap:12px"></div>
+
+    <div class="tarjeta">
+      <h2>Plan recomendado: próximas campañas</h2>
+      <p class="suave" id="plan-nombre"></p>
+      <div class="linea" id="rot-plan"></div>
+    </div>
+
+    <p class="guia">Esta app es una guía. La decisión final es tuya: conversa estos resultados con tu técnico o la agencia agraria. Cifras de ejemplo.</p>
+  </section>
+</main>
+
+<!-- ===== 4. AVISOS ===== -->
+<main class="pantalla" id="avisos">
+  <header class="barra">
+    <h1>Avisos</h1>
+    <button class="escuchar" data-leer="avisos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Escuchar</button>
+  </header>
+
+  <section class="contenido con-tabs">
+    <button class="aviso-item" data-ir="clima">
+      <span class="ic ic-lluvia"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.2"/><path d="M8 19v2"/><path d="M12 17v2"/><path d="M16 19v2"/></svg></span>
+      <div>
+        <p class="tit">Lluvia fuerte el miércoles</p>
+        <p>Se esperan 40 mm. No abones ni apliques productos ese día.</p>
+        <small>Hoy, 6:00 a. m. · Pronóstico del día</small>
+      </div>
+    </button>
+
+    <button class="aviso-item" data-ir="clima">
+      <span class="ic ic-suelo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.7 6.3 9.4a7 7 0 1 0 11.4 0z"/></svg></span>
+      <div>
+        <p class="tit">Tu suelo está muy húmedo</p>
+        <p>No riegues esta semana. Espera hasta el jueves para sembrar.</p>
+        <small>Ayer · Satélite NASA (humedad del suelo)</small>
+      </div>
+    </button>
+
+    <button class="aviso-item" data-ir="aviso-enfen">
+      <span class="ic ic-enfen"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+      <div>
+        <p class="tit">Cambió el pronóstico de El Niño</p>
+        <p>Tu recomendación cambió de arroz a maíz. Toca para escuchar.</p>
+        <small>Viernes · Comunicado ENFEN</small>
+      </div>
+    </button>
+    <p class="nota">Los avisos también llegan como mensaje al celular. Cifras de ejemplo.</p>
+  </section>
+</main>
+
+<!-- ===== 4b. AVISO ENFEN (mensaje) ===== -->
+<main class="pantalla" id="aviso-enfen">
+  <header class="chat-cab">
+    <button class="icono claro" aria-label="Volver" data-ir="avisos"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <span class="avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V11"/><path d="M12 11c0-4 3-7 7-7 0 4-3 7-7 7z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/></svg></span>
+    <div><b>Siembra Segura</b><small>Mensaje por celular</small></div>
+  </header>
+  <section class="chat">
+    <p class="hora">Viernes, 7:00 a. m.</p>
+    <div class="burbuja audio">
+      <button class="play" aria-label="Reproducir audio" data-leer="aviso-enfen"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg></button>
+      <svg width="160" height="28" viewBox="0 0 160 28" aria-hidden="true" id="ondas"></svg>
+      <span class="suave">0:42</span>
+    </div>
+    <div class="burbuja">
+      <p class="sobre" style="color:var(--ambar)">CAMBIÓ EL PRONÓSTICO</p>
+      <p>Doña Rosa, el ENFEN anunció que El Niño vendría más fuerte.</p>
+      <p>Para su parcela ya no le recomendamos <strong>arroz</strong>. Ahora le conviene <strong>maíz y después frejol</strong>.</p>
+      <p>Tiene hasta el <strong>15 de diciembre</strong> para decidir.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <button class="btn3" data-ir="recomendacion" data-forzar="nino">Ver mi recomendación</button>
+      <button class="btn2" data-ir="detalle" data-forzar="nino">¿Cuándo siembro?</button>
+    </div>
+  </section>
+  <form class="entrada" id="form-chat">
+    <label for="pregunta" class="oculto">Escribe tu pregunta</label>
+    <input id="pregunta" placeholder="Pregunta lo que quieras…">
+    <button type="button" class="mic" aria-label="Mandar audio"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/></svg></button>
+  </form>
+</main>
+
+<!-- ===== BARRA DE PESTAÑAS ===== -->
+<nav class="tabs" id="tabs" aria-label="Secciones">
+  <button class="tab" data-ir="clima" data-tab="clima">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.2"/><path d="M8 19v2"/><path d="M12 17v2"/><path d="M16 19v2"/></svg>Clima</button>
+  <button class="tab" data-ir="recomendacion" data-tab="recomendacion">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V11"/><path d="M12 11c0-4 3-7 7-7 0 4-3 7-7 7z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/></svg>Qué sembrar</button>
+  <button class="tab" data-ir="rotacion" data-tab="rotacion">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Rotación</button>
+  <button class="tab" data-ir="avisos" data-tab="avisos">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Avisos<span class="punto" aria-hidden="true"></span></button>
+</nav>
+
+</div>
+
+<script>
+// =====================================================================
+// DATOS DE EJEMPLO (cambiar aquí). En la app real vienen del backend:
+// pronóstico diario (API), históricos NASA y el modelo de rotaciones.
+// =====================================================================
+
+// Pronóstico de la semana (simulado; en la app real: API de pronóstico)
+var SEMANA = [
+  ['Dom', 'Lluvia', '12 mm', 'lluvia'], ['Lun', 'Nubes', '0 mm', ''], ['Mar', 'Lluvia', '8 mm', 'lluvia'],
+  ['Mié', 'Fuerte', '40 mm', 'fuerte'], ['Jue', 'Nubes', '2 mm', ''], ['Vie', 'Sol', '0 mm', ''], ['Sáb', 'Sol', '0 mm', '']
+];
+
+// Rotaciones posibles. "plan" = próximas 4 campañas y cómo queda la tierra.
+var ROTACIONES = {
+  r1: {
+    nombre: 'Maíz y después frejol', agua: 7800, aguaTxt: 'usa la mitad que el arroz', suelo: 3, sueloTxt: 'mejora mucho',
+    porque: 'El frejol le devuelve fuerza a tu tierra y el maíz aguanta mejor el clima que el arroz.',
+    fecha: '15 de diciembre', cal: [['Maíz', 4, 'maiz'], ['Frejol', 4, 'frejol']],
+    indica: 'Siembra el maíz entre el 1 y el 20 de diciembre. Cosecha antes de las lluvias más fuertes de marzo.',
+    plan: [['Dic–Mar', 'Maíz', 'maiz', 'Cansada'], ['Abr–Jul', 'Frejol', 'frejol', 'Regular'], ['Dic–May', 'Algodón', 'algodon', 'Regular'], ['Jun–Ago', 'Menestra', 'frejol', 'Buena']]
+  },
+  r2: {
+    nombre: 'Algodón y después menestra', agua: 9100, aguaTxt: 'usa menos que el arroz', suelo: 2, sueloTxt: 'mejora',
+    porque: 'El algodón da buena plata y la menestra después cuida tu tierra.',
+    fecha: '30 de noviembre', cal: [['Algodón', 6, 'algodon'], ['Menestra', 2, 'frejol']],
+    indica: 'Siembra el algodón en la primera quincena de diciembre.',
+    plan: [['Dic–May', 'Algodón', 'algodon', 'Cansada'], ['Jun–Ago', 'Menestra', 'frejol', 'Regular'], ['Dic–Mar', 'Maíz', 'maiz', 'Regular'], ['Abr–Jul', 'Frejol', 'frejol', 'Regular']]
+  },
+  r3: {
+    nombre: 'Frejol y después maíz', agua: 6900, aguaTxt: 'usa la menor cantidad', suelo: 2, sueloTxt: 'mejora',
+    porque: 'Son los cultivos que menos riego necesitan, y el frejol prepara la tierra para el maíz.',
+    fecha: '15 de diciembre', cal: [['Frejol', 3, 'frejol'], ['Maíz', 5, 'maiz']],
+    indica: 'Siembra el frejol cuando confirmes tu turno de riego.',
+    plan: [['Dic–Feb', 'Frejol', 'frejol', 'Regular'], ['Mar–Jul', 'Maíz', 'maiz', 'Regular'], ['Dic–Feb', 'Menestra', 'frejol', 'Buena'], ['Mar–Ago', 'Algodón', 'algodon', 'Buena']]
+  }
+};
+
+// Ganancia esperada y pérdida máxima (S/ por ha) de cada rotación en cada escenario
+var ESCENARIOS = {
+  nino:   { nota: 'Con El Niño llueve más; ', r1: [2400, 600], r2: [2300, 1900], r3: [1800, 400], arroz: 'Podrías ganar más, pero con El Niño es muy arriesgado: podrías perder hasta S/ 5,000.' },
+  normal: { nota: 'En un año normal, ',        r1: [2500, 400], r2: [3100, 700],  r3: [2000, 300], arroz: 'Ganas parecido, pero gastas mucha más agua y cansas tu tierra.' },
+  seco:   { nota: 'En un año seco, ',          r1: [2000, 900], r2: [2300, 2000], r3: [1900, 500], arroz: 'Sin agua suficiente podrías perder la campaña: hasta S/ 6,200.' }
+};
+var PRIORIDADES = { ganar: 'ganar más', agua: 'cuidar tu agua', tierra: 'recuperar tu tierra' };
+
+// Lo que siembra hoy el agricultor (rotación actual)
+var ACTUAL = {
+  nombre: 'Arroz y arroz', agua: 14500, tierra2: 'Muy cansada',
+  gana: { nino: 3000, normal: 3400, seco: 1200 },
+  ficha: {
+    porque: 'Es lo que siembras hoy. Lo comparamos para que veas la diferencia.',
+    evidencia: 'Tu parcela lleva 3 campañas de arroz y su verdor bajó en 5 años (Landsat). Es el cultivo que más agua consume (ECOSTRESS y FAO-56).',
+    beneficios: 'Ya conoces el cultivo y tienes comprador.',
+    vacios: 'Depende de cuánta agua tenga Poechos este año.',
+    riesgos: 'Con lluvias fuertes puede inundarse y perder la campaña (hasta S/ 5,000). Tu tierra se sigue cansando.'
+  }
+};
+
+// Ficha de cada rotación: lo que pide el reto (por qué, evidencia, beneficios, vacíos, riesgos)
+var FICHAS = {
+  r1: {
+    tierra2: 'Buena',
+    evidencia: 'En los años con El Niño (1998, 2017 y 2023) el maíz del valle perdió menos verdor que el arroz (lluvia GPM y verdor MODIS). El frejol fija nitrógeno en la tierra (FAO).',
+    beneficios: 'Devuelve nitrógeno a la tierra, corta las plagas del arroz y usa la mitad de agua.',
+    vacios: 'No tenemos un análisis de suelo de tu parcela. El precio del maíz en la cosecha puede cambiar.',
+    riesgos: 'Confirma con tu técnico la variedad de maíz para tu zona y si hay comprador cerca.'
+  },
+  r2: {
+    tierra2: 'Regular',
+    evidencia: 'El algodón tolera bien el calor (FAO ECOCROP) y tiene historia en el valle. La menestra fija nitrógeno.',
+    beneficios: 'Buen precio. Su raíz profunda mejora la estructura de la tierra y la menestra la abona.',
+    vacios: 'No sabemos si tienes comprador o desmotadora cerca. Los precios del algodón varían mucho.',
+    riesgos: 'En años lluviosos aumentan las plagas del algodón: revisa con tu técnico cómo controlarlas.'
+  },
+  r3: {
+    tierra2: 'Buena',
+    evidencia: 'Frejol y maíz necesitan menos agua (evapotranspiración de ECOSTRESS y FAO-56). El agua subterránea del valle viene bajando (GRACE).',
+    beneficios: 'Es la opción que menos agua usa y el frejol prepara la tierra para el maíz.',
+    vacios: 'Con lluvias muy fuertes el frejol rinde menos. Los datos de suelo son estimados (SoilGrids).',
+    riesgos: 'Confirma tu turno de riego con la junta de usuarios antes de sembrar.'
+  }
+};
+var restricciones = { comprador: false, agua: false };
+var ETIQ_ESC = { nino: 'un año con lluvias fuertes', normal: 'un año normal', seco: 'un año seco' };
+var MESES_RIESGO = { nino: [2, 3], normal: [], seco: [] }; // índices en MESES (Feb, Mar)
+var MESES = ['Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'];
+
+// ===== Estado =====
+var escenario = 'nino';
+var prioridad = 'ganar';
+var elegida = 'r1';
+function $(id) { return document.getElementById(id); }
+function soles(n) { return 'S/ ' + n.toLocaleString('es-PE'); }
+
+// Elige la rotación según la prioridad del agricultor
+// Devuelve las rotaciones permitidas ordenadas de mejor a peor según la prioridad
+function ordenarRotaciones() {
+  var e = ESCENARIOS[escenario];
+  var ids = ['r1', 'r2', 'r3'].filter(function (id) {
+    if (id === 'r2' && (restricciones.comprador || restricciones.agua)) return false;
+    return true;
+  });
+  if (prioridad === 'ganar') return ids.sort(function (a, b) { return e[b][0] - e[a][0]; });
+  if (prioridad === 'agua') return ids.sort(function (a, b) { return ROTACIONES[a].agua - ROTACIONES[b].agua; });
+  return ids.sort(function (a, b) { return ROTACIONES[b].suelo - ROTACIONES[a].suelo || e[a][1] - e[b][1]; });
+}
+function elegirRotacion() { return ordenarRotaciones()[0]; }
+
+function claseTierra(t) { return t === 'Buena' ? 't-buena' : t === 'Regular' ? 't-regular' : t === 'Muy cansada' ? 't-muy' : 't-cansada'; }
+
+// Tarjeta de comparación (estructura fija, textos con textContent)
+function tarjetaOpcion(etiqueta, reco, nombre, gana, agua, tierra2, f) {
+  var c = document.createElement('div');
+  c.className = 'opcion' + (reco ? ' reco' : '');
+  c.innerHTML =
+    '<span class="etiqueta"></span><p class="nom"></p>' +
+    '<div class="met"><div><p>Ganancia esperada</p><p></p></div><div><p>Agua</p><p></p></div><div><p>Tierra en 2 años</p><p><span class="tierra"></span></p></div></div>' +
+    '<details class="significa"><summary>Ver por qué, evidencia y riesgos</summary><div class="ficha">' +
+    '<div><p>POR QUÉ SE SUGIERE</p><p></p></div><div><p>QUÉ DATOS LO RESPALDAN</p><p></p></div>' +
+    '<div><p>BENEFICIOS</p><p></p></div><div><p>LO QUE NO SABEMOS</p><p></p></div>' +
+    '<div><p>REVÍSALO CON TU TÉCNICO</p><p></p></div></div></details>';
+  c.querySelector('.etiqueta').textContent = etiqueta;
+  c.querySelector('.nom').textContent = nombre;
+  var m = c.querySelectorAll('.met > div');
+  m[0].children[1].textContent = soles(gana);
+  m[1].children[1].textContent = agua.toLocaleString('es-PE') + ' m³';
+  var t = m[2].querySelector('.tierra'); t.textContent = tierra2; t.className = 'tierra ' + claseTierra(tierra2);
+  var fp = c.querySelectorAll('.ficha > div');
+  [f.porque, f.evidencia, f.beneficios, f.vacios, f.riesgos].forEach(function (txt, i) { fp[i].children[1].textContent = txt; });
+  return c;
+}
+
+function pintarComparacion() {
+  var orden = ordenarRotaciones(), e = ESCENARIOS[escenario];
+  var cont = $('comparar'); cont.innerHTML = '';
+  cont.appendChild(tarjetaOpcion('LO QUE SIEMBRAS HOY', false, ACTUAL.nombre, ACTUAL.gana[escenario], ACTUAL.agua, ACTUAL.tierra2, ACTUAL.ficha));
+  orden.slice(0, 2).forEach(function (id, i) {
+    var r = ROTACIONES[id], f = FICHAS[id];
+    cont.appendChild(tarjetaOpcion(i === 0 ? 'RECOMENDADA' : 'OTRA OPCIÓN', i === 0, r.nombre, e[id][0], r.agua, f.tierra2,
+      { porque: r.porque, evidencia: f.evidencia, beneficios: f.beneficios, vacios: f.vacios, riesgos: f.riesgos }));
+  });
+  $('c-prio').textContent = PRIORIDADES[prioridad];
+  $('c-esc').textContent = ETIQ_ESC[escenario];
+}
+
+// ===== Navegación =====
+var CON_TABS = ['clima', 'recomendacion', 'rotacion', 'avisos'];
+function ir(id) {
+  document.querySelectorAll('.pantalla').forEach(function (p) { p.classList.toggle('visible', p.id === id); });
+  $('tabs').classList.toggle('visible', CON_TABS.indexOf(id) >= 0);
+  document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('activo', t.dataset.tab === id); });
+  window.scrollTo(0, 0);
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+}
+document.querySelectorAll('[data-ir]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    if (b.dataset.forzar) { escenario = b.dataset.forzar; actualizar(); }
+    ir(b.dataset.ir);
+  });
+});
+
+// ===== Selecciones de inicio =====
+document.querySelectorAll('#chips .chip').forEach(function (c) {
+  c.addEventListener('click', function () {
+    document.querySelectorAll('#chips .chip').forEach(function (x) { x.classList.toggle('activo', x === c); x.setAttribute('aria-checked', x === c); });
+  });
+});
+document.querySelectorAll('[data-prio]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    prioridad = b.dataset.prio;
+    document.querySelectorAll('[data-prio]').forEach(function (x) { var on = x === b; x.classList.toggle('activo', on); x.setAttribute('aria-checked', on); });
+    actualizar();
+  });
+});
+document.querySelectorAll('[data-res]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var k = b.dataset.res; restricciones[k] = !restricciones[k];
+    b.classList.toggle('activo', restricciones[k]); b.setAttribute('aria-pressed', restricciones[k]);
+    actualizar();
+  });
+});
+document.querySelectorAll('[data-esc]').forEach(function (b) {
+  b.addEventListener('click', function () { escenario = b.dataset.esc; actualizar(); });
+});
+
+// ===== Pintar todo según escenario + prioridad =====
+function actualizar() {
+  elegida = elegirRotacion();
+  var r = ROTACIONES[elegida], e = ESCENARIOS[escenario];
+  document.querySelectorAll('[data-esc]').forEach(function (b) { var on = b.dataset.esc === escenario; b.classList.toggle('activo', on); b.setAttribute('aria-checked', on); });
+
+  $('r-prio').textContent = PRIORIDADES[prioridad];
+  $('r-titulo').textContent = escenario === 'nino' ? 'TE RECOMENDAMOS' : 'SI EL AÑO VIENE ' + (escenario === 'normal' ? 'NORMAL' : 'SECO') + ', TE CONVIENE';
+  $('r-nombre').textContent = r.nombre;
+  $('r-porque').textContent = e.nota + r.porque.charAt(0).toLowerCase() + r.porque.slice(1);
+  $('r-gana').textContent = soles(e[elegida][0]);
+  $('r-pierde').textContent = soles(e[elegida][1]);
+  $('r-normal').textContent = soles(ESCENARIOS.normal[elegida][0]);
+  $('r-agua').textContent = r.aguaTxt;
+  $('r-suelo').textContent = r.sueloTxt;
+  $('r-alt').textContent = e.arroz;
+
+  // Detalle
+  $('d-nombre').textContent = r.nombre;
+  $('d-fecha').textContent = r.fecha;
+  $('d-indica').textContent = r.indica;
+  var cal = $('d-cal'); cal.innerHTML = '';
+  MESES.forEach(function (m) { var s = document.createElement('span'); s.className = 'mes'; s.textContent = m; cal.appendChild(s); });
+  r.cal.forEach(function (c) { var d = document.createElement('div'); d.className = 'bloque ' + c[2]; d.style.gridColumn = 'span ' + c[1]; d.textContent = c[0]; cal.appendChild(d); });
+  var ul = $('d-razones'); ul.innerHTML = '';
+  [e.nota + r.porque.charAt(0).toLowerCase() + r.porque.slice(1),
+   'Tu tierra lleva 3 campañas de arroz; esta rotación la ' + (r.suelo === 3 ? 'recupera.' : 'ayuda a recuperar.'),
+   'Gastas menos agua de Poechos que con arroz.'].forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+  $('d-siguio').textContent = 'Sembré ' + r.cal[0][0].toLowerCase();
+  $('d-preguntar').hidden = false; $('d-gracias').hidden = true;
+
+  // Meses de riesgo en el calendario
+  var ley = $('d-leyenda'); ley.innerHTML = '';
+  var riesgo = MESES_RIESGO[escenario];
+  MESES.forEach(function (m, i) { var x = document.createElement('i'); if (riesgo.indexOf(i) >= 0) x.className = 'on'; ley.appendChild(x); });
+  if (riesgo.length) { var lt = document.createElement('span'); lt.className = 'leyenda-txt'; lt.textContent = 'Febrero y marzo: riesgo de lluvia fuerte. Ten la cosecha cerca o protegida.'; ley.appendChild(lt); }
+
+  // Rotación
+  pintarComparacion();
+  $('plan-nombre').textContent = r.nombre + ' y después ' + r.plan.slice(2).map(function (x) { return x[1].toLowerCase(); }).join(' y ') + '.';
+  var plan = $('rot-plan'); plan.innerHTML = '';
+  r.plan.forEach(function (p) {
+    var fila = document.createElement('div'); fila.className = 'camp';
+    var cls = p[3] === 'Buena' ? 't-buena' : p[3] === 'Regular' ? 't-regular' : 't-cansada';
+    fila.innerHTML = '<span class="cuando"></span><span class="cultivo ' + p[2] + '"></span><span class="tierra ' + cls + '"></span>';
+    fila.children[0].textContent = p[0]; fila.children[1].textContent = p[1]; fila.children[2].textContent = 'Tierra: ' + p[3].toLowerCase();
+    plan.appendChild(fila);
+  });
+}
+
+// ===== Respuesta "qué sembré" =====
+function responder() { $('d-preguntar').hidden = true; $('d-gracias').hidden = false; }
+$('d-siguio').addEventListener('click', responder);
+$('d-otro').addEventListener('click', responder);
+
+// ===== Semana de clima =====
+SEMANA.forEach(function (d) {
+  var el = document.createElement('div'); el.className = 'dia ' + d[3];
+  el.innerHTML = '<b></b><span></span><span></span>';
+  el.children[0].textContent = d[0]; el.children[1].textContent = d[1]; el.children[2].textContent = d[2];
+  $('semana').appendChild(el);
+});
+
+// ===== Audio con la voz del navegador =====
+function textoDe(p) {
+  var r = ROTACIONES[elegida], e = ESCENARIOS[escenario];
+  if (p === 'parcela') return 'Hola Doña Rosa. Por el satélite creemos que la última campaña sembraste arroz. Si no es así, toca el cultivo correcto. Luego dinos qué te importa más esta campaña: ganar más, cuidar tu agua o recuperar tu tierra.';
+  if (p === 'clima') return 'Hoy en tu valle se espera lluvia moderada, con setenta por ciento de probabilidad. El miércoles se espera lluvia fuerte. No siembres ni abones hasta el jueves, tu suelo ya está muy húmedo. Este mes llovió tres veces más de lo normal.';
+  if (p === 'recomendacion') return 'Lo más probable en tu valle hasta marzo son lluvias fuertes, con setenta por ciento de probabilidad. Pensando en ' + PRIORIDADES[prioridad] + ', te recomendamos ' + r.nombre + '. Si va bien, ganas unos ' + e[elegida][0] + ' soles por hectárea. Si va mal, pierdes hasta ' + e[elegida][1] + ' soles. Tu tierra ' + r.sueloTxt + '. ' + e.arroz;
+  if (p === 'detalle') return r.nombre + '. Decide antes del ' + r.fecha + '. ' + r.indica;
+  if (p === 'rotacion') return 'Tu tierra hoy está cansada, porque lleva tres campañas seguidas de arroz. Comparamos tres opciones. Si sigues con arroz y arroz, en dos años tu tierra quedará muy cansada. La opción recomendada es ' + r.nombre + ', que deja tu tierra mejor y usa menos agua. Toca cada opción para ver por qué la sugerimos, qué datos la respaldan y qué debes revisar con tu técnico. Recuerda: esta app es una guía, la decisión es tuya.';
+  if (p === 'avisos') return 'Tienes tres avisos. Lluvia fuerte el miércoles. Tu suelo está muy húmedo, no riegues esta semana. Y cambió el pronóstico de El Niño: tu recomendación cambió de arroz a maíz.';
+  return 'Doña Rosa, el ENFEN anunció que El Niño vendría más fuerte. Para su parcela ya no le recomendamos arroz. Ahora le conviene maíz y después frejol. Tiene hasta el 15 de diciembre para decidir.';
+}
+document.querySelectorAll('[data-leer]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(textoDe(b.dataset.leer));
+      u.lang = 'es-PE'; u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  });
+});
+
+// ===== Onda decorativa del audio =====
+[8, 16, 24, 12, 20, 8, 16, 24, 12, 20, 8, 16, 24, 12, 8, 20, 12, 8, 16, 8].forEach(function (h, i) {
+  var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  r.setAttribute('x', i * 8); r.setAttribute('y', (28 - h) / 2); r.setAttribute('width', 4); r.setAttribute('height', h); r.setAttribute('rx', 2);
+  r.setAttribute('fill', i < 8 ? '#1E5A3C' : '#A9B8AD');
+  $('ondas').appendChild(r);
+});
+
+$('form-chat').addEventListener('submit', function (e) { e.preventDefault(); $('pregunta').value = ''; });
+
+actualizar();
+</script>
+</body>
+</html>

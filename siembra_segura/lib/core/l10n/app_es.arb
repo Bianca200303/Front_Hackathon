@@ -1,0 +1,41 @@
+{
+  "@@locale": "es",
+
+  "appTitle": "Siembra Segura",
+
+  "tabClimate": "Clima",
+  "tabWhatToPlant": "Qué sembrar",
+  "tabRotation": "Rotación",
+  "tabAlerts": "Avisos",
+  "tabAlertsUnreadSemantics": "Avisos, hay avisos nuevos",
+
+  "actionStart": "Empezar",
+  "actionBack": "Volver",
+  "actionRetry": "Reintentar",
+  "actionListen": "Escuchar",
+  "actionChange": "Cambiar",
+  "actionCompareOptions": "Comparar con otras opciones",
+  "actionWhenToPlant": "¿Cuándo siembro?",
+  "actionSeeMyRecommendation": "Ver mi recomendación",
+
+  "farmTitle": "Tu parcela",
+  "climateTitle": "Cómo viene tu valle",
+  "recommendationTitle": "¿Qué me conviene sembrar?",
+  "plantingScheduleTitle": "¿Cuándo siembro?",
+  "rotationTitle": "Tu plan de rotación",
+  "alertsTitle": "Avisos",
+  "alertMessageTitle": "Mensaje",
+
+  "loading": "Cargando…",
+  "emptyDefault": "Todavía no hay información.",
+  "comingSoon": "Próximamente",
+  "placeholderUnderConstruction": "Pantalla en construcción.",
+
+  "errorNetwork": "No hay conexión. Revisa tu señal e inténtalo de nuevo.",
+  "errorTimeout": "La respuesta tardó demasiado. Inténtalo de nuevo.",
+  "errorUnauthorized": "Tu sesión terminó. Vuelve a ingresar.",
+  "errorServer": "Tuvimos un problema. Inténtalo más tarde.",
+  "errorNotFound": "No encontramos esta información.",
+  "errorUnexpected": "Algo salió mal. Inténtalo de nuevo.",
+  "errorSpeechUnavailable": "No se pudo reproducir el audio en este celular."
+}
