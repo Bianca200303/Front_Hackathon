@@ -1,23 +1,41 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum Environment { dev, staging, prod }
+/// Entorno en el que corre la app.
+enum Environment {
+  /// Desarrollo local.
+  dev,
+
+  /// Pruebas internas.
+  staging,
+
+  /// Producción.
+  prod,
+}
 
 /// Origen de los datos de los repositorios.
 ///
 /// `mock` usa datos locales de ejemplo; `remote` usará el backend cuando
 /// existan los contratos (ver docs/ARCHITECTURE.md, decisión B2).
-enum DataSourceMode { mock, remote }
+enum DataSourceMode {
+  /// Datos de ejemplo en memoria (repositorios mock).
+  mock,
+
+  /// Backend real (pendiente de contratos, decisión B2).
+  remote,
+}
 
 /// Configuración de la app, inyectada en tiempo de compilación con
 /// `--dart-define-from-file=config/<entorno>.json`.
 class AppConfig extends Equatable {
+  /// Crea la configuración. En la app se usa [AppConfig.fromEnvironment].
   const AppConfig({
     required this.environment,
     required this.dataSource,
     this.apiBaseUrl,
   });
 
+  /// Lee la configuración de `--dart-define-from-file` (ver `config/`).
   factory AppConfig.fromEnvironment() => AppConfig.parse(
     environment: const String.fromEnvironment('APP_ENV', defaultValue: 'dev'),
     dataSource: const String.fromEnvironment(
@@ -63,16 +81,23 @@ class AppConfig extends Equatable {
     return AppConfig(environment: env, dataSource: mode, apiBaseUrl: baseUrl);
   }
 
+  /// Entorno de ejecución.
   final Environment environment;
+
+  /// De dónde salen los datos.
   final DataSourceMode dataSource;
+
+  /// URL base del backend; nula mientras se usan mocks.
   final Uri? apiBaseUrl;
 
+  /// `true` si la app muestra datos de ejemplo.
   bool get usesMocks => dataSource == DataSourceMode.mock;
 
   @override
   List<Object?> get props => [environment, dataSource, apiBaseUrl];
 }
 
+/// Configuración vigente. `main.dart` la inyecta con `overrideWithValue`.
 final appConfigProvider = Provider<AppConfig>(
   (ref) => AppConfig.fromEnvironment(),
 );

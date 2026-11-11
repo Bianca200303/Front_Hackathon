@@ -4,7 +4,10 @@ import 'package:siembra_segura/app/router/app_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_theme.dart';
 
+/// Raíz de la app: tema, idioma y navegación.
 class SiembraSeguraApp extends ConsumerWidget {
+  /// Crea la app. Requiere un `ProviderScope` con la configuración y el
+  /// almacén de preferencias inyectados (ver `main.dart`).
   const SiembraSeguraApp({super.key});
 
   @override

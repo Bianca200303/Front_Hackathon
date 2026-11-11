@@ -11,9 +11,14 @@ import 'package:siembra_segura/features/crop_planning/presentation/screens/plant
 import 'package:siembra_segura/features/crop_planning/presentation/screens/recommendation_screen.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/screens/rotation_screen.dart';
 import 'package:siembra_segura/features/farm/presentation/screens/farm_screen.dart';
+import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 
 /// Composición de la navegación. Es el único lugar que conoce las
 /// pantallas de todos los features.
+///
+/// "Mi parcela" ([AppRoutes.farm]) está fuera de las pestañas: es la
+/// pantalla inicial la primera vez y, después, se abre encima de cualquier
+/// pestaña con `push` (botón de ajustes de cada cabecera).
 GoRouter createAppRouter({String initialLocation = AppRoutes.farm}) {
   final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -97,8 +102,16 @@ String _childPath(String fullPath, String parentPath) {
   return fullPath.substring(parentPath.length + 1);
 }
 
+/// Router de la app.
+///
+/// Si el agricultor ya configuró su campaña en una sesión anterior, abre
+/// directamente en Clima; si no, en "Mi parcela".
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final router = createAppRouter();
+  final hasSavedPreferences =
+      ref.read(campaignPreferencesStoreProvider).load() != null;
+  final router = createAppRouter(
+    initialLocation: hasSavedPreferences ? AppRoutes.climate : AppRoutes.farm,
+  );
   final speech = ref.read(speechServiceProvider);
 
   // Como en la referencia: al cambiar de pantalla se corta la lectura.

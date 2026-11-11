@@ -7,6 +7,7 @@ import 'package:siembra_segura/core/theme/app_spacing.dart';
 /// Renderiza de forma uniforme los estados de un [AsyncValue]:
 /// carga, error (con reintento), vacío y datos.
 class AsyncValueView<T> extends StatelessWidget {
+  /// Crea la vista para [value].
   const AsyncValueView({
     required this.value,
     required this.data,
@@ -16,12 +17,19 @@ class AsyncValueView<T> extends StatelessWidget {
     super.key,
   });
 
+  /// Estado asíncrono a representar.
   final AsyncValue<T> value;
+
+  /// Construye el contenido cuando hay datos.
   final Widget Function(T data) data;
+
+  /// Si se indica, el error muestra "Reintentar".
   final VoidCallback? onRetry;
 
   /// Si devuelve `true`, se muestra [EmptyView] en lugar de [data].
   final bool Function(T data)? isEmpty;
+
+  /// Mensaje del estado vacío; por defecto, uno genérico.
   final String? emptyMessage;
 
   @override
@@ -36,7 +44,9 @@ class AsyncValueView<T> extends StatelessWidget {
   }
 }
 
+/// Indicador de carga centrado y accesible.
 class LoadingView extends StatelessWidget {
+  /// Crea el indicador.
   const LoadingView({super.key});
 
   @override
@@ -53,10 +63,15 @@ class LoadingView extends StatelessWidget {
   }
 }
 
+/// Mensaje de error comprensible con opción de reintentar.
 class ErrorView extends StatelessWidget {
+  /// Crea la vista para [error].
   const ErrorView({required this.error, this.onRetry, super.key});
 
+  /// Error recibido; se traduce con `userMessageFor`.
   final Object error;
+
+  /// Si se indica, muestra el botón "Reintentar".
   final VoidCallback? onRetry;
 
   @override
@@ -72,9 +87,12 @@ class ErrorView extends StatelessWidget {
   }
 }
 
+/// Mensaje para cuando no hay nada que mostrar.
 class EmptyView extends StatelessWidget {
+  /// Crea la vista vacía.
   const EmptyView({this.message, super.key});
 
+  /// Mensaje a mostrar; por defecto, uno genérico.
   final String? message;
 
   @override

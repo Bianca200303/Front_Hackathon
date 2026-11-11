@@ -9,8 +9,10 @@ import 'package:siembra_segura/core/config/app_config.dart';
 ///
 /// Toda implementación debe traducir sus errores a `AppException`.
 abstract interface class ApiClient {
+  /// Pide [path] y devuelve el JSON decodificado.
   Future<Object?> get(String path, {Map<String, String>? query});
 
+  /// Envía [body] a [path] y devuelve el JSON decodificado.
   Future<Object?> post(String path, {Object? body});
 }
 
@@ -19,16 +21,20 @@ abstract interface class ApiClient {
 /// Las rutas concretas de cada recurso se definirán junto con el backend;
 /// no se inventan aquí.
 class ApiEndpoints {
+  /// Crea el resolvedor sobre [baseUrl].
   const ApiEndpoints(this.baseUrl);
 
+  /// URL base del backend.
   final Uri baseUrl;
 
+  /// URL completa para [path] con los parámetros [query].
   Uri resolve(String path, [Map<String, String>? query]) {
     final resolved = baseUrl.resolve(path);
     return query == null ? resolved : resolved.replace(queryParameters: query);
   }
 }
 
+/// Rutas del backend. Falla si no hay `API_BASE_URL` configurada.
 final apiEndpointsProvider = Provider<ApiEndpoints>((ref) {
   final baseUrl = ref.watch(appConfigProvider).apiBaseUrl;
   if (baseUrl == null) {

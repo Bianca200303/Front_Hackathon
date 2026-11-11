@@ -3,7 +3,9 @@ import 'package:siembra_segura/core/theme/app_colors.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 
+/// Tema de Material construido con los tokens de la app.
 abstract final class AppTheme {
+  /// Tema claro (la referencia no tiene modo oscuro).
   static ThemeData light() {
     const colorScheme = ColorScheme.light(
       primary: AppColors.primary,

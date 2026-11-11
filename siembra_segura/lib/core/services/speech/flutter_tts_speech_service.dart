@@ -3,6 +3,7 @@ import 'package:siembra_segura/core/services/speech/speech_service.dart';
 
 /// Implementación de [SpeechService] con el motor TTS del dispositivo.
 class FlutterTtsSpeechService implements SpeechService {
+  /// Crea el servicio; [tts] permite inyectar un doble en pruebas.
   FlutterTtsSpeechService({FlutterTts? tts}) : _tts = tts ?? FlutterTts();
 
   /// Idiomas en orden de preferencia: español de Perú primero.

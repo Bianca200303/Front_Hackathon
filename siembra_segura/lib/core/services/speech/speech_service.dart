@@ -11,18 +11,23 @@ abstract interface class SpeechService {
   /// Lanza [SpeechUnavailableException] si el dispositivo no puede leer.
   Future<void> speak(String text);
 
+  /// Corta la lectura en curso, si hay alguna.
   Future<void> stop();
 }
 
+/// El dispositivo no puede leer en voz alta (sin motor de voz en español).
 class SpeechUnavailableException implements Exception {
+  /// Crea el error, con la causa original opcional.
   const SpeechUnavailableException([this.cause]);
 
+  /// Error original del motor de voz.
   final Object? cause;
 
   @override
   String toString() => 'SpeechUnavailableException(cause: $cause)';
 }
 
+/// Servicio de lectura en voz alta del dispositivo.
 final speechServiceProvider = Provider<SpeechService>((ref) {
   final service = FlutterTtsSpeechService();
   ref.onDispose(service.stop);

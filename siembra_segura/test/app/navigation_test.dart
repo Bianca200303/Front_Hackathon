@@ -7,18 +7,6 @@ import '../helpers/pump_app.dart';
 void main() {
   final l10n = AppLocalizationsEs();
 
-  Future<void> tapTab(WidgetTester tester, String label) async {
-    await tester.tap(
-      find.descendant(of: findNavigationBar(), matching: find.text(label)),
-    );
-    await tester.pumpAndSettle();
-  }
-
-  Future<void> start(WidgetTester tester) async {
-    await tester.tap(find.text(l10n.actionStart));
-    await tester.pumpAndSettle();
-  }
-
   testWidgets('arranca en Mi parcela, sin pestañas', (tester) async {
     await tester.pumpSiembraSeguraApp();
 
@@ -28,7 +16,7 @@ void main() {
 
   testWidgets('Empezar lleva a Clima y muestra las pestañas', (tester) async {
     await tester.pumpSiembraSeguraApp();
-    await start(tester);
+    await tester.tapText(l10n.actionStart);
 
     expect(find.text(l10n.climateTitle), findsOneWidget);
     expect(findNavigationBar(), findsOneWidget);
@@ -36,7 +24,7 @@ void main() {
 
   testWidgets('las pestañas cambian de sección', (tester) async {
     await tester.pumpSiembraSeguraApp();
-    await start(tester);
+    await tester.tapText(l10n.actionStart);
 
     final tabs = [
       (l10n.tabWhatToPlant, l10n.recommendationTitle, 1),
@@ -45,7 +33,7 @@ void main() {
       (l10n.tabClimate, l10n.climateTitle, 0),
     ];
     for (final (tab, title, index) in tabs) {
-      await tapTab(tester, tab);
+      await tester.tapTab(tab);
       final navigationBar = tester.widget<NavigationBar>(findNavigationBar());
       expect(navigationBar.selectedIndex, index, reason: 'pestaña $tab');
       // El título puede coincidir con la etiqueta de la pestaña ("Avisos").
@@ -57,30 +45,27 @@ void main() {
     tester,
   ) async {
     await tester.pumpSiembraSeguraApp();
-    await start(tester);
-    await tapTab(tester, l10n.tabWhatToPlant);
+    await tester.tapText(l10n.actionStart);
+    await tester.tapTab(l10n.tabWhatToPlant);
 
-    await tester.tap(find.text(l10n.actionWhenToPlant));
-    await tester.pumpAndSettle();
-    expect(find.text(l10n.plantingScheduleTitle), findsOneWidget);
+    await tester.tapText(l10n.actionWhenToPlant);
+    expect(find.text(l10n.scheduleYourCalendar), findsOneWidget);
     expect(findNavigationBar(), findsNothing);
 
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byTooltip(l10n.actionBack));
     await tester.pumpAndSettle();
     expect(find.text(l10n.recommendationTitle), findsOneWidget);
     expect(findNavigationBar(), findsOneWidget);
   });
 
-  testWidgets('el mensaje de un aviso se abre sin pestañas', (tester) async {
+  testWidgets('"Cambiar" vuelve a Mi parcela', (tester) async {
     await tester.pumpSiembraSeguraApp();
-    await start(tester);
-    await tapTab(tester, l10n.tabAlerts);
+    await tester.tapText(l10n.actionStart);
+    await tester.tapTab(l10n.tabWhatToPlant);
 
-    await tester.tap(find.text(l10n.alertMessageTitle));
-    await tester.pumpAndSettle();
+    await tester.tapText(l10n.actionChange);
 
-    expect(findNavigationBar(), findsNothing);
-    expect(find.text(l10n.actionSeeMyRecommendation), findsOneWidget);
+    expect(find.text(l10n.farmTitle), findsOneWidget);
   });
 
   testWidgets('cambiar de pantalla detiene la lectura en voz alta', (
@@ -89,7 +74,7 @@ void main() {
     final speech = await tester.pumpSiembraSeguraApp();
     final before = speech.stopCalls;
 
-    await start(tester);
+    await tester.tapText(l10n.actionStart);
 
     expect(speech.stopCalls, greaterThan(before));
   });

@@ -142,6 +142,18 @@ abstract class AppLocalizations {
   /// **'Volver'**
   String get actionBack;
 
+  /// No description provided for @actionDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo'**
+  String get actionDone;
+
+  /// No description provided for @actionUndo.
+  ///
+  /// In es, this message translates to:
+  /// **'Deshacer'**
+  String get actionUndo;
+
   /// No description provided for @actionRetry.
   ///
   /// In es, this message translates to:
@@ -153,6 +165,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Escuchar'**
   String get actionListen;
+
+  /// No description provided for @actionListenSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Escuchar el contenido de esta pantalla'**
+  String get actionListenSemantics;
 
   /// No description provided for @actionChange.
   ///
@@ -232,17 +250,23 @@ abstract class AppLocalizations {
   /// **'Todavía no hay información.'**
   String get emptyDefault;
 
+  /// No description provided for @emptyRecommendation.
+  ///
+  /// In es, this message translates to:
+  /// **'Con lo que indicaste no encontramos opciones. Revisa lo que no puedes hacer en Tu parcela.'**
+  String get emptyRecommendation;
+
+  /// No description provided for @emptyAlerts.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes avisos por ahora.'**
+  String get emptyAlerts;
+
   /// No description provided for @comingSoon.
   ///
   /// In es, this message translates to:
   /// **'Próximamente'**
   String get comingSoon;
-
-  /// No description provided for @placeholderUnderConstruction.
-  ///
-  /// In es, this message translates to:
-  /// **'Pantalla en construcción.'**
-  String get placeholderUnderConstruction;
 
   /// No description provided for @errorNetwork.
   ///
@@ -285,6 +309,910 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo reproducir el audio en este celular.'**
   String get errorSpeechUnavailable;
+
+  /// No description provided for @sampleDataDisclaimer.
+  ///
+  /// In es, this message translates to:
+  /// **'Cifras de ejemplo.'**
+  String get sampleDataDisclaimer;
+
+  /// No description provided for @perHectare.
+  ///
+  /// In es, this message translates to:
+  /// **'Por hectárea.'**
+  String get perHectare;
+
+  /// No description provided for @guideDisclaimer.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta app es una guía. La decisión final es tuya: conversa estos resultados con tu técnico o la agencia agraria.'**
+  String get guideDisclaimer;
+
+  /// No description provided for @whatDoesItMean.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué significa?'**
+  String get whatDoesItMean;
+
+  /// No description provided for @optionalLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'(opcional)'**
+  String get optionalLabel;
+
+  /// No description provided for @rotationNameSequence.
+  ///
+  /// In es, this message translates to:
+  /// **'{first} y después {second}'**
+  String rotationNameSequence(String first, String second);
+
+  /// No description provided for @rotationNameRepeated.
+  ///
+  /// In es, this message translates to:
+  /// **'{first} y {second}'**
+  String rotationNameRepeated(String first, String second);
+
+  /// No description provided for @listJoin.
+  ///
+  /// In es, this message translates to:
+  /// **'{first} y {second}'**
+  String listJoin(String first, String second);
+
+  /// No description provided for @scenarioHeavyRains.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvias fuertes'**
+  String get scenarioHeavyRains;
+
+  /// No description provided for @scenarioNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Normal'**
+  String get scenarioNormal;
+
+  /// No description provided for @scenarioDry.
+  ///
+  /// In es, this message translates to:
+  /// **'Seco'**
+  String get scenarioDry;
+
+  /// No description provided for @scenarioOptionHeavyRains.
+  ///
+  /// In es, this message translates to:
+  /// **'Con lluvias'**
+  String get scenarioOptionHeavyRains;
+
+  /// No description provided for @scenarioPhraseHeavyRains.
+  ///
+  /// In es, this message translates to:
+  /// **'un año con lluvias fuertes'**
+  String get scenarioPhraseHeavyRains;
+
+  /// No description provided for @scenarioPhraseNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'un año normal'**
+  String get scenarioPhraseNormal;
+
+  /// No description provided for @scenarioPhraseDry.
+  ///
+  /// In es, this message translates to:
+  /// **'un año seco'**
+  String get scenarioPhraseDry;
+
+  /// No description provided for @soilVeryTired.
+  ///
+  /// In es, this message translates to:
+  /// **'Muy cansada'**
+  String get soilVeryTired;
+
+  /// No description provided for @soilTired.
+  ///
+  /// In es, this message translates to:
+  /// **'Cansada'**
+  String get soilTired;
+
+  /// No description provided for @soilRegular.
+  ///
+  /// In es, this message translates to:
+  /// **'Regular'**
+  String get soilRegular;
+
+  /// No description provided for @soilGood.
+  ///
+  /// In es, this message translates to:
+  /// **'Buena'**
+  String get soilGood;
+
+  /// No description provided for @soilWithLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tierra: {condition}'**
+  String soilWithLabel(String condition);
+
+  /// No description provided for @soilImpactImproves.
+  ///
+  /// In es, this message translates to:
+  /// **'mejora'**
+  String get soilImpactImproves;
+
+  /// No description provided for @soilImpactImprovesALot.
+  ///
+  /// In es, this message translates to:
+  /// **'mejora mucho'**
+  String get soilImpactImprovesALot;
+
+  /// No description provided for @farmGreeting.
+  ///
+  /// In es, this message translates to:
+  /// **'Hola, {name}'**
+  String farmGreeting(String name);
+
+  /// No description provided for @farmSatelliteCaption.
+  ///
+  /// In es, this message translates to:
+  /// **'Foto de satélite (NASA)'**
+  String get farmSatelliteCaption;
+
+  /// No description provided for @farmMapSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Vista satelital de la parcela marcada'**
+  String get farmMapSemantics;
+
+  /// No description provided for @farmValley.
+  ///
+  /// In es, this message translates to:
+  /// **'Valle'**
+  String get farmValley;
+
+  /// No description provided for @farmArea.
+  ///
+  /// In es, this message translates to:
+  /// **'Área'**
+  String get farmArea;
+
+  /// No description provided for @farmIrrigation.
+  ///
+  /// In es, this message translates to:
+  /// **'Riego de'**
+  String get farmIrrigation;
+
+  /// No description provided for @farmAreaValue.
+  ///
+  /// In es, this message translates to:
+  /// **'{area} ha'**
+  String farmAreaValue(String area);
+
+  /// No description provided for @farmLastCropQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué sembraste la última campaña?'**
+  String get farmLastCropQuestion;
+
+  /// No description provided for @farmLastCropHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Por el satélite creemos que fue {crop}. Si no es así, toca el correcto.'**
+  String farmLastCropHint(String crop);
+
+  /// No description provided for @farmLastCropGroupSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Cultivo de la última campaña'**
+  String get farmLastCropGroupSemantics;
+
+  /// No description provided for @farmPriorityQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué te importa más esta campaña?'**
+  String get farmPriorityQuestion;
+
+  /// No description provided for @farmPriorityGroupSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Prioridad'**
+  String get farmPriorityGroupSemantics;
+
+  /// No description provided for @farmPriorityNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes cambiarlo después desde el botón de ajustes de cada pantalla.'**
+  String get farmPriorityNote;
+
+  /// No description provided for @farmResetAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver a los valores sugeridos'**
+  String get farmResetAction;
+
+  /// No description provided for @farmResetDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo: usamos de nuevo los valores sugeridos.'**
+  String get farmResetDone;
+
+  /// No description provided for @farmSettingsTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi parcela: cambiar cultivo, prioridad o restricciones'**
+  String get farmSettingsTooltip;
+
+  /// No description provided for @farmRestrictionsQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Hay algo que no puedas hacer?'**
+  String get farmRestrictionsQuestion;
+
+  /// No description provided for @farmNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'Hola {name}. Por el satélite creemos que la última campaña sembraste {crop}. Si no es así, toca el cultivo correcto. Luego dinos qué te importa más esta campaña: ganar más, cuidar tu agua o recuperar tu tierra.'**
+  String farmNarration(String name, String crop);
+
+  /// No description provided for @weatherSunny.
+  ///
+  /// In es, this message translates to:
+  /// **'Sol'**
+  String get weatherSunny;
+
+  /// No description provided for @weatherCloudy.
+  ///
+  /// In es, this message translates to:
+  /// **'Nubes'**
+  String get weatherCloudy;
+
+  /// No description provided for @weatherRain.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia'**
+  String get weatherRain;
+
+  /// No description provided for @weatherModerateRain.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia moderada'**
+  String get weatherModerateRain;
+
+  /// No description provided for @weatherHeavyRain.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia fuerte'**
+  String get weatherHeavyRain;
+
+  /// No description provided for @weatherHeavyRainShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuerte'**
+  String get weatherHeavyRainShort;
+
+  /// No description provided for @climateToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy, {weekday}'**
+  String climateToday(String weekday);
+
+  /// No description provided for @climateTodayDetails.
+  ///
+  /// In es, this message translates to:
+  /// **'{probability} de probabilidad · {rain} · {temperature}'**
+  String climateTodayDetails(
+    String probability,
+    String rain,
+    String temperature,
+  );
+
+  /// No description provided for @climateThisWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana'**
+  String get climateThisWeek;
+
+  /// No description provided for @climateHeavyRainDay.
+  ///
+  /// In es, this message translates to:
+  /// **'El {weekday} se espera lluvia fuerte.'**
+  String climateHeavyRainDay(String weekday);
+
+  /// No description provided for @climateAdviceLead.
+  ///
+  /// In es, this message translates to:
+  /// **'Qué hacer:'**
+  String get climateAdviceLead;
+
+  /// No description provided for @climateOutlookTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Hasta {month}: {scenario} ({probability})'**
+  String climateOutlookTitle(String month, String scenario, String probability);
+
+  /// No description provided for @climateOutlookAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca para ver qué te conviene sembrar.'**
+  String get climateOutlookAction;
+
+  /// No description provided for @climateComparisonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Comparado con un año normal'**
+  String get climateComparisonTitle;
+
+  /// No description provided for @climateComparisonNote.
+  ///
+  /// In es, this message translates to:
+  /// **'La raya negra marca lo normal para este mes. Datos de satélite NASA (lluvia y humedad del suelo) y pronóstico del día.'**
+  String get climateComparisonNote;
+
+  /// No description provided for @anomalyRainfall.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia del mes'**
+  String get anomalyRainfall;
+
+  /// No description provided for @anomalyTemperature.
+  ///
+  /// In es, this message translates to:
+  /// **'Calor'**
+  String get anomalyTemperature;
+
+  /// No description provided for @anomalySoilMoisture.
+  ///
+  /// In es, this message translates to:
+  /// **'Humedad de tu suelo'**
+  String get anomalySoilMoisture;
+
+  /// No description provided for @anomalyTimesMore.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} veces más'**
+  String anomalyTimesMore(String count);
+
+  /// No description provided for @anomalyTimesLess.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} veces menos'**
+  String anomalyTimesLess(String count);
+
+  /// No description provided for @anomalyDegreesMore.
+  ///
+  /// In es, this message translates to:
+  /// **'{degrees} °C más'**
+  String anomalyDegreesMore(String degrees);
+
+  /// No description provided for @anomalyDegreesLess.
+  ///
+  /// In es, this message translates to:
+  /// **'{degrees} °C menos'**
+  String anomalyDegreesLess(String degrees);
+
+  /// No description provided for @anomalyAsNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Como lo normal'**
+  String get anomalyAsNormal;
+
+  /// No description provided for @anomalyBarSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'{metric}: {status}'**
+  String anomalyBarSemantics(String metric, String status);
+
+  /// No description provided for @moistureVeryWet.
+  ///
+  /// In es, this message translates to:
+  /// **'Muy húmedo'**
+  String get moistureVeryWet;
+
+  /// No description provided for @moistureWet.
+  ///
+  /// In es, this message translates to:
+  /// **'Húmedo'**
+  String get moistureWet;
+
+  /// No description provided for @moistureNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Normal'**
+  String get moistureNormal;
+
+  /// No description provided for @moistureDry.
+  ///
+  /// In es, this message translates to:
+  /// **'Seco'**
+  String get moistureDry;
+
+  /// No description provided for @climateExplainerSoilMoistureTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Humedad del suelo:'**
+  String get climateExplainerSoilMoistureTerm;
+
+  /// No description provided for @climateExplainerSoilMoistureBody.
+  ///
+  /// In es, this message translates to:
+  /// **'cuánta agua tiene tu tierra. La mide el satélite SMAP de la NASA.'**
+  String get climateExplainerSoilMoistureBody;
+
+  /// No description provided for @climateExplainerNormalTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo normal:'**
+  String get climateExplainerNormalTerm;
+
+  /// No description provided for @climateExplainerNormalBody.
+  ///
+  /// In es, this message translates to:
+  /// **'el promedio de los últimos 20 años para este mes en tu valle.'**
+  String get climateExplainerNormalBody;
+
+  /// No description provided for @climateExplainerSatelliteTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Satélite vs tu chacra:'**
+  String get climateExplainerSatelliteTerm;
+
+  /// No description provided for @climateExplainerSatelliteBody.
+  ///
+  /// In es, this message translates to:
+  /// **'el satélite mide toda la zona desde el espacio, así que puede diferir un poco de lo que ves en tu campo. Por eso te pedimos confirmar lo que sembraste: tu respuesta corrige al satélite.'**
+  String get climateExplainerSatelliteBody;
+
+  /// No description provided for @climateNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy en tu valle se espera {condition}, con {probability} de probabilidad.'**
+  String climateNarration(String condition, String probability);
+
+  /// No description provided for @recommendationOutlookOverline.
+  ///
+  /// In es, this message translates to:
+  /// **'CÓMO VIENE TU VALLE HASTA {month}'**
+  String recommendationOutlookOverline(String month);
+
+  /// No description provided for @recommendationMostLikely.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo más probable: {scenario}'**
+  String recommendationMostLikely(String scenario);
+
+  /// No description provided for @recommendationOutlookNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Calculado con datos de satélite de la NASA (mar, lluvia y suelo). Coincide con el ENFEN.'**
+  String get recommendationOutlookNote;
+
+  /// No description provided for @recommendationThinkingOf.
+  ///
+  /// In es, this message translates to:
+  /// **'Pensando en: {priority}'**
+  String recommendationThinkingOf(String priority);
+
+  /// No description provided for @recommendationHeadline.
+  ///
+  /// In es, this message translates to:
+  /// **'TE RECOMENDAMOS'**
+  String get recommendationHeadline;
+
+  /// No description provided for @recommendationIfHeavyRains.
+  ///
+  /// In es, this message translates to:
+  /// **'SI EL AÑO VIENE CON LLUVIAS FUERTES, TE CONVIENE'**
+  String get recommendationIfHeavyRains;
+
+  /// No description provided for @recommendationIfNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'SI EL AÑO VIENE NORMAL, TE CONVIENE'**
+  String get recommendationIfNormal;
+
+  /// No description provided for @recommendationIfDry.
+  ///
+  /// In es, this message translates to:
+  /// **'SI EL AÑO VIENE SECO, TE CONVIENE'**
+  String get recommendationIfDry;
+
+  /// No description provided for @outcomeIfGood.
+  ///
+  /// In es, this message translates to:
+  /// **'Si va bien:'**
+  String get outcomeIfGood;
+
+  /// No description provided for @outcomeIfGoodValue.
+  ///
+  /// In es, this message translates to:
+  /// **'ganas unos {amount}'**
+  String outcomeIfGoodValue(String amount);
+
+  /// No description provided for @outcomeIfBad.
+  ///
+  /// In es, this message translates to:
+  /// **'Si va mal:'**
+  String get outcomeIfBad;
+
+  /// No description provided for @outcomeIfBadValue.
+  ///
+  /// In es, this message translates to:
+  /// **'pierdes hasta {amount}'**
+  String outcomeIfBadValue(String amount);
+
+  /// No description provided for @outcomeIfNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Si al final no llueve tanto:'**
+  String get outcomeIfNormal;
+
+  /// No description provided for @outcomeIfNormalValue.
+  ///
+  /// In es, this message translates to:
+  /// **'igual ganas unos {amount}'**
+  String outcomeIfNormalValue(String amount);
+
+  /// No description provided for @outcomeWater.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua:'**
+  String get outcomeWater;
+
+  /// No description provided for @outcomeSoil.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra:'**
+  String get outcomeSoil;
+
+  /// No description provided for @recommendationRepeatOverline.
+  ///
+  /// In es, this message translates to:
+  /// **'SI SIEMBRAS {crop} OTRA VEZ'**
+  String recommendationRepeatOverline(String crop);
+
+  /// No description provided for @recommendationExploreScenarios.
+  ///
+  /// In es, this message translates to:
+  /// **'Explorar otros escenarios'**
+  String get recommendationExploreScenarios;
+
+  /// No description provided for @recommendationExploreQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Y si el año viene distinto a lo más probable?'**
+  String get recommendationExploreQuestion;
+
+  /// No description provided for @scenarioSelectorSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver otro escenario'**
+  String get scenarioSelectorSemantics;
+
+  /// No description provided for @recommendationNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo más probable en tu valle hasta {month} son {scenario}, con {probability} de probabilidad. Pensando en {priority}, te recomendamos {rotation}. Si va bien, ganas unos {profit} por hectárea. Si va mal, pierdes hasta {loss}. Tu tierra {soil}. {repeatWarning}'**
+  String recommendationNarration(
+    String month,
+    String scenario,
+    String probability,
+    String priority,
+    String rotation,
+    String profit,
+    String loss,
+    String soil,
+    String repeatWarning,
+  );
+
+  /// No description provided for @scheduleDecideBefore.
+  ///
+  /// In es, this message translates to:
+  /// **'Decide antes del'**
+  String get scheduleDecideBefore;
+
+  /// No description provided for @scheduleYourCalendar.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu calendario'**
+  String get scheduleYourCalendar;
+
+  /// No description provided for @scheduleCalendarSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'{crop}: {months} meses'**
+  String scheduleCalendarSemantics(String crop, int months);
+
+  /// No description provided for @scheduleRiskLegend.
+  ///
+  /// In es, this message translates to:
+  /// **'{months}: riesgo de lluvia fuerte. Ten la cosecha cerca o protegida.'**
+  String scheduleRiskLegend(String months);
+
+  /// No description provided for @scheduleFallowLead.
+  ///
+  /// In es, this message translates to:
+  /// **'De agosto a noviembre tu campo queda sin cultivo.'**
+  String get scheduleFallowLead;
+
+  /// No description provided for @scheduleFallowBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes sembrar un cultivo de cobertura (como frejol de palo o crotalaria) para proteger y abonar la tierra.'**
+  String get scheduleFallowBody;
+
+  /// No description provided for @scheduleWhyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué te lo recomendamos?'**
+  String get scheduleWhyTitle;
+
+  /// No description provided for @scheduleReasonSoilRestores.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra lleva {count} campañas de {crop}; esta rotación la recupera.'**
+  String scheduleReasonSoilRestores(int count, String crop);
+
+  /// No description provided for @scheduleReasonSoilHelps.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra lleva {count} campañas de {crop}; esta rotación la ayuda a recuperar.'**
+  String scheduleReasonSoilHelps(int count, String crop);
+
+  /// No description provided for @scheduleReasonWater.
+  ///
+  /// In es, this message translates to:
+  /// **'Gastas menos agua de {source} que con {crop}.'**
+  String scheduleReasonWater(String source, String crop);
+
+  /// No description provided for @scheduleNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'{rotation}. Decide antes del {date}. {instructions}'**
+  String scheduleNarration(String rotation, String date, String instructions);
+
+  /// No description provided for @feedbackQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuando siembres, cuéntanos qué fue'**
+  String get feedbackQuestion;
+
+  /// No description provided for @feedbackFollowed.
+  ///
+  /// In es, this message translates to:
+  /// **'Sembré {crop}'**
+  String feedbackFollowed(String crop);
+
+  /// No description provided for @feedbackOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Sembré otra cosa'**
+  String get feedbackOther;
+
+  /// No description provided for @feedbackThanksTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Gracias!'**
+  String get feedbackThanksTitle;
+
+  /// No description provided for @feedbackThanksBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Con tu respuesta las recomendaciones del valle mejoran para todos.'**
+  String get feedbackThanksBody;
+
+  /// No description provided for @rotationSoilToday.
+  ///
+  /// In es, this message translates to:
+  /// **'TU TIERRA HOY'**
+  String get rotationSoilToday;
+
+  /// No description provided for @rotationSoilGaugeSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado de tu tierra: {condition}'**
+  String rotationSoilGaugeSemantics(String condition);
+
+  /// No description provided for @rotationExplainerGreennessTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Verdor:'**
+  String get rotationExplainerGreennessTerm;
+
+  /// No description provided for @rotationExplainerGreennessBody.
+  ///
+  /// In es, this message translates to:
+  /// **'el satélite Landsat de la NASA mide qué tan verde y fuerte está tu cultivo (índice NDVI). Si baja año tras año, la tierra se está cansando.'**
+  String get rotationExplainerGreennessBody;
+
+  /// No description provided for @rotationExplainerOrganicMatterTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Materia orgánica:'**
+  String get rotationExplainerOrganicMatterTerm;
+
+  /// No description provided for @rotationExplainerOrganicMatterBody.
+  ///
+  /// In es, this message translates to:
+  /// **'restos de plantas que alimentan la tierra. Es un dato estimado (SoilGrids); un análisis de suelo lo confirmaría.'**
+  String get rotationExplainerOrganicMatterBody;
+
+  /// No description provided for @rotationCompareTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Compara {count} opciones'**
+  String rotationCompareTitle(int count);
+
+  /// No description provided for @rotationCompareSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Pensando en {priority} y en {scenario}. Por hectárea.'**
+  String rotationCompareSubtitle(String priority, String scenario);
+
+  /// No description provided for @optionCurrent.
+  ///
+  /// In es, this message translates to:
+  /// **'LO QUE SIEMBRAS HOY'**
+  String get optionCurrent;
+
+  /// No description provided for @optionRecommended.
+  ///
+  /// In es, this message translates to:
+  /// **'RECOMENDADA'**
+  String get optionRecommended;
+
+  /// No description provided for @optionOther.
+  ///
+  /// In es, this message translates to:
+  /// **'OTRA OPCIÓN'**
+  String get optionOther;
+
+  /// No description provided for @metricExpectedProfit.
+  ///
+  /// In es, this message translates to:
+  /// **'Ganancia esperada'**
+  String get metricExpectedProfit;
+
+  /// No description provided for @metricWater.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua'**
+  String get metricWater;
+
+  /// No description provided for @metricSoilInTwoYears.
+  ///
+  /// In es, this message translates to:
+  /// **'Tierra en 2 años'**
+  String get metricSoilInTwoYears;
+
+  /// No description provided for @factsheetToggle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver por qué, evidencia y riesgos'**
+  String get factsheetToggle;
+
+  /// No description provided for @factsheetWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'POR QUÉ SE SUGIERE'**
+  String get factsheetWhy;
+
+  /// No description provided for @factsheetEvidence.
+  ///
+  /// In es, this message translates to:
+  /// **'QUÉ DATOS LO RESPALDAN'**
+  String get factsheetEvidence;
+
+  /// No description provided for @factsheetBenefits.
+  ///
+  /// In es, this message translates to:
+  /// **'BENEFICIOS'**
+  String get factsheetBenefits;
+
+  /// No description provided for @factsheetUnknowns.
+  ///
+  /// In es, this message translates to:
+  /// **'LO QUE NO SABEMOS'**
+  String get factsheetUnknowns;
+
+  /// No description provided for @factsheetRisks.
+  ///
+  /// In es, this message translates to:
+  /// **'REVÍSALO CON TU TÉCNICO'**
+  String get factsheetRisks;
+
+  /// No description provided for @rotationPlanTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Plan recomendado: próximas campañas'**
+  String get rotationPlanTitle;
+
+  /// No description provided for @rotationPlanName.
+  ///
+  /// In es, this message translates to:
+  /// **'{rotation} y después {next}.'**
+  String rotationPlanName(String rotation, String next);
+
+  /// No description provided for @rotationNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra hoy está {soil}, porque lleva {count} campañas seguidas de {crop}. Comparamos {options} opciones. Si sigues con {current}, en dos años tu tierra quedará {currentSoil}. La opción recomendada es {rotation}. Toca cada opción para ver por qué la sugerimos, qué datos la respaldan y qué debes revisar con tu técnico. Recuerda: esta app es una guía, la decisión es tuya.'**
+  String rotationNarration(
+    String soil,
+    int count,
+    String crop,
+    int options,
+    String current,
+    String currentSoil,
+    String rotation,
+  );
+
+  /// No description provided for @alertsFooter.
+  ///
+  /// In es, this message translates to:
+  /// **'Los avisos también llegan como mensaje al celular.'**
+  String get alertsFooter;
+
+  /// No description provided for @alertsCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =0{No tienes avisos.} =1{Tienes un aviso.} other{Tienes {count} avisos.}}'**
+  String alertsCount(int count);
+
+  /// No description provided for @alertTimeToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy, {time}'**
+  String alertTimeToday(String time);
+
+  /// No description provided for @alertTimeYesterday.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayer'**
+  String get alertTimeYesterday;
+
+  /// No description provided for @alertMeta.
+  ///
+  /// In es, this message translates to:
+  /// **'{time} · {source}'**
+  String alertMeta(String time, String source);
+
+  /// No description provided for @messageChannel.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensaje por celular'**
+  String get messageChannel;
+
+  /// No description provided for @messageSentAt.
+  ///
+  /// In es, this message translates to:
+  /// **'{day}, {time}'**
+  String messageSentAt(String day, String time);
+
+  /// No description provided for @messagePlayAudio.
+  ///
+  /// In es, this message translates to:
+  /// **'Reproducir audio'**
+  String get messagePlayAudio;
+
+  /// No description provided for @messageInputLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe tu pregunta'**
+  String get messageInputLabel;
+
+  /// No description provided for @messageInputHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Pregunta lo que quieras…'**
+  String get messageInputHint;
+
+  /// No description provided for @messageSendAudio.
+  ///
+  /// In es, this message translates to:
+  /// **'Mandar audio'**
+  String get messageSendAudio;
+
+  /// No description provided for @messageChatComingSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Podrás hacer preguntas próximamente.'**
+  String get messageChatComingSoon;
 }
 
 class _AppLocalizationsDelegate
