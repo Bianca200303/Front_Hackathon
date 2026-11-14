@@ -38,8 +38,8 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
 
    `local.json` apunta a `http://10.0.2.2:8000/`, que es el equipo visto
    desde el emulador de Android. En el simulador de iOS usa
-   `http://localhost:8000/`; en un teléfono físico, la IP del equipo en la
-   red local. El HTTP sin TLS solo está permitido en las compilaciones de
+   `http://localhost:8000/`; en un iPhone físico, `config/device.json`, que
+   usa el nombre Bonjour del Mac (`scutil --get LocalHostName` + `.local`). El HTTP sin TLS solo está permitido en las compilaciones de
    depuración de Android y para la red local en iOS.
 
 Sin `--dart-define-from-file`, la app arranca en `dev` + `mock`. Usa

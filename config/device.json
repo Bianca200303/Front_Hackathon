@@ -1,0 +1,5 @@
+{
+  "APP_ENV": "dev",
+  "DATA_SOURCE": "remote",
+  "API_BASE_URL": "http://MacBookAir.local:8000/"
+}
