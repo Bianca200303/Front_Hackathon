@@ -56,7 +56,8 @@ class ClimateScreen extends ConsumerWidget {
               heavyRainDay: overview.firstHeavyRainDay,
             ),
             const _SeasonalOutlookTile(),
-            AnomalyComparisonCard(anomalies: overview.anomalies),
+            if (overview.anomalies.isNotEmpty)
+              AnomalyComparisonCard(anomalies: overview.anomalies),
           ],
         ),
       ),

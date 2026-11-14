@@ -36,16 +36,16 @@ lib/
 │   ├── config/            # AppConfig (entorno, origen de datos), latencia de mocks
 │   ├── error/             # AppException (sealed) + mensajes para el usuario
 │   ├── l10n/              # app_es.arb → AppLocalizations (generado)
-│   ├── network/           # Contrato ApiClient, ApiEndpoints, política de reintentos
+│   ├── network/           # ApiClient + HttpApiClient (package:http), ApiEndpoints, JsonObject, reintentos
 │   ├── router/            # AppRoutes: paths de la app (constantes)
 │   ├── services/speech/   # SpeechService (abstracto) + implementación TTS
 │   ├── theme/             # Tokens: colores, tipografía, espaciado, breakpoints, ThemeData
 │   └── utils/             # Formateadores, reloj inyectable, combinación de AsyncValue
 ├── shared/                # Compartido por varios features
-│   ├── domain/            # Vocabulario, CampaignCatalog, CampaignContext, CampaignPreferencesStore, SeasonalOutlook
-│   ├── data/              # MockCatalog (única fuente de datos de ejemplo del catálogo), mocks,
+│   ├── domain/            # Vocabulario, CampaignCatalog, CampaignContext, CampaignPreferencesStore, SeasonalOutlook, FarmLocation
+│   ├── data/              # MockCatalog (única fuente de datos de ejemplo del catálogo), mocks, zona piloto,
 │   │                      # almacén de preferencias (SharedPreferences / memoria) y su codec JSON
-│   ├── state/             # campaignContextProvider, campaignCatalogProvider, seasonalOutlookProvider
+│   ├── state/             # campaignContextProvider, campaignCatalogProvider, seasonalOutlookProvider, farmLocationProvider
 │   ├── presentation/      # Textos y colores del vocabulario
 │   └── widgets/           # Design system (ver §5)
 └── features/
@@ -95,8 +95,30 @@ Hoy cada repositorio mock implementa directamente la interfaz: separar
 Cuando haya caché offline (B10), `Remote<X>Repository` combinará una fuente
 remota y una local dentro de `data/`, sin tocar dominio ni presentación.
 
-Con `DATA_SOURCE=remote`, los providers lanzan un error explícito
-(`remoteDataSourcePending`) hasta que existan los contratos (B2).
+### Modo `remote` híbrido
+
+Con `DATA_SOURCE=remote`, cada repositorio usa el backend
+(`spaceapps-2026-core`) si ya tiene contrato, y los datos de ejemplo si no.
+Así la app se puede probar completa contra el backend mientras se integra
+pantalla por pantalla.
+
+| Repositorio | Con `remote` | Endpoint / pendiente |
+|---|---|---|
+| `ClimateRepository` | **Backend** | `GET /api/v1/app/climate-overview` (Open-Meteo + NASA POWER) |
+| `SeasonalOutlookRepository` | Ejemplo | Probabilidades del ENFEN; el backend aún no las publica |
+| `FarmRepository` | Ejemplo | B4 |
+| `CampaignCatalogRepository` | Ejemplo | B12 |
+| `CropPlanningRepository`, `RotationRankingPolicy` | Ejemplo | B3, B6 |
+| `AlertsRepository` | Ejemplo | B7 |
+
+- La parcela se ubica con `farmLocationProvider` (hoy, la zona piloto de
+  `shared/data/pilot_farm_location.dart`, la misma que `DEFAULT_LAT/LON` del
+  backend).
+- `SourceNote(…, backedByRemote: true)` marca las notas cuyos datos ya vienen
+  del backend: "Cifras de ejemplo." solo se oculta en esas y solo con
+  `remote`.
+- Si el backend no puede calcular la comparación con un año normal, devuelve
+  `anomalies: []` y la pantalla Clima oculta esa tarjeta.
 
 ### Ejemplo: la recomendación
 
@@ -193,7 +215,8 @@ Abrir la recomendación desde el mensaje del ENFEN fija el escenario del aviso
 | `FarmSettingsButton` | — (acceso a Mi parcela desde las pestañas) |
 | `ResponsiveColumns` | — (dos columnas en tablets) |
 
-`SourceNote` añade "Cifras de ejemplo." solo cuando `DATA_SOURCE=mock`.
+`SourceNote` añade "Cifras de ejemplo." salvo en las notas con
+`backedByRemote: true` cuando `DATA_SOURCE=remote` (ver §4).
 
 **Tokens:** los widgets no escriben tamaños de letra ni colores. Usan el
 `TextTheme` o los estilos con nombre de `AppTypography` (`muted`, `caption`,
@@ -209,7 +232,7 @@ se usa `copyWith(color: …)`.
 | 2 | **go_router** | Shell con pestañas que conservan estado; deep links futuros desde notificaciones | Navigator 2.0 manual |
 | 3 | **equatable** para igualdad de valor | Evita reconstrucciones innecesarias y facilita tests, sin build_runner | freezed (se reevaluará al tener DTOs) |
 | 4 | Excepciones tipadas + `AsyncValue` | Idiomático en Riverpod, sin dependencias extra | Either / fpdart |
-| 5 | Sin DTOs ni serialización todavía | No hay contratos de backend (B2) | Inventar JSON |
+| 5 | Sin clases DTO: el JSON se lee con `JsonObject` (lectura tipada que lanza `FormatException`) y se mapea directo al dominio en `data/` | Un solo contrato y pocos campos; los errores de formato se traducen a `UnexpectedException` en un único lugar | freezed / json_serializable (requieren build_runner) |
 | 6 | Config con `--dart-define-from-file` | Nativo, sin dependencias; valida al arrancar | flutter_dotenv |
 | 7 | Figtree incluida en assets | Funciona offline | google_fonts (descarga en runtime) |
 | 8 | `flutter_tts` detrás de `SpeechService` | "Escuchar" es central; permite cambiar a audio del servidor (B8) | TTS directo en widgets |
@@ -229,12 +252,15 @@ se usa `copyWith(color: …)`.
 | 22 | Navegación adaptable: barra inferior < 600 dp, riel lateral ≥ 600 dp; dos columnas solo donde aportan | Tablets y teléfonos en horizontal; el riel libera alto | Solo centrar el contenido (versión anterior); `flutter_adaptive_scaffold` (dependencia extra) |
 | 23 | Tipografía solo por tokens (`TextTheme` + `AppTypography`) | 38 estilos sueltos duplicaban tamaños; ahora un cambio de escala se hace en un lugar | Estilos inline |
 | 24 | Lint `public_member_api_docs` activo | Todo miembro público lleva documentación; el analizador impide olvidarla | Documentar "cuando haya tiempo" |
+| 25 | **`http`** detrás de `ApiClient` (`HttpApiClient`) | Solo hace falta GET/POST JSON sin autenticación; `MockClient` permite probar sin red. El cuerpo se decodifica como UTF-8 porque FastAPI no declara charset | `dio` (interceptores que todavía no se usan) |
+| 26 | Modo `remote` híbrido: backend donde hay contrato, ejemplo en el resto | Permite integrar pantalla por pantalla sin romper la app | Todo o nada (versión anterior: `remote` fallaba en todas las pantallas) |
+| 27 | Clima usa un endpoint hecho para la pantalla (`/app/climate-overview`) en lugar de combinar series en el cliente | El cálculo de anomalías y el consejo viven en el servidor (B11); la app hace una sola petición, mejor con mala señal | Pedir `/climate/forecast` y `/climate/history` y calcular en la app |
 
 ### Dependencias pospuestas
 
 | Paquete | Cuándo |
 |---|---|
-| `dio` | Al definir contratos y autenticación (B1, B2) |
+| `dio` | Solo si la autenticación (B1) necesita interceptores |
 | Caché local de datos | Al decidir el modo offline (B10) |
 | `firebase_messaging` | Si los avisos usan push (B7) |
 
@@ -243,7 +269,7 @@ se usa `copyWith(color: …)`.
 | # | Tema | Pregunta abierta | Dónde impacta |
 |---|---|---|---|
 | B1 | Autenticación | ¿Cómo se identifica el agricultor? ¿Sesión o tokens? | `core/network`, nuevo feature `auth` |
-| B2 | Contratos | Endpoints, formatos, IDs, formato de error | `data/` de cada feature, `ApiClient` |
+| B2 | Contratos | **Parcial:** Clima ya tiene contrato (§4). Falta el resto de endpoints y usar el cuerpo de error `{"error": {"code", "message"}}` del backend | `data/` de cada feature, `ApiClient` |
 | B3 | Recomendación | ¿Ranking en el servidor o en el cliente? Si es en el cliente, ¿quién define el criterio de cada prioridad? | `RotationRankingPolicy` |
 | B4 | Parcela | Geometría, imagen satelital, inferencia del último cultivo | `farm` |
 | B5 | Preferencias | Hoy en el dispositivo. ¿También en el perfil del servidor (cambio de teléfono)? | `CampaignPreferencesStore` |
@@ -324,3 +350,4 @@ Hoy la app asume una sola parcela. Propuesta para soportar de 1 a N:
 | 2026-11-10 | Fase 3: proyecto base, tema, router, DI, configuración de entornos, servicio de voz y tests de infraestructura |
 | 2026-11-10 | Fase 4: design system, los 4 features con datos mock, recomendación con ranking en dominio, estados de carga/error/vacío, accesibilidad y texto grande |
 | 2026-11-10 | Revisión de la Fase 4: catálogos como datos, criterio de orden como política intercambiable, preferencias guardadas en el dispositivo, volver a Mi parcela y restablecer, diseño adaptable (riel y dos columnas), tipografía por tokens, documentación obligatoria de código |
+| 2026-11-13 | Integración con el backend: `HttpApiClient`, modo `remote` híbrido y Clima con datos reales (Open-Meteo + NASA POWER) |

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
 import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_crop_planning_repository.dart';
@@ -8,28 +7,20 @@ import 'package:siembra_segura/features/crop_planning/domain/crop_planning_model
 import 'package:siembra_segura/features/crop_planning/domain/get_recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/domain/rotation_ranker.dart';
-import 'package:siembra_segura/shared/data/remote_pending.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 import 'package:siembra_segura/shared/state/seasonal_outlook_provider.dart';
 
-/// Repositorio de planificación según la fuente de datos configurada.
-final cropPlanningRepositoryProvider = Provider<CropPlanningRepository>((ref) {
-  return switch (ref.watch(appConfigProvider).dataSource) {
-    DataSourceMode.mock => MockCropPlanningRepository(
-      latency: ref.watch(mockLatencyProvider),
-    ),
-    DataSourceMode.remote => remoteDataSourcePending('CropPlanning'),
-  };
-});
+/// Repositorio de planificación. Usa datos de ejemplo también con
+/// `DATA_SOURCE=remote` hasta que exista el motor de recomendación (B3).
+final cropPlanningRepositoryProvider = Provider<CropPlanningRepository>(
+  (ref) => MockCropPlanningRepository(latency: ref.watch(mockLatencyProvider)),
+);
 
 /// Criterio para ordenar las rotaciones por prioridad (decisión B3).
-final rotationRankingPolicyProvider = Provider<RotationRankingPolicy>((ref) {
-  return switch (ref.watch(appConfigProvider).dataSource) {
-    DataSourceMode.mock => const MockRotationRankingPolicy(),
-    DataSourceMode.remote => remoteDataSourcePending('RotationRankingPolicy'),
-  };
-});
+final rotationRankingPolicyProvider = Provider<RotationRankingPolicy>(
+  (ref) => const MockRotationRankingPolicy(),
+);
 
 /// Opciones de rotación, práctica actual y estado del suelo.
 final planningDataProvider = FutureProvider<CropPlanningData>(

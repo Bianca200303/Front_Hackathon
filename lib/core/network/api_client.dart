@@ -1,11 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/config/app_config.dart';
 
-/// Contrato mínimo del cliente HTTP que usarán las fuentes de datos remotas.
+/// Contrato mínimo del cliente HTTP que usan las fuentes de datos remotas.
 ///
-/// Todavía no tiene implementación: el cliente concreto (previsiblemente
-/// basado en `dio`) se añade cuando el backend defina contratos,
-/// autenticación y formato de errores (decisiones B1 y B2).
+/// La implementación es `HttpApiClient`. La autenticación sigue pendiente
+/// (decisión B1).
 ///
 /// Toda implementación debe traducir sus errores a `AppException`.
 abstract interface class ApiClient {
@@ -16,10 +15,8 @@ abstract interface class ApiClient {
   Future<Object?> post(String path, {Object? body});
 }
 
-/// Resuelve rutas relativas contra la URL base del entorno.
-///
-/// Las rutas concretas de cada recurso se definirán junto con el backend;
-/// no se inventan aquí.
+/// Resuelve rutas relativas (sin `/` inicial) contra la URL base del
+/// entorno.
 class ApiEndpoints {
   /// Crea el resolvedor sobre [baseUrl].
   const ApiEndpoints(this.baseUrl);

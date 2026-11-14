@@ -1,21 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/features/alerts/data/mock_alerts_repository.dart';
 import 'package:siembra_segura/features/alerts/domain/alert.dart';
-import 'package:siembra_segura/shared/data/remote_pending.dart';
 
-/// Repositorio de avisos según la fuente de datos configurada.
-final alertsRepositoryProvider = Provider<AlertsRepository>((ref) {
-  return switch (ref.watch(appConfigProvider).dataSource) {
-    DataSourceMode.mock => MockAlertsRepository(
-      clock: ref.watch(clockProvider),
-      latency: ref.watch(mockLatencyProvider),
-    ),
-    DataSourceMode.remote => remoteDataSourcePending('Alerts'),
-  };
-});
+/// Repositorio de avisos. Usa datos de ejemplo también con
+/// `DATA_SOURCE=remote` hasta que el backend publique avisos (B7).
+final alertsRepositoryProvider = Provider<AlertsRepository>(
+  (ref) => MockAlertsRepository(
+    clock: ref.watch(clockProvider),
+    latency: ref.watch(mockLatencyProvider),
+  ),
+);
 
 /// Avisos del agricultor.
 final alertsProvider = FutureProvider<List<Alert>>(

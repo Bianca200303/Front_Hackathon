@@ -29,7 +29,7 @@ class AnomalyComparisonCard extends StatelessWidget {
             for (final anomaly in anomalies) _AnomalyRow(anomaly: anomaly),
           ],
         ),
-        SourceNote(l10n.climateComparisonNote),
+        SourceNote(l10n.climateComparisonNote, backedByRemote: true),
         ExplainerTile(
           title: l10n.whatDoesItMean,
           framed: false,

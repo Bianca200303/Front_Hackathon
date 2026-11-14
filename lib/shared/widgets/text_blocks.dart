@@ -180,22 +180,27 @@ class BulletList extends StatelessWidget {
   }
 }
 
-/// Nota de fuente de datos (`.nota`). Si la app usa datos de ejemplo, lo
+/// Nota de fuente de datos (`.nota`). Si los datos son de ejemplo, lo
 /// indica, como hacía la referencia con "Cifras de ejemplo".
 class SourceNote extends ConsumerWidget {
   /// Crea la nota.
-  const SourceNote(this.text, {super.key});
+  const SourceNote(this.text, {this.backedByRemote = false, super.key});
 
   /// Fuente de los datos; puede estar vacía.
   final String text;
 
+  /// `true` si estos datos ya vienen del backend con `DATA_SOURCE=remote`.
+  /// Si es `false`, siempre son de ejemplo.
+  final bool backedByRemote;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final usesMocks = ref.watch(appConfigProvider).usesMocks;
+    final isSampleData =
+        !backedByRemote || ref.watch(appConfigProvider).usesMocks;
     final disclaimer = AppLocalizations.of(context).sampleDataDisclaimer;
     final content = [
       if (text.isNotEmpty) text,
-      if (usesMocks) disclaimer,
+      if (isSampleData) disclaimer,
     ].join(' ');
     if (content.isEmpty) return const SizedBox.shrink();
     return Text(content, style: Theme.of(context).textTheme.bodySmall);

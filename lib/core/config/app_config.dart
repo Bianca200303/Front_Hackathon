@@ -15,13 +15,14 @@ enum Environment {
 
 /// Origen de los datos de los repositorios.
 ///
-/// `mock` usa datos locales de ejemplo; `remote` usará el backend cuando
-/// existan los contratos (ver docs/ARCHITECTURE.md, decisión B2).
+/// `mock` usa datos locales de ejemplo; `remote` usa el backend en las
+/// pantallas que ya tienen contrato y datos de ejemplo en el resto (ver
+/// docs/ARCHITECTURE.md, §4).
 enum DataSourceMode {
   /// Datos de ejemplo en memoria (repositorios mock).
   mock,
 
-  /// Backend real (pendiente de contratos, decisión B2).
+  /// Backend real donde ya está integrado; datos de ejemplo en el resto.
   remote,
 }
 
@@ -73,6 +74,9 @@ class AppConfig extends Equatable {
       if (baseUrl == null || !baseUrl.hasScheme || baseUrl.host.isEmpty) {
         throw ArgumentError.value(apiBaseUrl, 'API_BASE_URL', 'URL inválida');
       }
+      if (!baseUrl.path.endsWith('/')) {
+        baseUrl = baseUrl.replace(path: '${baseUrl.path}/');
+      }
     }
     if (mode == DataSourceMode.remote && baseUrl == null) {
       throw ArgumentError('DATA_SOURCE=remote requiere API_BASE_URL.');
@@ -87,10 +91,11 @@ class AppConfig extends Equatable {
   /// De dónde salen los datos.
   final DataSourceMode dataSource;
 
-  /// URL base del backend; nula mientras se usan mocks.
+  /// URL base del backend, siempre terminada en `/`; nula mientras se usan
+  /// mocks.
   final Uri? apiBaseUrl;
 
-  /// `true` si la app muestra datos de ejemplo.
+  /// `true` si toda la app muestra datos de ejemplo.
   bool get usesMocks => dataSource == DataSourceMode.mock;
 
   @override
