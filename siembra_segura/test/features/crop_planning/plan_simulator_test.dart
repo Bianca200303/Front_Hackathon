@@ -43,14 +43,13 @@ void main() {
 
     expect(find.text(l10n.simGreenManureStep), findsOneWidget);
     expect(find.textContaining('Cosecha '), findsWidgets);
-    expect(find.text(l10n.simResultTitle), findsOneWidget);
-    expect(find.textContaining('Con el plan recomendado:'), findsOneWidget);
+    expect(find.text(l10n.optionMineLabel), findsOneWidget);
     // Sin dinero: solo cosecha, agua y tierra.
     expect(find.textContaining('S/'), findsNothing);
 
     // Volver al recomendado borra el resultado anterior.
     await tester.tapText(l10n.simReset);
-    expect(find.text(l10n.simResultTitle), findsNothing);
+    expect(find.text(l10n.optionMineLabel), findsNothing);
     expect(find.text(l10n.simReset), findsNothing);
   });
 
@@ -64,9 +63,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     // A mitad de camino aún no está el resumen.
-    expect(find.text(l10n.simResultTitle), findsNothing);
+    expect(find.text(l10n.optionMineLabel), findsNothing);
     await tester.pumpAndSettle();
-    expect(find.text(l10n.simResultTitle), findsOneWidget);
+    expect(find.text(l10n.optionMineLabel), findsOneWidget);
   });
 
   testWidgets('las restricciones bloquean cultivos y explican por qué', (
@@ -90,5 +89,20 @@ void main() {
     await tester.tap(inSheet(MockCatalog.cotton.name));
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsOneWidget);
+  });
+
+  testWidgets('como en el prototipo: se toca un cultivo y luego la siembra', (
+    tester,
+  ) async {
+    await tester.pumpSiembraSeguraApp();
+    await openRotation(tester);
+
+    final greenManure = find.text(MockCatalog.greenManure.name);
+    await tester.tapVisible(greenManure.last);
+    await tester.tapVisible(slot('Abr–Jul'));
+
+    // Sin abrir la lista: la siembra ya tiene el cultivo elegido.
+    expect(find.byType(BottomSheet), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('Abr–Jul: Abono verde')), findsOne);
   });
 }

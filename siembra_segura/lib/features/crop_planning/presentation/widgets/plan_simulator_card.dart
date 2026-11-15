@@ -11,6 +11,7 @@ import 'package:siembra_segura/features/crop_planning/domain/plan_simulation.dar
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_blocks.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
@@ -46,8 +47,10 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
 
   late List<Crop> _plan = _recommendedPlan;
   PlanSimulation? _result;
-  PlanSimulation? _recommendedResult;
   bool _running = false;
+
+  /// Cultivo elegido en la grilla, a poner en la siembra que se toque.
+  Crop? _chosen;
 
   late final AnimationController _reveal = AnimationController(
     vsync: this,
@@ -108,12 +111,11 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
     );
 
     setState(() => _running = true);
-    final results = await Future.wait([run(_plan), run(_recommendedPlan)]);
+    final result = await run(_plan);
     if (!mounted) return;
     setState(() {
       _running = false;
-      _result = results[0];
-      _recommendedResult = results[1];
+      _result = result;
     });
     if (MediaQuery.disableAnimationsOf(context)) return;
     await _reveal.forward(from: 0);
@@ -180,31 +182,26 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
     final result = _result;
     final revealed = _revealed;
     final finished = result != null && revealed >= _plan.length;
+    final crops = ref.watch(simulationCropsProvider).value ?? const [];
+    final restrictions = ref.watch(
+      campaignContextProvider.select((c) => c.restrictionIds),
+    );
 
+    // `#r-campanas` y `#r-cultivos` de `semi_app.html`: se toca un cultivo y
+    // luego la siembra donde va. Tocar una siembra sin cultivo elegido abre
+    // la lista (para quien no descubre los dos pasos).
     return AppCard(
       children: [
         SectionTitle(l10n.simTitle),
-        MutedText(l10n.simIntro),
-        Text(
-          l10n.simClimateNote(
-            widget.recommendation.scenario.label(l10n).toLowerCase(),
-          ),
-          style: context.text.caption,
-        ),
+        MutedText(l10n.simPickHint),
         LayoutBuilder(
           builder: (context, constraints) {
             final scale = MediaQuery.textScalerOf(context).scale(1);
-            final columns = constraints.maxWidth >= 640 * scale
-                ? 4
-                : constraints.maxWidth >= 260 * scale
-                ? 2
-                : 1;
-            final width =
-                (constraints.maxWidth - AppSpacing.sm * (columns - 1)) /
-                columns;
+            final columns = constraints.maxWidth >= 340 * scale ? 4 : 2;
+            final width = (constraints.maxWidth - 6 * (columns - 1)) / columns;
             return Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
+              spacing: 6,
+              runSpacing: 6,
               children: [
                 for (final (index, step) in steps.indexed)
                   SizedBox(
@@ -212,15 +209,56 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
                     child: _CampaignSlot(
                       period: periodLabel(step.start, step.end),
                       crop: _plan[index],
+                      target: _chosen != null,
+                      active: _reveal.isAnimating && index == revealed - 1,
                       outcome: result != null && index < revealed
                           ? result.campaigns[index]
                           : null,
                       onTap: _running
                           ? null
-                          : () => _pickCrop(
-                              index,
-                              periodLabel(step.start, step.end),
-                            ),
+                          : () {
+                              final chosen = _chosen;
+                              if (chosen != null) {
+                                _setCrop(index, chosen);
+                                setState(() => _chosen = null);
+                              } else {
+                                unawaited(
+                                  _pickCrop(
+                                    index,
+                                    periodLabel(step.start, step.end),
+                                  ),
+                                );
+                              }
+                            },
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final scale = MediaQuery.textScalerOf(context).scale(1);
+            final columns = constraints.maxWidth >= 300 * scale ? 3 : 2;
+            final width = (constraints.maxWidth - 6 * (columns - 1)) / columns;
+            return Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final option in crops)
+                  SizedBox(
+                    width: width,
+                    child: _CropTile(
+                      crop: option.crop,
+                      selected: option.crop == _chosen,
+                      blocked: option.excludedBy
+                          .intersection(restrictions)
+                          .isNotEmpty,
+                      onTap: () => setState(
+                        () => _chosen = _chosen == option.crop
+                            ? null
+                            : option.crop,
+                      ),
                     ),
                   ),
               ],
@@ -240,24 +278,51 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
               onPressed: _resetPlan,
             ),
           ),
-        if (finished)
-          _SimulationSummary(result: result, recommended: _recommendedResult),
+        if (finished) ...[
+          // Igual que las otras opciones, para comparar a simple vista.
+          OptionRow(
+            kind: OptionRowKind.mine,
+            crops: _plan,
+            harvest: result.averageHarvest,
+            waterM3: result.waterUseM3 ~/ _plan.length,
+            soil: result.soilAfter,
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: ListenButton(
+              text: l10n.simNarration(
+                result.soilAfter.label(l10n).toLowerCase(),
+                AppFormatters.percent(result.averageHarvest),
+                AppFormatters.cubicMeters(result.waterUseM3 ~/ _plan.length),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
 }
 
-/// Una campaña del plan: periodo, cultivo y, al simular, su resultado.
+/// Una siembra del plan (`.slot`): color del cultivo, periodo arriba y, al
+/// simular, su resultado.
 class _CampaignSlot extends StatelessWidget {
   const _CampaignSlot({
     required this.period,
     required this.crop,
+    required this.target,
+    required this.active,
     required this.outcome,
     required this.onTap,
   });
 
   final String period;
   final Crop crop;
+
+  /// Hay un cultivo elegido: la siembra se marca como destino.
+  final bool target;
+
+  /// Es la que se está mostrando al simular.
+  final bool active;
   final SimulatedCampaign? outcome;
   final VoidCallback? onTap;
 
@@ -265,54 +330,73 @@ class _CampaignSlot extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
+    final tone = crop.tone(colors);
     final outcome = this.outcome;
     final harvest = outcome?.harvest;
-    final shape = RoundedRectangleBorder(
-      borderRadius: AppRadii.card,
-      side: BorderSide(color: colors.borderStrong),
-    );
     final result = outcome == null
         ? null
         : harvest == null
         ? l10n.simGreenManureStep
         : l10n.simHarvestStep(AppFormatters.percent(harvest));
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+      side: active
+          ? BorderSide(color: colors.focus, width: 3)
+          : target
+          ? BorderSide(color: colors.primary, width: 2)
+          : BorderSide.none,
+    );
     return Semantics(
       button: true,
-      // Un solo anuncio con todo: periodo, cultivo, resultado y qué hacer.
       label: [?result, l10n.simSlotSemantics(period, crop.name)].join('. '),
       excludeSemantics: true,
       onTap: onTap,
       child: Material(
-        color: colors.surface,
+        color: tone.background,
         shape: shape,
         child: InkWell(
           customBorder: shape,
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.sm,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(period, style: context.text.captionMuted),
-                    ),
-                    Icon(Icons.edit_rounded, size: 18, color: colors.primary),
-                  ],
-                ),
-                ColoredBlock(label: crop.name, tone: crop.tone(colors)),
-                if (result != null)
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 92),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(2, 6, 2, 6),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 4,
+                children: [
                   Text(
-                    result,
-                    style: context.text.emphasis.copyWith(
-                      color: harvest == null || harvest >= 0.8
-                          ? colors.positive
-                          : colors.negative,
+                    period,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: tone.foreground.withValues(alpha: 0.7),
                     ),
                   ),
-              ],
+                  Text(
+                    crop.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: tone.foreground,
+                    ),
+                  ),
+                  if (result != null)
+                    Text(
+                      result,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: harvest == null || harvest >= 0.8
+                            ? const Color(0xFF14532D)
+                            : const Color(0xFF8F1B13),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -321,7 +405,69 @@ class _CampaignSlot extends StatelessWidget {
   }
 }
 
-/// Opción de cultivo en la lista para elegir.
+/// Un cultivo de la grilla (`.cultivo`).
+class _CropTile extends StatelessWidget {
+  const _CropTile({
+    required this.crop,
+    required this.selected,
+    required this.blocked,
+    required this.onTap,
+  });
+
+  final Crop crop;
+  final bool selected;
+  final bool blocked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final tone = crop.tone(colors);
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+      side: selected
+          ? BorderSide(color: tone.foreground, width: 2)
+          : BorderSide.none,
+    );
+    return Semantics(
+      button: true,
+      selected: selected,
+      enabled: !blocked,
+      child: Opacity(
+        opacity: blocked ? 0.4 : 1,
+        child: Material(
+          color: tone.background,
+          shape: shape,
+          child: InkWell(
+            customBorder: shape,
+            onTap: blocked ? null : onTap,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    crop.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: tone.foreground,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CropOption extends StatelessWidget {
   const _CropOption({
     required this.crop,
@@ -383,105 +529,6 @@ class _CropOption extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Resumen al terminar: cosecha, agua y tierra, comparado con el plan
-/// recomendado (calculado con las mismas reglas).
-class _SimulationSummary extends StatelessWidget {
-  const _SimulationSummary({required this.result, required this.recommended});
-
-  final PlanSimulation result;
-  final PlanSimulation? recommended;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colors = context.colors;
-    final harvest = AppFormatters.percent(result.averageHarvest);
-    final water = AppFormatters.cubicMeters(result.waterUseM3);
-    final soil = result.soilAfter;
-    final reference = recommended;
-    final narration = l10n.simNarration(
-      soil.label(l10n).toLowerCase(),
-      harvest,
-      water,
-    );
-
-    return Semantics(
-      liveRegion: true,
-      container: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.primarySoft,
-          borderRadius: AppRadii.card,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              Text(
-                l10n.simResultTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Wrap(
-                spacing: AppSpacing.xl,
-                runSpacing: AppSpacing.md,
-                children: [
-                  _Metric(label: l10n.metricExpectedHarvest, value: harvest),
-                  _Metric(label: l10n.simWaterTotal, value: water),
-                  _Metric(
-                    label: l10n.metricSoilInTwoYears,
-                    child: StatusPill(
-                      label: soil.label(l10n),
-                      tone: soil.tone(colors),
-                    ),
-                  ),
-                ],
-              ),
-              if (reference != null)
-                Text(
-                  l10n.simCompare(
-                    AppFormatters.percent(reference.averageHarvest),
-                    AppFormatters.cubicMeters(reference.waterUseM3),
-                    reference.soilAfter.label(l10n).toLowerCase(),
-                  ),
-                  style: context.text.bodyCompact,
-                ),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: ListenButton(text: narration),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({required this.label, this.value, this.child});
-
-  final String label;
-  final String? value;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = value;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.xxs,
-      children: [
-        Text(label, style: context.text.caption),
-        if (text != null) Text(text, style: context.text.metricValue),
-        ?child,
-      ],
     );
   }
 }
