@@ -53,10 +53,10 @@ abstract final class AppRadii {
   static const double pill = 999;
 
   /// Borde de tarjeta.
-  static const BorderRadius card = BorderRadius.all(Radius.circular(xl));
+  static const BorderRadius card = BorderRadius.all(Radius.circular(md));
 
   /// Borde de botón.
-  static const BorderRadius button = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius button = BorderRadius.all(Radius.circular(10));
 }
 
 /// Tamaños fijos de componentes.

@@ -126,7 +126,7 @@ void main() {
     expect(find.text(l10n.chatTitle), findsNothing);
   });
 
-  testWidgets('en tablet, Semi va a la izquierda de la conversación', (
+  testWidgets('como en el prototipo, el globo va arriba y Semi debajo', (
     tester,
   ) async {
     await startChat(tester, size: const Size(1280, 800));
@@ -137,7 +137,7 @@ void main() {
     final question = tester.getCenter(
       find.text(l10n.chatParcelQuestion('Medio Piura', '3.2')),
     );
-    expect(semi.dx, lessThan(question.dx));
+    expect(question.dy, lessThan(semi.dy));
     expect(find.byType(NavigationRail), findsNothing);
   });
 }

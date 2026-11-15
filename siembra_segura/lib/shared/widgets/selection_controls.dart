@@ -67,7 +67,8 @@ class SelectableChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shape = StadiumBorder(
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
       side: BorderSide(
         color: selected ? context.colors.primary : context.colors.borderStrong,
       ),

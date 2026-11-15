@@ -34,24 +34,31 @@ void main() {
     expect(find.text(l10n.semiFarmGuide), findsOneWidget);
   });
 
-  testWidgets('el selector de arriba cambia de modo y se recuerda', (
+  testWidgets('en llenado manual Semi espera a que le pregunten', (
     tester,
   ) async {
-    final store = InMemoryAppModeStore(AppMode.assisted);
-    await tester.pumpSiembraSeguraApp(appModeStore: store);
-
-    await tester.tap(find.text(l10n.appModeManualTitle));
-    await tester.pumpAndSettle();
+    final speech = await tester.pumpSiembraSeguraApp(
+      appModeStore: InMemoryAppModeStore(AppMode.manual),
+    );
 
     expect(find.text(l10n.semiFarmGuide), findsNothing);
-    expect(store.load(), AppMode.manual);
+    await tester.tapText(l10n.helpTitle);
 
-    // En llenado manual el selector sigue visible para volver.
-    await tester.tap(find.text(l10n.appModeAssistedTitle));
+    // Al pedirlo, aparece el globo y Semi lo lee en voz alta.
+    expect(find.text(l10n.semiFarmGuide), findsOneWidget);
+    expect(speech.spoken.last, l10n.semiFarmGuide);
+  });
+
+  testWidgets('el modo se cambia en Ajustes y se recuerda', (tester) async {
+    final store = InMemoryAppModeStore(AppMode.assisted);
+    await tester.pumpSiembraSeguraApp(appModeStore: store);
+    await tester.tapText(l10n.actionSeePlan);
+    await tester.tap(find.byTooltip(l10n.settingsTooltip));
     await tester.pumpAndSettle();
 
-    expect(find.text(l10n.semiFarmGuide), findsOneWidget);
-    expect(store.load(), AppMode.assisted);
+    await tester.tapText(l10n.appModeManualTitle);
+
+    expect(store.load(), AppMode.manual);
   });
 
   testWidgets('en Asistencia Semi presenta la pantalla y se puede escuchar', (

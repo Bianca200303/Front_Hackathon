@@ -74,7 +74,19 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.semiGuideBackground,
     required this.semiGuideBorder,
     required this.semiHalo,
+    required this.furrowLight,
+    required this.furrowDark,
+    required this.furrowLine,
   });
+
+  /// Surcos bajo Semi en la conversación (loma de atrás).
+  final Color furrowLight;
+
+  /// Surcos bajo Semi (loma de adelante).
+  final Color furrowDark;
+
+  /// Rayas de los surcos.
+  final Color furrowLine;
 
   /// Claro o oscuro.
   final Brightness brightness;
@@ -230,23 +242,26 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Círculo detrás de la cabeza de Semi.
   final Color semiHalo;
 
+  /// Colores de los cultivos de `semi_app.html` (`.c-arroz`…), con texto
+  /// oscuro también en modo oscuro. Ver `CropTone` para cuál toca a cada uno.
   static const _cropPalette = <Tone>[
-    Tone(Color(0xFFC9CCD6), Color(0xFF22252E)), // gris (algodón)
-    Tone(Color(0xFF8BB37C), Color(0xFF14321E)), // verde (frejol)
-    Tone(Color(0xFFD8CBA8), Color(0xFF3A2F12)), // beige (arroz)
-    Tone(Color(0xFFE9E2D3), Color(0xFF5A4520)), // tierra (menestra)
-    Tone(Color(0xFFE9B949), Color(0xFF3D2A00)), // amarillo (maíz)
+    Tone(Color(0xFFE8DDB5), Color(0xFF17231C)), // arroz
+    Tone(Color(0xFFF2D57E), Color(0xFF17231C)), // maíz
+    Tone(Color(0xFFC4DCB4), Color(0xFF17231C)), // frejol
+    Tone(Color(0xFFE2E4EA), Color(0xFF17231C)), // algodón
+    Tone(Color(0xFFD3E3A8), Color(0xFF17231C)), // menestra
+    Tone(Color(0xFFA9D2B8), Color(0xFF17231C)), // abono verde
   ];
 
   /// Paleta clara (variables `:root` de la referencia).
   static const light = AppPalette(
     brightness: Brightness.light,
-    background: Color(0xFFF5F6F1),
+    background: Color(0xFFF7F7F3),
     chatBackground: Color(0xFFEEF0EA),
     surface: Color(0xFFFFFFFF),
     surfaceMuted: Color(0xFFE6EAE1),
-    surfaceSubtle: Color(0xFFF0F3EE),
-    surfaceSoft: Color(0xFFEEF0EA),
+    surfaceSubtle: Color(0xFFEFF0EA),
+    surfaceSoft: Color(0xFFEFF0EA),
     textPrimary: Color(0xFF17231C),
     textBody: Color(0xFF2E3A32),
     textMuted: Color(0xFF4B5A50),
@@ -255,7 +270,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     borderStrong: Color(0xFFCBD2C6),
     primary: Color(0xFF1E5A3C),
     primaryDark: Color(0xFF123A26),
-    primarySoft: Color(0xFFEAF2EC),
+    primarySoft: Color(0xFFE7F0E8),
     focus: Color(0xFFE9B949),
     positive: Color(0xFF14532D),
     negative: Color(0xFF8F1B13),
@@ -288,19 +303,22 @@ class AppPalette extends ThemeExtension<AppPalette> {
     cropPalette: _cropPalette,
     scenarioNormal: Color(0xFF8BB37C),
     semiGuideBackground: Color(0xFFF4F8EE),
-    semiGuideBorder: Color(0xFFB8D9A6),
+    semiGuideBorder: Color(0xFFCFE3D4),
     semiHalo: Color(0xFFE1F1D6),
+    furrowLight: Color(0xFFDCE7CF),
+    furrowDark: Color(0xFFC9DBB8),
+    furrowLine: Color(0xFFB5CBA0),
   );
 
   /// Paleta oscura (variables `[data-tema="oscuro"]` de `semi_app.html`).
   static const dark = AppPalette(
     brightness: Brightness.dark,
-    background: Color(0xFF111714),
+    background: Color(0xFF121815),
     chatBackground: Color(0xFF0E1411),
     surface: Color(0xFF1A221D),
     surfaceMuted: Color(0xFF2C3830),
-    surfaceSubtle: Color(0xFF1F2822),
-    surfaceSoft: Color(0xFF212B24),
+    surfaceSubtle: Color(0xFF1C241F),
+    surfaceSoft: Color(0xFF1C241F),
     textPrimary: Color(0xFFE9EFEA),
     textBody: Color(0xFFCAD4CD),
     textMuted: Color(0xFF9EABA2),
@@ -309,7 +327,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     borderStrong: Color(0xFF3B4840),
     primary: Color(0xFF7CC895),
     primaryDark: Color(0xFFA6DDB7),
-    primarySoft: Color(0xFF1E3326),
+    primarySoft: Color(0xFF1C3024),
     focus: Color(0xFFE9B949),
     positive: Color(0xFF7CC895),
     negative: Color(0xFFF29A8A),
@@ -344,6 +362,9 @@ class AppPalette extends ThemeExtension<AppPalette> {
     semiGuideBackground: Color(0xFF18241C),
     semiGuideBorder: Color(0xFF2F4A37),
     semiHalo: Color(0xFF24402C),
+    furrowLight: Color(0xFF1F2E22),
+    furrowDark: Color(0xFF26392A),
+    furrowLine: Color(0xFF30483A),
   );
 
   @override

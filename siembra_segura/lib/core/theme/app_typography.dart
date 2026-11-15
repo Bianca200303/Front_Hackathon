@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/theme/app_palette.dart';
 
-/// Tipografía de la referencia (Figtree), mapeada al `TextTheme` de Material
+/// Tipografía de la referencia (Atkinson Hyperlegible), mapeada al `TextTheme` de Material
 /// para que los widgets usen `Theme.of(context).textTheme`.
 ///
 /// | Referencia CSS | TextTheme        |
@@ -18,8 +18,8 @@ import 'package:siembra_segura/core/theme/app_palette.dart';
 /// | .sobre 13/800  | labelMedium      |
 /// | .paso 12/600   | labelSmall       |
 abstract final class AppTypography {
-  /// Fuente de la app, incluida en `assets/fonts` (licencia OFL).
-  static const fontFamily = 'Figtree';
+  /// Fuente de `semi_app.html` (Atkinson Hyperlegible, OFL), en `assets/fonts`.
+  static const fontFamily = 'AtkinsonHyperlegible';
 
   /// Escala tipográfica de Material (ver tabla arriba).
   static const TextTheme textTheme = TextTheme(

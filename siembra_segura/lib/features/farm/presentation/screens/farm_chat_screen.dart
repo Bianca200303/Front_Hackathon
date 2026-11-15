@@ -18,9 +18,7 @@ import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_car
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
-import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/constrained_content.dart';
 import 'package:siembra_segura/shared/widgets/listen_button.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
@@ -190,7 +188,10 @@ class _ConversationState extends ConsumerState<_Conversation>
           AppFormatters.decimal(farm.areaHectares),
         ),
         why: l10n.chatParcelWhy,
-        image: ParcelMapCard(farm: farm),
+        image: LayoutBuilder(
+          builder: (context, constraints) =>
+              ParcelMapThumbnail(width: constraints.maxWidth),
+        ),
         answers: [
           _Answer(l10n.chatParcelYes, () => _answer(l10n.chatParcelYes)),
           _Answer(
@@ -287,85 +288,202 @@ class _ConversationState extends ConsumerState<_Conversation>
     final thinking = _isThinking;
     final answered = math.min(_step, _questionCount);
     final lastAnswer = _lastAnswer;
+    final colors = context.colors;
+    // Semi grande, pero sin comerse la pantalla en horizontal.
+    final semiSize = math
+        .min(170, MediaQuery.sizeOf(context).height * 0.24)
+        .toDouble();
 
-    final semi = SemiAvatar(
-      expression: thinking ? SemiExpression.thinking : step.expression,
-      size: 132,
-      semanticLabel: l10n.semiAvatarSemantics,
-    );
-    final bubble = thinking
-        ? _ThinkingBubble(animation: _thinking)
-        : _SemiBubble(step: step);
-    final answers = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.sm,
-      children: [
-        if (!thinking)
-          for (final answer in step.answers)
-            AppButton(
-              label: answer.label,
-              variant: answer.primary
-                  ? AppButtonVariant.primary
-                  : AppButtonVariant.outline,
-              onPressed: answer.onChosen,
-            ),
-      ],
-    );
-    final conversation = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.lg,
-      children: [
-        if (lastAnswer != null) _YouSaid(answer: lastAnswer),
-        bubble,
-      ],
-    );
-
-    return Column(
-      children: [
-        _ChatHeader(answered: answered, total: _questionCount, onBack: _back),
-        Expanded(
-          child: SafeArea(
-            top: false,
-            child: SingleChildScrollView(
-              controller: _scroll,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenGutter,
-                AppSpacing.lg,
-                AppSpacing.screenGutter,
-                AppSpacing.xxl,
-              ),
-              child: ConstrainedContent(
-                // Semi a un lado y la conversación del ancho de lectura.
-                maxWidth: AppSizes.maxContentWidth + 220,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Tablet u horizontal: Semi a la izquierda.
-                    if (constraints.maxWidth >= 640) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: AppSpacing.xxl,
+    // Escena de `semi_app.html` (#v-chat): todo apoyado abajo, el globo
+    // apunta a Semi, que está parado sobre los surcos; las respuestas van
+    // en la barra fija de abajo.
+    return ColoredBox(
+      color: colors.background,
+      child: Column(
+        children: [
+          _ChatHeader(answered: answered, total: _questionCount, onBack: _back),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                controller: _scroll,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppSizes.maxContentWidth,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          semi,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: AppSpacing.lg,
-                              children: [conversation, answers],
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+                            child: thinking
+                                ? _ThinkingBubble(animation: _thinking)
+                                : _SemiBubble(step: step),
+                          ),
+                          _SemiStage(
+                            size: semiSize,
+                            child: SemiAvatar(
+                              expression: thinking
+                                  ? SemiExpression.thinking
+                                  : step.expression,
+                              size: semiSize,
+                              semanticLabel: l10n.semiAvatarSemantics,
                             ),
                           ),
+                          if (lastAnswer != null)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(18, 8, 18, 4),
+                              child: _YouSaid(answer: lastAnswer),
+                            ),
                         ],
-                      );
-                    }
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: AppSpacing.md,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          _AnswersBar(answers: thinking ? const [] : step.answers),
+        ],
+      ),
+    );
+  }
+}
+
+/// Semi parado sobre los surcos de la chacra.
+class _SemiStage extends StatelessWidget {
+  const _SemiStage({required this.size, required this.child});
+
+  final double size;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return SizedBox(
+      height: size + 30,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned.fill(
+            top: null,
+            child: SizedBox(
+              height: 70,
+              child: CustomPaint(painter: _FurrowsPainter(colors)),
+            ),
+          ),
+          Padding(padding: const EdgeInsets.only(bottom: 10), child: child),
+        ],
+      ),
+    );
+  }
+}
+
+/// Surcos de `semi_app.html` (dos lomas y dos rayas).
+class _FurrowsPainter extends CustomPainter {
+  _FurrowsPainter(this.colors);
+
+  final AppPalette colors;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    double y(double svg) => svg / 70 * h;
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(0, h)
+          ..lineTo(0, y(34))
+          ..quadraticBezierTo(w / 2, y(14), w, y(34))
+          ..lineTo(w, h)
+          ..close(),
+        Paint()..color = colors.furrowLight,
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(0, h)
+          ..lineTo(0, y(50))
+          ..quadraticBezierTo(w / 2, y(32), w, y(50))
+          ..lineTo(w, h)
+          ..close(),
+        Paint()..color = colors.furrowDark,
+      );
+    final line = Paint()
+      ..color = colors.furrowLine
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(w * 0.1, h)
+          ..quadraticBezierTo(w / 2, y(40), w * 0.9, h),
+        line,
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(w * 0.275, h)
+          ..quadraticBezierTo(w / 2, y(50), w * 0.725, h),
+        line,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_FurrowsPainter oldDelegate) =>
+      oldDelegate.colors != colors;
+}
+
+/// Respuestas en la barra fija de abajo (`.respuestas`): de a dos si caben,
+/// si no, una por fila.
+class _AnswersBar extends StatelessWidget {
+  const _AnswersBar({required this.answers});
+
+  final List<_Answer> answers;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return ColoredBox(
+      color: colors.background,
+      child: SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: 72,
+            maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: AppSizes.maxContentWidth,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final scale = MediaQuery.textScalerOf(context).scale(1);
+                    final half = (constraints.maxWidth - AppSpacing.sm) / 2;
+                    final twoPerRow =
+                        half >= 150 * scale &&
+                        answers.every((a) => a.label.length <= 24);
+                    return Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
                       children: [
-                        conversation,
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: semi,
-                        ),
-                        answers,
+                        for (final (index, answer) in answers.indexed)
+                          SizedBox(
+                            // El último impar ocupa toda la fila.
+                            width:
+                                twoPerRow &&
+                                    !(index == answers.length - 1 &&
+                                        answers.length.isOdd)
+                                ? half
+                                : constraints.maxWidth,
+                            child: _AnswerButton(answer: answer),
+                          ),
                       ],
                     );
                   },
@@ -374,8 +492,48 @@ class _ConversationState extends ConsumerState<_Conversation>
             ),
           ),
         ),
-      ],
+      ),
     );
+  }
+}
+
+class _AnswerButton extends StatelessWidget {
+  const _AnswerButton({required this.answer});
+
+  final _Answer answer;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+      side: BorderSide(color: colors.primary, width: 2),
+    );
+    const style = TextStyle(
+      fontFamily: AppTypography.fontFamily,
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+    );
+    return answer.primary
+        ? FilledButton(
+            onPressed: answer.onChosen,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              shape: shape,
+              textStyle: style,
+            ),
+            child: Text(answer.label, textAlign: TextAlign.center),
+          )
+        : OutlinedButton(
+            onPressed: answer.onChosen,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              shape: shape,
+              side: BorderSide(color: colors.primary, width: 2),
+              textStyle: style,
+            ),
+            child: Text(answer.label, textAlign: TextAlign.center),
+          );
   }
 }
 
@@ -455,8 +613,8 @@ class _ChatHeader extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: answered / total,
                       minHeight: 6,
-                      color: colors.onPrimary,
-                      backgroundColor: colors.onPrimary.withValues(alpha: 0.3),
+                      color: colors.focus,
+                      backgroundColor: colors.onPrimary.withValues(alpha: 0.25),
                     ),
                   ),
                 ),
@@ -470,12 +628,7 @@ class _ChatHeader extends StatelessWidget {
 }
 
 /// Forma del globo: la esquina de abajo a la izquierda "sale" de Semi.
-const _bubbleShape = BorderRadius.only(
-  topLeft: Radius.circular(20),
-  topRight: Radius.circular(20),
-  bottomRight: Radius.circular(20),
-  bottomLeft: Radius.circular(6),
-);
+const _bubbleShape = BorderRadius.all(Radius.circular(18));
 
 /// Globo de Semi: imagen opcional, mensaje, por qué y "Escuchar".
 class _SemiBubble extends StatelessWidget {
@@ -489,35 +642,49 @@ class _SemiBubble extends StatelessWidget {
     final why = step.why;
     final image = step.image;
     final spoken = why == null ? step.message : '${step.message} $why';
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: _bubbleShape,
-        border: Border.all(color: colors.semiGuideBorder),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.sm,
-          children: [
-            ?image,
-            Semantics(
-              liveRegion: true,
-              child: Text(
-                step.message,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+    // `.globo-semi`: borde marcado y una punta que baja hacia Semi.
+    return Column(
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: _bubbleShape,
+            border: Border.all(color: colors.borderStrong, width: 2),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSpacing.sm,
+              children: [
+                ?image,
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    step.message,
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1.4,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ),
+                if (why != null)
+                  Text(
+                    why,
+                    style: TextStyle(fontSize: 15, color: colors.textMuted),
+                  ),
+                ListenButton(text: spoken),
+              ],
             ),
-            if (why != null)
-              Text(
-                why,
-                style: context.text.muted.copyWith(fontStyle: FontStyle.italic),
-              ),
-            ListenButton(text: spoken),
-          ],
+          ),
         ),
-      ),
+        CustomPaint(
+          size: const Size(24, 12),
+          painter: _BubbleTipPainter(colors),
+        ),
+      ],
     );
   }
 }
@@ -622,4 +789,32 @@ class _YouSaid extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Punta del globo, hacia Semi.
+class _BubbleTipPainter extends CustomPainter {
+  _BubbleTipPainter(this.colors);
+
+  final AppPalette colors;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final tip = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width, 0);
+    canvas
+      ..drawPath(tip, Paint()..color = colors.surface)
+      ..drawPath(
+        tip,
+        Paint()
+          ..color = colors.borderStrong
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_BubbleTipPainter oldDelegate) =>
+      oldDelegate.colors != colors;
 }

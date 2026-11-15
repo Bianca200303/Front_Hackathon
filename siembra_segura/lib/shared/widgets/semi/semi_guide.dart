@@ -3,22 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
+import 'package:siembra_segura/core/services/speech/speech_service.dart';
 import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
-import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/shared/domain/app_mode.dart';
 import 'package:siembra_segura/shared/state/app_mode_provider.dart';
 import 'package:siembra_segura/shared/widgets/listen_button.dart';
-import 'package:siembra_segura/shared/widgets/selection_controls.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 
-/// Parte superior de cada pantalla: el selector de modo, siempre visible,
-/// y debajo Semi presentando la pantalla (solo en [AppMode.assisted]).
+/// Semi en lo alto de cada pestaña (`.semi-dice` de `semi_app.html`).
 ///
-/// Con poco alto (teléfono en horizontal) o letra grande, Semi se muestra
-/// compacto: solo la cabeza y dos líneas; al tocarlo se ve el mensaje
-/// completo.
+/// En [AppMode.assisted] habla con un globo y "Escuchar". En
+/// [AppMode.manual] solo aparece "Pregúntale a Semi" (`.ayuda-btn`): al
+/// tocarlo se abre el globo y lo lee en voz alta. El modo se cambia en
+/// Ajustes o con la Ayuda de Semi.
 class SemiGuide extends ConsumerStatefulWidget {
   /// Crea la guía con lo que Semi dice en esta pantalla.
   const SemiGuide({
@@ -26,12 +25,6 @@ class SemiGuide extends ConsumerStatefulWidget {
     this.expression = SemiExpression.happy,
     super.key,
   });
-
-  /// Por debajo de este alto de ventana, la guía es compacta.
-  static const compactBelowHeight = 600.0;
-
-  /// Por encima de esta escala de texto, la guía es compacta.
-  static const compactAboveTextScale = 1.3;
 
   /// Lo que dice Semi (también lo lee en voz alta).
   final String message;
@@ -44,15 +37,11 @@ class SemiGuide extends ConsumerStatefulWidget {
 }
 
 class _SemiGuideState extends ConsumerState<SemiGuide> {
+  bool _openedInManual = false;
+
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final mode = ref.watch(appModeProvider);
-    final compact =
-        MediaQuery.sizeOf(context).height < SemiGuide.compactBelowHeight ||
-        MediaQuery.textScalerOf(context).scale(1) >
-            SemiGuide.compactAboveTextScale;
-
+    final manual = ref.watch(appModeProvider) == AppMode.manual;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.screenGutter,
@@ -60,59 +49,72 @@ class _SemiGuideState extends ConsumerState<SemiGuide> {
         AppSpacing.screenGutter,
         AppSpacing.md,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SegmentedSelector<AppMode>(
-            semanticsLabel: l10n.appModeSwitchSemantics,
-            selected: mode,
-            options: [
-              (AppMode.assisted, l10n.appModeAssistedTitle),
-              (AppMode.manual, l10n.appModeManualTitle),
-            ],
-            onChanged: (mode) =>
-                unawaited(ref.read(appModeProvider.notifier).select(mode)),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOut,
-            alignment: Alignment.topCenter,
-            child: mode != AppMode.assisted
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.sm),
-                    child: SemiGuideCard(
-                      message: widget.message,
-                      expression: widget.expression,
-                      compact: compact,
-                      onExpand: compact
-                          ? () => _showFullMessage(context)
-                          : null,
-                    ),
-                  ),
-          ),
-        ],
-      ),
+      child: manual && !_openedInManual
+          ? Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: _AskSemiButton(
+                onTap: () {
+                  setState(() => _openedInManual = true);
+                  unawaited(_speak());
+                },
+              ),
+            )
+          : SemiGuideCard(
+              message: widget.message,
+              expression: widget.expression,
+            ),
     );
   }
 
-  Future<void> _showFullMessage(BuildContext context) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: context.colors.semiGuideBackground,
-      builder: (context) => SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screenGutter,
-            0,
-            AppSpacing.screenGutter,
-            AppSpacing.xxl,
-          ),
-          child: SemiGuideCard(
-            message: widget.message,
-            expression: widget.expression,
+  Future<void> _speak() async {
+    try {
+      await ref.read(speechServiceProvider).speak(widget.message);
+    } on SpeechUnavailableException {
+      // Sin voz igual queda el globo con el texto.
+    }
+  }
+}
+
+/// "Pregúntale a Semi" del modo manual.
+class _AskSemiButton extends StatelessWidget {
+  const _AskSemiButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+      side: BorderSide(color: colors.semiGuideBorder),
+    );
+    return Material(
+      color: colors.surface,
+      shape: shape,
+      child: InkWell(
+        customBorder: shape,
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 14, 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: AppSpacing.sm,
+              children: [
+                const SemiAvatar(expression: SemiExpression.happy, size: 30),
+                Flexible(
+                  child: Text(
+                    AppLocalizations.of(context).helpTitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -120,14 +122,12 @@ class _SemiGuideState extends ConsumerState<SemiGuide> {
   }
 }
 
-/// Tarjeta con Semi y su globo de diálogo, con botón para escucharlo.
+/// Semi con su globo de diálogo y "Escuchar" (`.semi-dice`).
 class SemiGuideCard extends StatelessWidget {
   /// Crea la tarjeta.
   const SemiGuideCard({
     required this.message,
     this.expression = SemiExpression.happy,
-    this.compact = false,
-    this.onExpand,
     super.key,
   });
 
@@ -137,83 +137,55 @@ class SemiGuideCard extends StatelessWidget {
   /// Expresión de Semi.
   final SemiExpression expression;
 
-  /// Solo la cabeza de Semi y el mensaje recortado a dos líneas.
-  final bool compact;
-
-  /// Si se indica, tocar el globo muestra el mensaje completo.
-  final VoidCallback? onExpand;
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final avatar = compact
-        ? SemiAvatar.head(
-            expression: expression,
-            size: 44,
-            semanticLabel: l10n.semiAvatarSemantics,
-          )
-        : SemiAvatar(
-            expression: expression,
-            size: 76,
-            semanticLabel: l10n.semiAvatarSemantics,
-          );
-    const bubbleShape = BorderRadius.only(
-      topLeft: Radius.circular(18),
-      topRight: Radius.circular(18),
-      bottomRight: Radius.circular(18),
-      // Esquina casi recta junto a Semi: el globo "sale" de él.
-      bottomLeft: Radius.circular(6),
-    );
-    Widget bubble = Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: 10,
-      ),
-      child: Text(
-        message,
-        maxLines: compact ? 2 : null,
-        overflow: compact ? TextOverflow.ellipsis : null,
-        style: context.text.bodyCompact.copyWith(
-          color: context.colors.textPrimary,
+    final colors = context.colors;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.sm,
+      children: [
+        SemiAvatar(
+          expression: expression,
+          size: 56,
+          semanticLabel: AppLocalizations.of(context).semiAvatarSemantics,
         ),
-      ),
-    );
-    final expand = onExpand;
-    if (expand != null) {
-      bubble = InkWell(
-        borderRadius: bubbleShape,
-        onTap: expand,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSizes.minTouchTarget),
-          child: Align(alignment: Alignment.centerLeft, child: bubble),
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: context.colors.semiGuideBackground,
-        borderRadius: AppRadii.card,
-        border: Border.all(color: context.colors.semiGuideBorder),
-      ),
-      child: Row(
-        crossAxisAlignment: compact
-            ? CrossAxisAlignment.center
-            : CrossAxisAlignment.end,
-        spacing: AppSpacing.sm,
-        children: [
-          avatar,
-          Expanded(
-            child: Material(
-              color: context.colors.surface,
-              borderRadius: bubbleShape,
-              child: bubble,
+        Expanded(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              border: Border.all(color: colors.semiGuideBorder),
+              // La esquina recta "sale" de Semi.
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(4),
+                topRight: Radius.circular(14),
+                bottomLeft: Radius.circular(14),
+                bottomRight: Radius.circular(14),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.sm,
+                children: [
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      message,
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.45,
+                        color: colors.textBody,
+                      ),
+                    ),
+                  ),
+                  ListenButton(text: message),
+                ],
+              ),
             ),
           ),
-          ListenButton(text: message, compact: true),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

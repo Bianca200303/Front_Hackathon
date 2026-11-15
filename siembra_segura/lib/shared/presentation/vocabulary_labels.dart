@@ -18,8 +18,22 @@ extension CropTone on Crop {
   /// El mismo cultivo tiene siempre el mismo color en todas las pantallas,
   /// sin que la app conozca la lista de cultivos. Si producto quiere un
   /// color fijo por cultivo, el backend debería enviarlo (decisión B13).
-  Tone tone(AppPalette colors) =>
-      colors.cropPalette[_stableHash(id) % colors.cropPalette.length];
+  Tone tone(AppPalette colors) {
+    // Los cultivos de `semi_app.html` tienen su color fijo; uno nuevo toma
+    // uno estable según su identificador.
+    final known = _knownIndex[id];
+    final palette = colors.cropPalette;
+    return palette[(known ?? _stableHash(id)) % palette.length];
+  }
+
+  static const _knownIndex = {
+    'rice': 0,
+    'maize': 1,
+    'bean': 2,
+    'cotton': 3,
+    'pulse': 4,
+    'green-manure': 5,
+  };
 
   /// FNV-1a de 32 bits: estable entre ejecuciones y plataformas, a
   /// diferencia de `String.hashCode`.
