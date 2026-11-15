@@ -1200,4 +1200,111 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get simWaterTotal => 'Water in 2 years';
+
+  @override
+  String get recoOverline => 'I recommend';
+
+  @override
+  String get stripNext => 'Next planting';
+
+  @override
+  String get stripLater => 'In 2 years';
+
+  @override
+  String get recoSoil => 'Your soil';
+
+  @override
+  String waterLess(String percent) {
+    return '$percent less';
+  }
+
+  @override
+  String get waterSimilar => 'About the same';
+
+  @override
+  String recoNote(String priority, String crop) {
+    return 'With $priority in mind. Compared with keeping $crop.';
+  }
+
+  @override
+  String get whyTitle => 'Why?';
+
+  @override
+  String get whyConfidence =>
+      'It\'s what works most often in years like this, but the weather can change.';
+
+  @override
+  String semiPlantSay(String priority, String rotation) {
+    return 'With $priority in mind, I recommend $rotation. I explain why below.';
+  }
+
+  @override
+  String get semiRotationSay =>
+      'Here you compare what you plant today with two other options. Tap \"See why\" on each one. And if you like, build your own plan.';
+
+  @override
+  String get soilTodayOverline => 'Your soil today';
+
+  @override
+  String soilReason(int count, String crop) {
+    return '$count plantings of $crop in a row.';
+  }
+
+  @override
+  String get howDoIKnow => 'How do I know?';
+
+  @override
+  String get compareSubtitle =>
+      'For the next 4 plantings (2 years), with the most likely weather.';
+
+  @override
+  String get optionCurrentLabel => 'If you keep going as now';
+
+  @override
+  String get optionRecommendedLabel => 'The one I recommend';
+
+  @override
+  String get optionOtherLabel => 'Another option';
+
+  @override
+  String get optionMineLabel => 'The one you built';
+
+  @override
+  String get metricHarvestShort => 'Harvest';
+
+  @override
+  String get seeWhy => 'See why';
+
+  @override
+  String get fichaWhy => 'Why it\'s suggested';
+
+  @override
+  String get fichaEvidence => 'What supports it';
+
+  @override
+  String get fichaUnknowns => 'What we don\'t know';
+
+  @override
+  String get fichaCheck => 'Check it with your extension agent';
+
+  @override
+  String get simPickHint => 'Tap a crop, then the planting where you want it.';
+
+  @override
+  String get rotationGuideNote =>
+      'This is a guide, not an order. Review the options with your extension agent.';
+
+  @override
+  String get deleteAll => 'Delete everything and start over';
+
+  @override
+  String get deleteAllConfirm => 'Tap again to delete your data';
+
+  @override
+  String get settingsModeAssistedNote =>
+      'Semi explains each screen and asks you one question at a time.';
+
+  @override
+  String get settingsModeManualNote =>
+      'You fill in your details on one screen. Semi only shows up if you ask.';
 }

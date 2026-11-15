@@ -2095,6 +2095,192 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agua en 2 años'**
   String get simWaterTotal;
+
+  /// No description provided for @recoOverline.
+  ///
+  /// In es, this message translates to:
+  /// **'Te recomiendo'**
+  String get recoOverline;
+
+  /// No description provided for @stripNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima siembra'**
+  String get stripNext;
+
+  /// No description provided for @stripLater.
+  ///
+  /// In es, this message translates to:
+  /// **'En 2 años'**
+  String get stripLater;
+
+  /// No description provided for @recoSoil.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra'**
+  String get recoSoil;
+
+  /// No description provided for @waterLess.
+  ///
+  /// In es, this message translates to:
+  /// **'{percent} menos'**
+  String waterLess(String percent);
+
+  /// No description provided for @waterSimilar.
+  ///
+  /// In es, this message translates to:
+  /// **'Parecida'**
+  String get waterSimilar;
+
+  /// No description provided for @recoNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Pensando en: {priority}. Comparado con seguir con {crop}.'**
+  String recoNote(String priority, String crop);
+
+  /// No description provided for @whyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué?'**
+  String get whyTitle;
+
+  /// No description provided for @whyConfidence.
+  ///
+  /// In es, this message translates to:
+  /// **'Es lo que más veces funciona en años así, pero el clima puede cambiar.'**
+  String get whyConfidence;
+
+  /// No description provided for @semiPlantSay.
+  ///
+  /// In es, this message translates to:
+  /// **'Pensando en {priority}, te recomiendo {rotation}. Abajo te explico por qué.'**
+  String semiPlantSay(String priority, String rotation);
+
+  /// No description provided for @semiRotationSay.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí comparas lo que siembras hoy con otras dos opciones. Toca \"Ver por qué\" en cada una. Y si quieres, arma tu propio plan.'**
+  String get semiRotationSay;
+
+  /// No description provided for @soilTodayOverline.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu tierra hoy'**
+  String get soilTodayOverline;
+
+  /// No description provided for @soilReason.
+  ///
+  /// In es, this message translates to:
+  /// **'Lleva {count} siembras seguidas de {crop}.'**
+  String soilReason(int count, String crop);
+
+  /// No description provided for @howDoIKnow.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo lo sé?'**
+  String get howDoIKnow;
+
+  /// No description provided for @compareSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Para las próximas 4 siembras (2 años), con el clima más probable.'**
+  String get compareSubtitle;
+
+  /// No description provided for @optionCurrentLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Si sigues como ahora'**
+  String get optionCurrentLabel;
+
+  /// No description provided for @optionRecommendedLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'La que te recomiendo'**
+  String get optionRecommendedLabel;
+
+  /// No description provided for @optionOtherLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Otra opción'**
+  String get optionOtherLabel;
+
+  /// No description provided for @optionMineLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'La que tú armaste'**
+  String get optionMineLabel;
+
+  /// No description provided for @metricHarvestShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Cosecha'**
+  String get metricHarvestShort;
+
+  /// No description provided for @seeWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver por qué'**
+  String get seeWhy;
+
+  /// No description provided for @fichaWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Por qué se sugiere'**
+  String get fichaWhy;
+
+  /// No description provided for @fichaEvidence.
+  ///
+  /// In es, this message translates to:
+  /// **'Qué lo respalda'**
+  String get fichaEvidence;
+
+  /// No description provided for @fichaUnknowns.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo que no sabemos'**
+  String get fichaUnknowns;
+
+  /// No description provided for @fichaCheck.
+  ///
+  /// In es, this message translates to:
+  /// **'Revísalo con tu técnico'**
+  String get fichaCheck;
+
+  /// No description provided for @simPickHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca un cultivo y luego la siembra donde lo quieres.'**
+  String get simPickHint;
+
+  /// No description provided for @rotationGuideNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Esto es una guía, no una orden. Revisa las opciones con tu técnico.'**
+  String get rotationGuideNote;
+
+  /// No description provided for @deleteAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar todo y empezar de nuevo'**
+  String get deleteAll;
+
+  /// No description provided for @deleteAllConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca otra vez para borrar tus datos'**
+  String get deleteAllConfirm;
+
+  /// No description provided for @settingsModeAssistedNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Semi te explica cada pantalla y te hace las preguntas una por una.'**
+  String get settingsModeAssistedNote;
+
+  /// No description provided for @settingsModeManualNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.'**
+  String get settingsModeManualNote;
 }
 
 class _AppLocalizationsDelegate

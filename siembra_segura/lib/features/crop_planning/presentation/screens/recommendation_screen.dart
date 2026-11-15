@@ -5,7 +5,7 @@ import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
-import 'package:siembra_segura/features/crop_planning/presentation/widgets/recommendation_cards.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_blocks.dart';
 import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
@@ -14,7 +14,8 @@ import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
-/// Pantalla 2: ¿Qué me conviene sembrar?
+/// "Qué sembrar" (`#v-sembrar` de `semi_app.html`): la recomendación con su
+/// franja de siembras, cuándo decidir y por qué.
 class RecommendationScreen extends ConsumerWidget {
   /// Crea la pantalla.
   const RecommendationScreen({super.key});
@@ -27,15 +28,18 @@ class RecommendationScreen extends ConsumerWidget {
 
     return ScreenLayout(
       guide: SemiGuide(
-        message: l10n.semiRecommendationGuide,
+        message: current != null && current.hasOptions
+            ? l10n.semiPlantSay(
+                current.priority.phrase,
+                current.best.name(l10n).toLowerCase(),
+              )
+            : l10n.semiRecommendationGuide,
         expression: SemiExpression.celebrating,
       ),
       header: ScreenHeader(
         actions: const [AppSettingsButton()],
         title: l10n.recommendationTitle,
-        listenText: current != null && current.hasOptions
-            ? current.recommendationNarration(l10n)
-            : null,
+        showListen: false,
       ),
       body: AsyncValueView(
         value: recommendation,
@@ -44,16 +48,17 @@ class RecommendationScreen extends ConsumerWidget {
         emptyMessage: l10n.emptyRecommendation,
         data: (recommendation) => ScreenContent(
           children: [
-            SeasonalOutlookCard(outlook: recommendation.outlook),
-            PriorityContextRow(priority: recommendation.priority),
-            RecommendedOptionCard(recommendation: recommendation),
-            RepeatCropCard(recommendation: recommendation),
+            RecommendationBlock(recommendation: recommendation),
+            DeadlineBox(
+              deadline: recommendation.best.schedule.decisionDeadline,
+              onTap: () => context.go(AppRoutes.plantingSchedule),
+            ),
+            ReasonsSection(recommendation: recommendation),
             AppButton(
               label: l10n.actionCompareOptions,
               variant: AppButtonVariant.outline,
               onPressed: () => context.go(AppRoutes.rotation),
             ),
-            ScenarioExplorer(selected: recommendation.scenario),
             const GuideDisclaimer(),
           ],
         ),

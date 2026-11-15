@@ -30,7 +30,7 @@ Future<void> visitScreens(
   Navigator.of(tester.element(find.text(texts.settingsTitle))).pop();
   await tester.pumpAndSettle();
   await tester.tapTab(texts.tabWhatToPlant);
-  await tester.tapText(texts.actionWhenToPlant);
+  await tester.tapText(texts.scheduleDecideBefore);
   // Comprueba que de verdad se abrió (no solo que no hubo errores).
   expect(find.byTooltip(texts.actionBack), findsOneWidget);
   await check(texts.plantingScheduleTitle);

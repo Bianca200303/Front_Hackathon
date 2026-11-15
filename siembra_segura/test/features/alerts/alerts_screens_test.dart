@@ -74,7 +74,7 @@ void main() {
 
     await tester.tapText(l10n.actionSeeMyRecommendation);
     // El aviso devuelve el escenario de lluvias fuertes (el más probable).
-    expect(find.text(l10n.recommendationHeadline), findsOneWidget);
+    expect(find.text(l10n.recoOverline), findsOneWidget);
     expect(
       tester.container.read(campaignContextProvider).selectedScenario,
       ClimateScenario.heavyRains,

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
-import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_blocks.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_simulator_card.dart';
-import 'package:siembra_segura/features/crop_planning/presentation/widgets/rotation_cards.dart';
-import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/responsive_columns.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
@@ -25,17 +23,14 @@ class RotationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final recommendation = ref.watch(recommendationProvider);
-    final current = recommendation.value;
 
     return ScreenLayout(
-      guide: SemiGuide(message: l10n.semiRotationGuide),
+      guide: SemiGuide(message: l10n.semiRotationSay),
       wide: true,
       header: ScreenHeader(
         actions: [const AppSettingsButton()],
         title: l10n.rotationTitle,
-        listenText: current != null && current.hasOptions
-            ? current.rotationNarration(l10n)
-            : null,
+        showListen: false,
       ),
       body: AsyncValueView(
         value: recommendation,
@@ -56,45 +51,52 @@ class _RotationContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final priority = recommendation.priority.phrase;
-    final compared = recommendation.comparedRotations;
+    final r = recommendation;
+    final current = r.currentPractice;
+    final compared = r.comparedRotations;
 
+    // `#v-rotacion` de `semi_app.html`: tierra de hoy, las opciones como
+    // filas con su franja y "Prueba tu propio plan".
     return ScreenContent(
       children: [
-        SoilHealthCard(soilHealth: recommendation.data.soilHealth),
+        SoilTodaySection(recommendation: r),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.xxs,
           children: [
-            SectionTitle(
-              l10n.rotationCompareTitle(recommendation.comparedOptionsCount),
-            ),
-            HighlightedText(
-              text: l10n.rotationCompareSubtitle(
-                priority,
-                recommendation.scenario.phrase(l10n),
-              ),
-              highlight: priority,
-              style: context.text.muted,
-              highlightStyle: context.text.mutedEmphasis,
-            ),
+            SectionTitle(l10n.rotationCompareTitle(r.comparedOptionsCount)),
+            MutedText(l10n.compareSubtitle),
           ],
         ),
-        ResponsiveColumns(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            OptionComparisonCard.current(recommendation, l10n),
+            OptionRow(
+              kind: OptionRowKind.current,
+              crops: List.filled(4, current.mainCrop),
+              harvest: current.expectedHarvest[r.scenario] ?? 0,
+              waterM3: current.waterUseM3,
+              soil: current.soilInTwoYears,
+              factsheet: current.factsheet,
+            ),
             for (final (index, option) in compared.indexed)
-              OptionComparisonCard.rotation(
-                option,
-                recommendation,
-                l10n,
-                recommended: index == 0,
+              OptionRow(
+                kind: index == 0
+                    ? OptionRowKind.recommended
+                    : OptionRowKind.other,
+                crops: [for (final s in option.longTermPlan) s.crop],
+                harvest: option.outcomeFor(r.scenario).expectedHarvest,
+                waterM3: option.waterUseM3,
+                soil: option.soilInTwoYears,
+                factsheet: option.factsheet,
               ),
           ],
         ),
-        LongTermPlanCard(recommendation: recommendation),
-        PlanSimulatorCard(recommendation: recommendation),
-        const GuideDisclaimer(),
+        PlanSimulatorCard(recommendation: r),
+        Text(
+          l10n.rotationGuideNote,
+          style: TextStyle(fontSize: 13, color: context.colors.textMuted),
+        ),
         const SourceNote(''),
       ],
     );

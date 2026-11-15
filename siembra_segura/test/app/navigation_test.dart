@@ -48,7 +48,7 @@ void main() {
     await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(l10n.tabWhatToPlant);
 
-    await tester.tapText(l10n.actionWhenToPlant);
+    await tester.tapText(l10n.scheduleDecideBefore);
     expect(find.text(l10n.scheduleYourCalendar), findsOneWidget);
     expect(findNavigationBar(), findsNothing);
 
@@ -56,16 +56,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(l10n.recommendationTitle), findsOneWidget);
     expect(findNavigationBar(), findsOneWidget);
-  });
-
-  testWidgets('"Cambiar" vuelve a Mi parcela', (tester) async {
-    await tester.pumpSiembraSeguraApp();
-    await tester.tapText(l10n.actionSeePlan);
-    await tester.tapTab(l10n.tabWhatToPlant);
-
-    await tester.tapText(l10n.actionChange);
-
-    expect(find.text(l10n.farmTitle), findsOneWidget);
   });
 
   testWidgets('cambiar de pantalla detiene la lectura en voz alta', (
