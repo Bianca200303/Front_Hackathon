@@ -30,13 +30,18 @@ class AlertsScreen extends ConsumerWidget {
 
     return ScreenLayout(
       guide: SemiGuide(
-        message: l10n.semiAlertsGuide,
+        // Como en el prototipo: cuántos avisos hay y cuál importa más (el
+        // cambio de pronóstico, si llegó uno).
+        message: loaded == null || loaded.isEmpty
+            ? l10n.semiAlertsGuide
+            : '${l10n.alertsCount(loaded.length)} '
+                  '${l10n.semiAlertsImportant(_mostImportant(loaded).title)}',
         expression: SemiExpression.alert,
       ),
       header: ScreenHeader(
         actions: const [AppSettingsButton()],
         title: l10n.alertsTitle,
-        listenText: loaded == null ? null : _narration(loaded, l10n),
+        showListen: false,
       ),
       body: AsyncValueView(
         value: alerts,
@@ -46,18 +51,23 @@ class AlertsScreen extends ConsumerWidget {
         data: (alerts) => ScreenContent(
           onRefresh: () => ref.refresh(alertsProvider.future),
           children: [
-            for (final alert in alerts)
-              NoticeTile(
-                icon: alert.type.icon,
-                iconTone: alert.type.tone(context.colors),
-                title: alert.title,
-                body: alert.body,
-                meta: l10n.alertMeta(
-                  relativeDayLabel(alert.receivedAt, now, l10n),
-                  alert.source,
-                ),
-                onTap: () => _open(context, alert),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final alert in alerts)
+                  NoticeTile(
+                    icon: alert.type.icon,
+                    iconTone: alert.type.tone(context.colors),
+                    title: alert.title,
+                    body: alert.body,
+                    meta: l10n.alertMeta(
+                      relativeDayLabel(alert.receivedAt, now, l10n),
+                      alert.source,
+                    ),
+                    onTap: () => _open(context, alert),
+                  ),
+              ],
+            ),
             SourceNote(l10n.alertsFooter),
           ],
         ),
@@ -73,9 +83,9 @@ class AlertsScreen extends ConsumerWidget {
         context.go(AppRoutes.alertDetail(alert.id));
     }
   }
-
-  String _narration(List<Alert> alerts, AppLocalizations l10n) => [
-    l10n.alertsCount(alerts.length),
-    for (final alert in alerts) '${alert.title}.',
-  ].join(' ');
 }
+
+/// El aviso más importante: el cambio de pronóstico; si no hay, el primero.
+Alert _mostImportant(List<Alert> alerts) =>
+    alerts.where((a) => a.type == AlertType.forecastChange).firstOrNull ??
+    alerts.first;

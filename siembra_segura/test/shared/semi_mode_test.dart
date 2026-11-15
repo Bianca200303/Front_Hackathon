@@ -96,4 +96,21 @@ void main() {
       expect(tester.takeException(), isNull, reason: expression.name);
     }
   });
+
+  testWidgets('"Borrar todo" pide confirmar y vuelve a la bienvenida', (
+    tester,
+  ) async {
+    final store = InMemoryAppModeStore(AppMode.manual);
+    await tester.pumpSiembraSeguraApp(appModeStore: store);
+    await tester.tapText(l10n.actionSeePlan);
+    await tester.tap(find.byTooltip(l10n.settingsTooltip));
+    await tester.pumpAndSettle();
+
+    await tester.tapText(l10n.deleteAll);
+    expect(find.text(l10n.deleteAllConfirm), findsOneWidget);
+    await tester.tapText(l10n.deleteAllConfirm);
+
+    expect(find.text(l10n.welcomeTitle), findsOneWidget);
+    expect(store.load(), isNull);
+  });
 }

@@ -116,7 +116,7 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: c.surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: c.primarySoft,
+        indicatorColor: Colors.transparent,
         elevation: 0,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
@@ -138,7 +138,7 @@ abstract final class AppTheme {
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: c.surface,
-        indicatorColor: c.primarySoft,
+        indicatorColor: Colors.transparent,
         selectedIconTheme: IconThemeData(color: c.primary),
         unselectedIconTheme: IconThemeData(color: c.textMuted),
         selectedLabelTextStyle: TextStyle(

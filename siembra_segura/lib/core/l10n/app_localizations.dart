@@ -2281,6 +2281,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.'**
   String get settingsModeManualNote;
+
+  /// No description provided for @semiAlertsImportant.
+  ///
+  /// In es, this message translates to:
+  /// **'El más importante: {title}.'**
+  String semiAlertsImportant(String title);
 }
 
 class _AppLocalizationsDelegate

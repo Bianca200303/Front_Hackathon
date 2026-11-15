@@ -18,4 +18,7 @@ abstract interface class AppModeStore {
 
   /// Guarda el modo.
   Future<void> save(AppMode mode);
+
+  /// Olvida el modo elegido (la próxima vez vuelve la bienvenida).
+  Future<void> clear();
 }

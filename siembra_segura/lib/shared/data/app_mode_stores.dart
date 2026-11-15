@@ -30,6 +30,9 @@ class SharedPreferencesAppModeStore implements AppModeStore {
   @override
   Future<void> save(AppMode mode) =>
       _preferences.setString(storageKey, mode.name);
+
+  @override
+  Future<void> clear() => _preferences.remove(storageKey);
 }
 
 /// Guarda el modo solo mientras la app está abierta. Se usa en pruebas y
@@ -45,4 +48,7 @@ class InMemoryAppModeStore implements AppModeStore {
 
   @override
   Future<void> save(AppMode mode) async => _mode = mode;
+
+  @override
+  Future<void> clear() async => _mode = null;
 }

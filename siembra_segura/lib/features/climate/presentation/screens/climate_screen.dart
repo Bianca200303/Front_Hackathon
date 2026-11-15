@@ -33,13 +33,18 @@ class ClimateScreen extends ConsumerWidget {
     final data = overview.value;
 
     return ScreenLayout(
-      guide: SemiGuide(message: l10n.semiClimateGuide),
+      // Semi resume el día en su globo (y lo lee con "Escuchar").
+      guide: SemiGuide(
+        message: data == null
+            ? l10n.semiClimateGuide
+            : '${l10n.semiClimateGuide} ${_narration(data, l10n)}',
+      ),
       wide: true,
       header: ScreenHeader(
         actions: [const AppSettingsButton()],
         title: l10n.climateTitle,
         subtitle: data?.valleyName,
-        listenText: data == null ? null : _narration(data, l10n),
+        showListen: false,
       ),
       body: AsyncValueView(
         value: overview,

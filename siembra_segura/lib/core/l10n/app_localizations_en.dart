@@ -1307,4 +1307,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsModeManualNote =>
       'You fill in your details on one screen. Semi only shows up if you ask.';
+
+  @override
+  String semiAlertsImportant(String title) {
+    return 'The most important one: $title.';
+  }
 }

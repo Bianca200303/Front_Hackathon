@@ -57,12 +57,11 @@ class WelcomeScreen extends ConsumerWidget {
               children: [
                 const _TopActions(),
                 _Greeting(title: l10n.welcomeTitle, body: l10n.welcomeBody),
-                Text(
-                  l10n.welcomeAiNote,
-                  style: context.text.caption,
-                  textAlign: TextAlign.center,
+                Text(l10n.welcomeAiNote, style: context.text.caption),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: ListenButton(text: spoken),
                 ),
-                Center(child: ListenButton(text: spoken)),
                 Semantics(
                   header: true,
                   child: Text(
@@ -120,6 +119,9 @@ class _TopActions extends ConsumerWidget {
           color: context.colors.textPrimary,
           style: IconButton.styleFrom(
             side: BorderSide(color: context.colors.borderStrong),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           icon: Icon(
             isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
@@ -190,10 +192,11 @@ class _Greeting extends StatelessWidget {
           );
         }
         return Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          spacing: AppSpacing.md,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.sm,
           children: [
             semi,
+            // El globo queda arriba, a la altura de la cara de Semi.
             Expanded(child: bubble),
           ],
         );

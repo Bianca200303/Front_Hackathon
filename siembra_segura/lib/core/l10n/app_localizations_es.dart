@@ -1315,4 +1315,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsModeManualNote =>
       'Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.';
+
+  @override
+  String semiAlertsImportant(String title) {
+    return 'El más importante: $title.';
+  }
 }

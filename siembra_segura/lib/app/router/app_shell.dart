@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_breakpoints.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/features/alerts/presentation/providers/alerts_providers.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_help.dart';
@@ -42,18 +43,24 @@ class AppShell extends ConsumerWidget {
       return Scaffold(
         body: navigationShell,
         floatingActionButton: help,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: _onDestinationSelected,
-          destinations: [
-            for (final destination in destinations)
-              NavigationDestination(
-                icon: destination.icon,
-                selectedIcon: destination.selectedIcon,
-                label: destination.label,
-                tooltip: destination.tooltip,
-              ),
-          ],
+        // Pestañas de `semi_app.html`: sin pastilla, con una raya verde
+        // arriba de la activa.
+        bottomNavigationBar: _TopLineIndicator(
+          index: navigationShell.currentIndex,
+          count: destinations.length,
+          child: NavigationBar(
+            selectedIndex: navigationShell.currentIndex,
+            onDestinationSelected: _onDestinationSelected,
+            destinations: [
+              for (final destination in destinations)
+                NavigationDestination(
+                  icon: destination.icon,
+                  selectedIcon: destination.selectedIcon,
+                  label: destination.label,
+                  tooltip: destination.tooltip,
+                ),
+            ],
+          ),
         ),
       );
     }
@@ -144,4 +151,45 @@ class _Destination {
   final Widget selectedIcon;
   final String label;
   final String? tooltip;
+}
+
+/// Raya verde arriba de la pestaña activa.
+class _TopLineIndicator extends StatelessWidget {
+  const _TopLineIndicator({
+    required this.index,
+    required this.count,
+    required this.child,
+  });
+
+  final int index;
+  final int count;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: colors.border)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth / count;
+          return Stack(
+            children: [
+              child,
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                top: 0,
+                left: width * index,
+                width: width,
+                height: 3,
+                child: ColoredBox(color: colors.primary),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }

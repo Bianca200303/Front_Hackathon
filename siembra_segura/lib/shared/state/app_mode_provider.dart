@@ -22,6 +22,16 @@ class AppModeNotifier extends Notifier<AppMode> {
     return ref.read(appModeStoreProvider).load() ?? AppMode.assisted;
   }
 
+  /// Olvida el modo elegido: la app vuelve a la bienvenida la próxima vez.
+  Future<void> forget() async {
+    state = AppMode.assisted;
+    try {
+      await ref.read(appModeStoreProvider).clear();
+    } on Object catch (error) {
+      debugPrint('No se pudo borrar el modo de uso: $error');
+    }
+  }
+
   /// Cambia al modo [mode] y lo recuerda para la próxima vez.
   Future<void> select(AppMode mode) async {
     state = mode;

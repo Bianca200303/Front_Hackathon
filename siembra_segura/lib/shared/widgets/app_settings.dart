@@ -13,6 +13,7 @@ import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/theme/theme_mode_provider.dart';
 import 'package:siembra_segura/shared/domain/app_mode.dart';
 import 'package:siembra_segura/shared/state/app_mode_provider.dart';
+import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/selection_controls.dart';
 
@@ -90,6 +91,12 @@ class _SettingsSheet extends ConsumerWidget {
                 unawaited(ref.read(appModeProvider.notifier).select(mode)),
           ),
         ),
+        Text(
+          mode == AppMode.assisted
+              ? l10n.settingsModeAssistedNote
+              : l10n.settingsModeManualNote,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         const LanguageOptions(),
         _Section(
           title: l10n.settingsAppearanceTitle,
@@ -118,6 +125,7 @@ class _SettingsSheet extends ConsumerWidget {
             );
           },
         ),
+        const _DeleteAllButton(),
       ],
     );
   }
@@ -205,6 +213,61 @@ class _SheetBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.lg,
           children: children,
+        ),
+      ),
+    );
+  }
+}
+
+/// "Borrar todo y empezar de nuevo" (`.borrar` de `semi_app.html`): el
+/// primer toque pide confirmar y el segundo borra los datos de la chacra y
+/// el modo, y vuelve a la bienvenida.
+class _DeleteAllButton extends ConsumerStatefulWidget {
+  const _DeleteAllButton();
+
+  @override
+  ConsumerState<_DeleteAllButton> createState() => _DeleteAllButtonState();
+}
+
+class _DeleteAllButtonState extends ConsumerState<_DeleteAllButton> {
+  bool _armed = false;
+
+  void _onTap() {
+    if (!_armed) {
+      setState(() => _armed = true);
+      return;
+    }
+    final router = GoRouter.of(context);
+    ref.read(campaignContextProvider.notifier).reset();
+    unawaited(ref.read(appModeProvider.notifier).forget());
+    Navigator.of(context).pop();
+    router.go(AppRoutes.welcome);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.colors;
+    return Center(
+      child: TextButton(
+        onPressed: _onTap,
+        style: TextButton.styleFrom(
+          foregroundColor: _armed ? colors.onPrimary : colors.negative,
+          backgroundColor: _armed ? colors.negative : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: const TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        child: Text(
+          _armed ? l10n.deleteAllConfirm : l10n.deleteAll,
+          style: TextStyle(
+            decoration: _armed ? null : TextDecoration.underline,
+          ),
         ),
       ),
     );

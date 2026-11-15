@@ -36,19 +36,17 @@ class NoticeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shape = RoundedRectangleBorder(
-      borderRadius: AppRadii.card,
-      side: BorderSide(color: context.colors.border),
-    );
+    // `.aviso` de `semi_app.html`: fila plana separada por una línea, con
+    // el icono en un cuadrado de color.
     final metaText = meta;
-    return Material(
-      color: context.colors.surface,
-      shape: shape,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: context.colors.borderStrong)),
+      ),
       child: InkWell(
-        customBorder: shape,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.md,
@@ -59,7 +57,7 @@ class NoticeTile extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: iconTone.background,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, size: 22, color: iconTone.foreground),
                 ),

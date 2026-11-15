@@ -453,5 +453,7 @@
   "deleteAll": "Borrar todo y empezar de nuevo",
   "deleteAllConfirm": "Toca otra vez para borrar tus datos",
   "settingsModeAssistedNote": "Semi te explica cada pantalla y te hace las preguntas una por una.",
-  "settingsModeManualNote": "Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas."
+  "settingsModeManualNote": "Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.",
+  "semiAlertsImportant": "El más importante: {title}.",
+  "@semiAlertsImportant": { "placeholders": { "title": { "type": "String" } } }
 }

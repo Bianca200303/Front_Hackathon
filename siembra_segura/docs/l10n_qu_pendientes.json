@@ -282,6 +282,7 @@
     "deleteAll",
     "deleteAllConfirm",
     "settingsModeAssistedNote",
-    "settingsModeManualNote"
+    "settingsModeManualNote",
+    "semiAlertsImportant"
   ]
 }
