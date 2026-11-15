@@ -124,9 +124,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sampleDataDisclaimer => 'Cifras de ejemplo.';
 
   @override
-  String get perHectare => 'Por hectárea.';
-
-  @override
   String get guideDisclaimer =>
       'Esta app es una guía. La decisión final es tuya: conversa estos resultados con tu técnico o la agencia agraria.';
 
@@ -173,6 +170,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scenarioPhraseDry => 'un año seco';
 
   @override
+  String get climateRiskLow => 'Bajo';
+
+  @override
+  String get climateRiskMedium => 'Medio';
+
+  @override
+  String get climateRiskHigh => 'Alto';
+
+  @override
   String get soilVeryTired => 'Muy cansada';
 
   @override
@@ -190,6 +196,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get soilImpactDegrades => 'se cansa más';
+
+  @override
+  String get soilImpactNeutral => 'queda igual';
+
+  @override
   String get soilImpactImproves => 'mejora';
 
   @override
@@ -201,16 +213,30 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get farmSatelliteCaption => 'Foto de satélite (NASA)';
+  String get farmSatelliteCaption => 'Tu chacra en el valle';
 
   @override
-  String get farmMapSemantics => 'Vista satelital de la parcela marcada';
+  String get farmMapSemantics => 'Mapa del valle con tu chacra marcada';
+
+  @override
+  String get farmMapQuestion => '¿Dónde está tu chacra?';
+
+  @override
+  String get farmMapHint =>
+      'Toca el mapa para marcarla: los datos de la NASA se piden para ese punto.';
+
+  @override
+  String farmMapCoordinates(String lat, String lon) {
+    return '$lat, $lon';
+  }
+
+  @override
+  String farmMapPinSemantics(String lat, String lon) {
+    return 'Tu chacra está en $lat, $lon. Toca el mapa para moverla.';
+  }
 
   @override
   String get farmValley => 'Valle';
-
-  @override
-  String get farmArea => 'Área';
 
   @override
   String get farmIrrigation => 'Riego de';
@@ -230,6 +256,49 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get farmLastCropGroupSemantics => 'Cultivo de la última campaña';
+
+  @override
+  String get farmCampaignTitle => 'Tu campaña';
+
+  @override
+  String get farmAreaQuestion => '¿Cuántas hectáreas vas a sembrar?';
+
+  @override
+  String get farmAreaDecrease => 'Quitar media hectárea';
+
+  @override
+  String get farmAreaIncrease => 'Agregar media hectárea';
+
+  @override
+  String get farmPlantingDateQuestion => '¿Cuándo quieres sembrar?';
+
+  @override
+  String get farmPlantingDateHint => 'Puedes cambiarla cuando quieras.';
+
+  @override
+  String get farmPlantingDatePickerTitle => 'Fecha de siembra';
+
+  @override
+  String farmCampaignsQuestion(String crop) {
+    return '¿Cuántas campañas seguidas sembraste $crop?';
+  }
+
+  @override
+  String farmCampaignsValue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count campañas',
+      one: '1 campaña',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get farmCampaignsDecrease => 'Quitar una campaña';
+
+  @override
+  String get farmCampaignsIncrease => 'Agregar una campaña';
 
   @override
   String get farmPriorityQuestion => '¿Qué te importa más esta campaña?';
@@ -255,8 +324,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get farmRestrictionsQuestion => '¿Hay algo que no puedas hacer?';
 
   @override
+  String get farmSoilTextureHint =>
+      'Agarra un puñado de tierra de tu chacra y toca la que se parezca. Lo que tú ves manda sobre lo que estima el satélite.';
+
+  @override
+  String get farmSoilTextureGroupSemantics => 'Cómo es tu tierra';
+
+  @override
+  String get farmSoilTextureUnknown => 'No estoy seguro';
+
+  @override
+  String get farmSoilTextureUnknownHint =>
+      'Usamos la tierra que estima el satélite para tu punto.';
+
+  @override
   String farmNarration(String name, String crop) {
-    return 'Hola $name. Por el satélite creemos que la última campaña sembraste $crop. Si no es así, toca el cultivo correcto. Luego dinos qué te importa más esta campaña: ganar más, cuidar tu agua o recuperar tu tierra.';
+    return 'Hola $name. Por el satélite creemos que la última campaña sembraste $crop. Si no es así, toca el cultivo correcto. Luego dinos cuántas hectáreas vas a sembrar, cuándo quieres sembrar y qué te importa más esta campaña.';
   }
 
   @override
@@ -303,16 +386,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get climateAdviceLead => 'Qué hacer:';
 
   @override
-  String climateOutlookTitle(
-    String month,
-    String scenario,
-    String probability,
-  ) {
-    return 'Hasta $month: $scenario ($probability)';
-  }
+  String get climatePlanTitle => '¿Qué te conviene sembrar?';
 
   @override
-  String get climateOutlookAction => 'Toca para ver qué te conviene sembrar.';
+  String get climatePlanAction =>
+      'Toca para ver tu recomendación y cuándo sembrar.';
 
   @override
   String get climateComparisonTitle => 'Comparado con un año normal';
@@ -397,20 +475,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String recommendationOutlookOverline(String month) {
-    return 'CÓMO VIENE TU VALLE HASTA $month';
-  }
-
-  @override
-  String recommendationMostLikely(String scenario) {
-    return 'Lo más probable: $scenario';
-  }
-
-  @override
-  String get recommendationOutlookNote =>
-      'Calculado con datos de satélite de la NASA (mar, lluvia y suelo). Coincide con el ENFEN.';
-
-  @override
   String recommendationThinkingOf(String priority) {
     return 'Pensando en: $priority';
   }
@@ -419,44 +483,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recommendationHeadline => 'TE RECOMENDAMOS';
 
   @override
-  String get recommendationIfHeavyRains =>
-      'SI EL AÑO VIENE CON LLUVIAS FUERTES, TE CONVIENE';
+  String get recommendationScenarioNote =>
+      'Calculado con el clima de los años de referencia de cada escenario (NASA POWER).';
 
   @override
-  String get recommendationIfNormal => 'SI EL AÑO VIENE NORMAL, TE CONVIENE';
+  String get recommendationIfHeavyRains =>
+      'SI EL AÑO VIENE CON LLUVIAS FUERTES, TE CONVIENE';
 
   @override
   String get recommendationIfDry => 'SI EL AÑO VIENE SECO, TE CONVIENE';
 
   @override
-  String get outcomeIfGood => 'Si va bien:';
+  String get outcomeWater => 'Agua de riego:';
 
   @override
-  String outcomeIfGoodValue(String amount) {
-    return 'ganas unos $amount';
-  }
-
-  @override
-  String get outcomeIfBad => 'Si va mal:';
-
-  @override
-  String outcomeIfBadValue(String amount) {
-    return 'pierdes hasta $amount';
-  }
-
-  @override
-  String get outcomeIfNormal => 'Si al final no llueve tanto:';
-
-  @override
-  String outcomeIfNormalValue(String amount) {
-    return 'igual ganas unos $amount';
-  }
-
-  @override
-  String get outcomeWater => 'Agua:';
+  String get outcomeClimateRisk => 'Riesgo de clima:';
 
   @override
   String get outcomeSoil => 'Tu tierra:';
+
+  @override
+  String forArea(String area) {
+    return 'Para $area ha.';
+  }
 
   @override
   String recommendationRepeatOverline(String crop) {
@@ -467,25 +516,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recommendationExploreScenarios => 'Explorar otros escenarios';
 
   @override
-  String get recommendationExploreQuestion =>
-      '¿Y si el año viene distinto a lo más probable?';
+  String get recommendationExploreQuestion => '¿Y si el año viene distinto?';
 
   @override
   String get scenarioSelectorSemantics => 'Ver otro escenario';
 
   @override
   String recommendationNarration(
-    String month,
-    String scenario,
-    String probability,
     String priority,
+    String scenario,
     String rotation,
-    String profit,
-    String loss,
+    String water,
+    String risk,
     String soil,
     String repeatWarning,
   ) {
-    return 'Lo más probable en tu valle hasta $month son $scenario, con $probability de probabilidad. Pensando en $priority, te recomendamos $rotation. Si va bien, ganas unos $profit por hectárea. Si va mal, pierdes hasta $loss. Tu tierra $soil. $repeatWarning';
+    return 'Pensando en $priority, para $scenario te recomendamos $rotation. Necesitarías $water de agua de riego y el riesgo de clima es $risk. Tu tierra $soil. $repeatWarning';
   }
 
   @override
@@ -582,11 +628,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String rotationCompareSubtitle(String priority, String scenario) {
-    return 'Pensando en $priority y en $scenario. Por hectárea.';
+    return 'Pensando en $priority y en $scenario.';
   }
 
   @override
   String get optionCurrent => 'LO QUE SIEMBRAS HOY';
+
+  @override
+  String get optionCustom => 'LA TUYA';
 
   @override
   String get optionRecommended => 'RECOMENDADA';
@@ -595,10 +644,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get optionOther => 'OTRA OPCIÓN';
 
   @override
-  String get metricExpectedProfit => 'Ganancia esperada';
+  String get metricClimateRisk => 'Riesgo de clima';
 
   @override
-  String get metricWater => 'Agua';
+  String get metricWater => 'Agua de riego';
 
   @override
   String get metricSoilInTwoYears => 'Tierra en 2 años';
@@ -620,6 +669,57 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get factsheetRisks => 'REVÍSALO CON TU TÉCNICO';
+
+  @override
+  String get cropWaterNeedLow => 'Poca agua';
+
+  @override
+  String get cropWaterNeedMedium => 'Agua media';
+
+  @override
+  String get cropWaterNeedHigh => 'Mucha agua';
+
+  @override
+  String cropCycleMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count meses',
+      one: '1 mes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cropFixesNitrogen => 'Abona tu tierra';
+
+  @override
+  String get rotationCustomTitle => 'Arma tu rotación';
+
+  @override
+  String get rotationCustomHint =>
+      'Toca un cultivo para cambiarlo y mira cómo cambian el agua y tu tierra.';
+
+  @override
+  String get rotationCustomPickTitle => '¿Qué cultivo va aquí?';
+
+  @override
+  String get rotationCustomAdd => 'Agregar cultivo';
+
+  @override
+  String get rotationCustomRemove => 'Quitar de la secuencia';
+
+  @override
+  String get rotationCustomClear => 'Volver a las rotaciones sugeridas';
+
+  @override
+  String get rotationCustomExcluded =>
+      'Con lo que indicaste en Tu parcela, esta secuencia queda descartada.';
+
+  @override
+  String rotationCustomPositionSemantics(int position, int total) {
+    return 'Cultivo $position de $total';
+  }
 
   @override
   String get rotationPlanTitle => 'Plan recomendado: próximas campañas';

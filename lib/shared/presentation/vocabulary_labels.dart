@@ -32,6 +32,25 @@ extension CropTone on Crop {
   }
 }
 
+/// Textos de la ficha de un cultivo.
+extension CropWaterNeedLabels on CropWaterNeed {
+  /// Cuánta agua pide ("Mucha agua").
+  String label(AppLocalizations l10n) => switch (this) {
+    CropWaterNeed.low => l10n.cropWaterNeedLow,
+    CropWaterNeed.medium => l10n.cropWaterNeedMedium,
+    CropWaterNeed.high => l10n.cropWaterNeedHigh,
+  };
+}
+
+/// Ficha corta de un cultivo: agua, duración y si abona la tierra.
+///
+/// Devuelve solo lo que la fuente de datos sabe, en ese orden.
+List<String> cropFacts(Crop crop, AppLocalizations l10n) => [
+  if (crop.waterNeed case final need?) need.label(l10n),
+  if (crop.cycleMonths case final months?) l10n.cropCycleMonths(months),
+  if (crop.fixesNitrogen) l10n.cropFixesNitrogen,
+];
+
 /// Nombre de una secuencia de cultivos: "Maíz y después frejol" o, si se
 /// repite, "Arroz y arroz".
 String cropSequenceName(List<Crop> crops, AppLocalizations l10n) {
@@ -73,6 +92,23 @@ extension ClimateScenarioLabels on ClimateScenario {
     ClimateScenario.heavyRains => l10n.scenarioPhraseHeavyRains,
     ClimateScenario.normal => l10n.scenarioPhraseNormal,
     ClimateScenario.dry => l10n.scenarioPhraseDry,
+  };
+}
+
+/// Texto y color del riesgo de clima.
+extension ClimateRiskLabels on ClimateRisk {
+  /// Nombre del nivel ("Alto").
+  String label(AppLocalizations l10n) => switch (this) {
+    ClimateRisk.low => l10n.climateRiskLow,
+    ClimateRisk.medium => l10n.climateRiskMedium,
+    ClimateRisk.high => l10n.climateRiskHigh,
+  };
+
+  /// Color asociado, de verde (bajo) a rojo (alto).
+  Tone get tone => switch (this) {
+    ClimateRisk.low => AppColors.normalTone,
+    ClimateRisk.medium => AppColors.warningTone,
+    ClimateRisk.high => AppColors.soilTiredTone,
   };
 }
 

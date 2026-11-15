@@ -24,7 +24,7 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
 | Clave | Valores | Descripción |
 |---|---|---|
 | `APP_ENV` | `dev` · `staging` · `prod` | Entorno |
-| `DATA_SOURCE` | `mock` · `remote` | `mock` usa datos locales de ejemplo; `remote` usa el backend en las pantallas ya integradas (hoy, Clima) y datos de ejemplo en el resto |
+| `DATA_SOURCE` | `mock` · `remote` | `mock` usa datos locales de ejemplo; `remote` usa el backend en las pantallas ya integradas (Clima, Qué sembrar, ¿Cuándo siembro?, Rotación) y datos de ejemplo en el resto. Con `remote`, la recomendación combina NASA POWER, SoilGrids, la tierra que reconoció el agricultor, el verdor MODIS, la humedad SMAP y la lluvia GPM IMERG del punto que marcó en el mapa |
 | `API_BASE_URL` | URL | Obligatoria si `DATA_SOURCE=remote` |
 
 ### Con el backend local

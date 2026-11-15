@@ -6,13 +6,10 @@ import '../../helpers/pump_app.dart';
 void main() {
   setUpAll(initTestLocale);
 
-  test('formatea soles como en la referencia', () {
-    expect(AppFormatters.soles(2400), 'S/ 2,400');
-    expect(AppFormatters.soles(300), 'S/ 300');
-  });
-
+  // Los miles se agrupan con coma, como en la referencia (decisión 11).
   test('formatea unidades', () {
-    expect(AppFormatters.cubicMeters(14500), '14,500 m³');
+    expect(AppFormatters.cubicMeters(15600), '15,600 m³');
+    expect(AppFormatters.cubicMeters(300), '300 m³');
     expect(AppFormatters.percent(0.7), '70%');
     expect(AppFormatters.millimeters(40), '40 mm');
     expect(AppFormatters.celsius(31), '31 °C');

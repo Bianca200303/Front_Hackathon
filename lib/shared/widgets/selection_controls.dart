@@ -111,11 +111,19 @@ class RadioOptionTile extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.description,
+    this.leading,
     super.key,
   });
 
   /// Texto de la opción.
   final String label;
+
+  /// Explicación breve bajo [label]; nula si no hace falta.
+  final String? description;
+
+  /// Ilustración o icono antes del texto; nulo si no hay.
+  final Widget? leading;
 
   /// Si está seleccionada.
   final bool selected;
@@ -151,7 +159,18 @@ class RadioOptionTile extends StatelessWidget {
                 spacing: 10,
                 children: [
                   _RadioMark(selected: selected),
-                  Expanded(child: Text(label, style: AppTypography.option)),
+                  if (leading case final leading?) leading,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: AppSpacing.xxs,
+                      children: [
+                        Text(label, style: AppTypography.option),
+                        if (description case final description?)
+                          Text(description, style: AppTypography.captionMuted),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

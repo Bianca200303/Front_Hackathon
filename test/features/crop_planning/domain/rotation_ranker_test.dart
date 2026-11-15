@@ -14,7 +14,10 @@ class _WaterPolicy implements RotationRankingPolicy {
     ClimateScenario scenario,
   ) => priority.id == 'unknown'
       ? null
-      : (a, b) => a.waterUseM3.compareTo(b.waterUseM3);
+      : (a, b) => a
+            .resultFor(scenario)
+            .waterUseM3
+            .compareTo(b.resultFor(scenario).waterUseM3);
 }
 
 void main() {
@@ -33,12 +36,14 @@ void main() {
     List<RotationOption>? from,
     CampaignPriority priority = anyPriority,
     Set<String> restrictionIds = const {},
+    List<String> serverOrder = const [],
   }) => ranker
       .rank(
         options: from ?? options,
         scenario: ClimateScenario.heavyRains,
         priority: priority,
         restrictionIds: restrictionIds,
+        serverOrder: serverOrder,
       )
       .ids;
 
@@ -48,6 +53,14 @@ void main() {
 
   test('sin criterio para la prioridad conserva el orden de los datos', () {
     expect(rank(priority: unknownPriority), ['r1', 'r2', 'r3']);
+  });
+
+  test('el orden de la fuente manda sobre la política', () {
+    expect(rank(serverOrder: ['r2', 'r3', 'r1']), ['r2', 'r3', 'r1']);
+  });
+
+  test('una opción que la fuente no menciona va al final', () {
+    expect(rank(serverOrder: ['r2']), ['r2', 'r1', 'r3']);
   });
 
   test('descarta las opciones excluidas por una restricción activa', () {
@@ -64,12 +77,10 @@ void main() {
     RotationOption copy(RotationOption source, String id) => RotationOption(
       id: id,
       crops: source.crops,
-      waterUseM3: source.waterUseM3,
-      waterSummary: source.waterSummary,
+      scenarios: source.scenarios,
       soilImpact: source.soilImpact,
       soilInTwoYears: source.soilInTwoYears,
       factsheet: source.factsheet,
-      outcomes: source.outcomes,
       schedule: source.schedule,
       longTermPlan: source.longTermPlan,
     );

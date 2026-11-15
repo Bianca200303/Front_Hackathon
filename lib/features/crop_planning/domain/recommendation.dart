@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
-import 'package:siembra_segura/shared/domain/seasonal_outlook.dart';
 
 /// Recomendación para un escenario y una prioridad concretos.
 class Recommendation extends Equatable {
@@ -9,7 +8,6 @@ class Recommendation extends Equatable {
   const Recommendation({
     required this.scenario,
     required this.priority,
-    required this.outlook,
     required this.rankedOptions,
     required this.data,
   });
@@ -19,9 +17,6 @@ class Recommendation extends Equatable {
 
   /// Prioridad con la que se ordenó.
   final CampaignPriority priority;
-
-  /// Pronóstico usado.
-  final SeasonalOutlook outlook;
 
   /// Opciones permitidas, de mejor a peor según la prioridad.
   final List<RotationOption> rankedOptions;
@@ -35,14 +30,15 @@ class Recommendation extends Equatable {
   /// La opción recomendada. Solo válida si [hasOptions].
   RotationOption get best => rankedOptions.first;
 
-  /// Es verdadero si se calculó para el escenario más probable.
-  bool get isMostLikelyScenario => scenario == outlook.mostLikely;
-
-  /// Resultado de la opción recomendada en el escenario.
-  ScenarioOutcome get bestOutcome => best.outcomeFor(scenario);
+  /// Agua y riesgo de la opción recomendada en el escenario.
+  RotationScenarioResult get bestResult => best.resultFor(scenario);
 
   /// Lo que el agricultor siembra hoy.
   CurrentPractice get currentPractice => data.currentPractice;
+
+  /// Agua y riesgo de la práctica actual en el escenario.
+  RotationScenarioResult get currentResult =>
+      currentPractice.resultFor(scenario);
 
   /// Introducción del escenario para la explicación.
   String get scenarioNote => data.scenarioNotes[scenario] ?? '';
@@ -51,5 +47,5 @@ class Recommendation extends Equatable {
   List<DateTime> get riskMonths => data.riskMonths[scenario] ?? const [];
 
   @override
-  List<Object?> get props => [scenario, priority, outlook, rankedOptions, data];
+  List<Object?> get props => [scenario, priority, rankedOptions, data];
 }

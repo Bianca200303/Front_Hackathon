@@ -35,6 +35,9 @@ class AsyncValueView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return value.when(
+      // Al recalcular con datos nuevos (otra fecha, otra rotación) se
+      // mantiene lo anterior en pantalla en vez de parpadear "Cargando".
+      skipLoadingOnReload: true,
       data: (result) => isEmpty?.call(result) ?? false
           ? EmptyView(message: emptyMessage)
           : data(result),

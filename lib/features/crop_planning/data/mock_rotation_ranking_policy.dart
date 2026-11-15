@@ -3,13 +3,14 @@ import 'package:siembra_segura/features/crop_planning/domain/rotation_ranker.dar
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
-/// Criterio de orden de la referencia (mvp.html), asociado a las
-/// prioridades del catálogo de ejemplo.
+/// Criterio de orden para las prioridades del catálogo de ejemplo. Replica
+/// el del servidor para que la app se vea igual con datos de ejemplo:
 ///
-/// - "Ganar más": mayor ganancia esperada en el escenario.
-/// - "Cuidar mi agua": menor consumo de agua.
-/// - "Recuperar mi tierra": mayor mejora del suelo y, a igualdad, menor
-///   pérdida máxima en el escenario.
+/// - "Cuidar mi agua": menos agua de riego.
+/// - "Recuperar mi tierra": mayor mejora de la tierra y, a igualdad, menos
+///   meses de riesgo.
+/// - "Menos riesgo de clima": menos meses de riesgo y, a igualdad, menos
+///   agua.
 ///
 /// Vive en la capa de datos porque depende de los identificadores del
 /// catálogo de ejemplo. Una prioridad desconocida no tiene criterio.
@@ -22,31 +23,39 @@ class MockRotationRankingPolicy implements RotationRankingPolicy {
     CampaignPriority priority,
     ClimateScenario scenario,
   ) {
-    if (priority.id == MockCatalog.maximizeProfit.id) {
-      return (a, b) => b
-          .outcomeFor(scenario)
-          .expectedProfit
-          .compareTo(a.outcomeFor(scenario).expectedProfit);
-    }
     if (priority.id == MockCatalog.saveWater.id) {
-      return (a, b) => a.waterUseM3.compareTo(b.waterUseM3);
+      return (a, b) => _byWater(a, b, scenario);
     }
     if (priority.id == MockCatalog.restoreSoil.id) {
-      return (a, b) => _compareSoil(a, b, scenario);
+      return (a, b) {
+        final bySoil = b.soilImpact.index.compareTo(a.soilImpact.index);
+        return bySoil != 0 ? bySoil : _byRisk(a, b, scenario);
+      };
+    }
+    if (priority.id == MockCatalog.lowerClimateRisk.id) {
+      return (a, b) {
+        final byRisk = _byRisk(a, b, scenario);
+        return byRisk != 0 ? byRisk : _byWater(a, b, scenario);
+      };
     }
     return null;
   }
 
-  static int _compareSoil(
+  static int _byWater(
     RotationOption a,
     RotationOption b,
     ClimateScenario scenario,
   ) {
-    final bySoil = b.soilImpact.score.compareTo(a.soilImpact.score);
-    if (bySoil != 0) return bySoil;
-    return a
-        .outcomeFor(scenario)
-        .maxLoss
-        .compareTo(b.outcomeFor(scenario).maxLoss);
+    final water = a.resultFor(scenario).waterUseM3;
+    return water.compareTo(b.resultFor(scenario).waterUseM3);
+  }
+
+  static int _byRisk(
+    RotationOption a,
+    RotationOption b,
+    ClimateScenario scenario,
+  ) {
+    final months = a.resultFor(scenario).riskMonths.length;
+    return months.compareTo(b.resultFor(scenario).riskMonths.length);
   }
 }

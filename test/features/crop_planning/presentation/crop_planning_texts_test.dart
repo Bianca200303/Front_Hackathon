@@ -15,7 +15,6 @@ void main() {
     CampaignContext context = const CampaignContext(),
   ]) async => referenceGetRecommendation(
     data: await referencePlanningData(),
-    outlook: await referenceOutlook(),
     catalog: referenceCatalog,
     context: context,
   );
@@ -25,15 +24,15 @@ void main() {
   test('nombres de rotaciones como en la referencia', () async {
     final recommendation = await recommendationFor();
 
-    expect(recommendation.best.name(l10n), 'Maíz y después frejol');
+    expect(recommendation.best.name(l10n), 'Frejol y después maíz');
     expect(recommendation.currentPractice.name(l10n), 'Arroz y arroz');
     expect(
       recommendation.longTermPlanName(l10n),
-      'Maíz y después frejol y después algodón y menestra.',
+      'Frejol y después maíz y después menestra y algodón.',
     );
   });
 
-  test('el titular depende de si es el escenario más probable', () async {
+  test('el titular depende del escenario que se está viendo', () async {
     expect((await recommendationFor()).headline(l10n), 'TE RECOMENDAMOS');
     expect(
       (await recommendationFor(
@@ -47,25 +46,26 @@ void main() {
     final reasons = (await recommendationFor()).reasons(l10n);
 
     expect(reasons, [
-      'Con El Niño llueve más; el frejol le devuelve fuerza a tu tierra y el '
-          'maíz aguanta mejor el clima que el arroz.',
-      'Tu tierra lleva 3 campañas de arroz; esta rotación la recupera.',
+      'En un año normal, son los cultivos que menos riego necesitan, y el '
+          'frejol prepara la tierra para el maíz.',
+      'Tu tierra lleva 3 campañas de arroz; esta rotación la ayuda a '
+          'recuperar.',
       'Gastas menos agua de Poechos que con arroz.',
     ]);
   });
 
-  test('la narración incluye la recomendación y sus cifras', () async {
+  test('la narración incluye el agua y el riesgo de clima', () async {
     final narration = (await recommendationFor()).recommendationNarration(l10n);
 
-    expect(narration, contains('te recomendamos Maíz y después frejol'));
-    expect(narration, contains('S/ 2,400'));
-    expect(narration, contains('marzo'));
+    expect(narration, contains('te recomendamos Frejol y después maíz'));
+    expect(narration, contains('13,800 m³'));
+    expect(narration, contains('el riesgo de clima es bajo'));
   });
 
   test('compara lo actual con hasta dos rotaciones', () async {
     final recommendation = await recommendationFor();
 
-    expect(recommendation.comparedRotations.ids, ['r1', 'r2']);
+    expect(recommendation.comparedRotations.ids, ['r3', 'r1']);
     expect(recommendation.comparedOptionsCount, 3);
   });
 }

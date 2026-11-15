@@ -45,11 +45,11 @@ void main() {
     expect(find.textContaining('Cifras de ejemplo.'), findsOneWidget);
   });
 
-  testWidgets('la perspectiva estacional lleva a Qué sembrar', (tester) async {
+  testWidgets('el aviso de planificación lleva a Qué sembrar', (tester) async {
     await tester.pumpSiembraSeguraApp();
     await openClimate(tester);
 
-    await tester.tapText('Hasta marzo: lluvias fuertes (70%)');
+    await tester.tapText(l10n.climatePlanTitle);
 
     expect(find.text(l10n.recommendationTitle), findsOneWidget);
   });

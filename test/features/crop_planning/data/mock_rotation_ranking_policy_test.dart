@@ -7,7 +7,7 @@ import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
 import '../../../helpers/planning_fixtures.dart';
 
-/// Reglas de la referencia (mvp.html) aplicadas a sus datos.
+/// Criterios del servidor replicados sobre los datos de ejemplo.
 void main() {
   const ranker = RotationRanker(MockRotationRankingPolicy());
   late List<RotationOption> options;
@@ -15,8 +15,8 @@ void main() {
   setUpAll(() async => options = (await referencePlanningData()).options);
 
   List<String> rank({
-    ClimateScenario scenario = ClimateScenario.heavyRains,
-    CampaignPriority priority = MockCatalog.maximizeProfit,
+    ClimateScenario scenario = ClimateScenario.normal,
+    CampaignPriority priority = MockCatalog.lowerClimateRisk,
     Set<String> restrictionIds = const {},
   }) => ranker
       .rank(
@@ -27,25 +27,30 @@ void main() {
       )
       .ids;
 
-  test('"ganar más" ordena por ganancia esperada del escenario', () {
-    expect(rank(), ['r1', 'r2', 'r3']);
-    expect(rank(scenario: ClimateScenario.normal), ['r2', 'r1', 'r3']);
-    expect(rank(scenario: ClimateScenario.dry), ['r2', 'r1', 'r3']);
-  });
-
   test('"cuidar mi agua" ordena por menor consumo', () {
     expect(rank(priority: MockCatalog.saveWater), ['r3', 'r1', 'r2']);
+    expect(
+      rank(
+        priority: MockCatalog.saveWater,
+        scenario: ClimateScenario.heavyRains,
+      ),
+      ['r3', 'r1', 'r2'],
+    );
   });
 
-  test('"recuperar mi tierra" prioriza la mejora y luego la menor pérdida', () {
-    expect(rank(priority: MockCatalog.restoreSoil), ['r1', 'r3', 'r2']);
+  test('"recuperar mi tierra" prioriza la mejora del suelo', () {
+    expect(rank(priority: MockCatalog.restoreSoil), ['r1', 'r2', 'r3']);
+  });
+
+  test('"menos riesgo de clima" desempata por agua', () {
+    expect(rank(), ['r3', 'r1', 'r2']);
   });
 
   test('cada restricción de ejemplo descarta el algodón (r2)', () {
     for (final restriction in referenceCatalog.restrictions) {
       expect(rank(restrictionIds: {restriction.id}), [
-        'r1',
         'r3',
+        'r1',
       ], reason: restriction.name);
     }
   });

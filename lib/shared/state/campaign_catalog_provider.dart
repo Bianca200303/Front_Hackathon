@@ -1,14 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
+import 'package:siembra_segura/core/network/http_api_client.dart';
 import 'package:siembra_segura/shared/data/mock_campaign_catalog_repository.dart';
+import 'package:siembra_segura/shared/data/remote_campaign_catalog_repository.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 
-/// Repositorio del catálogo. Usa datos de ejemplo también con
-/// `DATA_SOURCE=remote` hasta que el backend lo exponga (B12).
-final campaignCatalogRepositoryProvider = Provider<CampaignCatalogRepository>(
-  (ref) =>
-      MockCampaignCatalogRepository(latency: ref.watch(mockLatencyProvider)),
-);
+/// Repositorio del catálogo: el backend con `DATA_SOURCE=remote`.
+final campaignCatalogRepositoryProvider = Provider<CampaignCatalogRepository>((
+  ref,
+) {
+  if (ref.watch(appConfigProvider).usesMocks) {
+    return MockCampaignCatalogRepository(
+      latency: ref.watch(mockLatencyProvider),
+    );
+  }
+  return RemoteCampaignCatalogRepository(
+    apiClient: ref.watch(apiClientProvider),
+  );
+});
 
 /// Prioridades y restricciones entre las que elige el agricultor.
 final campaignCatalogProvider = FutureProvider<CampaignCatalog>(

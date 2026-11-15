@@ -8,14 +8,12 @@ import 'package:intl/intl.dart';
 abstract final class AppFormatters {
   static const _locale = 'es';
 
-  /// En Perú las cifras se agrupan con coma (`S/ 2,400`), como en la
+  /// En Perú las cifras se agrupan con coma (`15,600 m³`), como en la
   /// referencia. Los datos de `intl` para `es_PE` usan punto, así que se
-  /// fijan explícitamente los símbolos de agrupación.
+  /// fija explícitamente el patrón de agrupación.
   static final NumberFormat _integer = NumberFormat('#,##0', 'en_US');
   static final NumberFormat _decimal = NumberFormat('#,##0.#', 'en_US');
-
-  /// `2400` → `S/ 2,400`
-  static String soles(num amount) => 'S/ ${_integer.format(amount)}';
+  static final NumberFormat _coordinate = NumberFormat('0.0000', 'en_US');
 
   /// `7800` → `7,800 m³`
   static String cubicMeters(num volume) => '${_integer.format(volume)} m³';
@@ -31,6 +29,10 @@ abstract final class AppFormatters {
 
   /// `3.2` → `3.2`, `3.0` → `3`
   static String decimal(num value) => _decimal.format(value);
+
+  /// `-5.19` → `-5.1900`. Cuatro decimales: ~10 m, suficiente para una
+  /// chacra y para pedir los datos satelitales del punto.
+  static String coordinate(double degrees) => _coordinate.format(degrees);
 
   /// Domingo → `domingo`
   static String weekday(DateTime date) =>

@@ -1,6 +1,4 @@
-import 'package:flutter/painting.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
@@ -13,18 +11,10 @@ import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 extension SoilImpactLabels on SoilImpact {
   /// Texto del impacto en el suelo.
   String label(AppLocalizations l10n) => switch (this) {
+    SoilImpact.degrades => l10n.soilImpactDegrades,
+    SoilImpact.neutral => l10n.soilImpactNeutral,
     SoilImpact.improves => l10n.soilImpactImproves,
     SoilImpact.improvesALot => l10n.soilImpactImprovesALot,
-  };
-}
-
-/// Color de cada escenario en las barras de probabilidad.
-extension ScenarioColors on ClimateScenario {
-  /// Color del escenario.
-  Color get color => switch (this) {
-    ClimateScenario.heavyRains => AppColors.water,
-    ClimateScenario.normal => AppColors.scenarioNormal,
-    ClimateScenario.dry => AppColors.heat,
   };
 }
 
@@ -46,15 +36,13 @@ String periodLabel(DateTime start, DateTime end) =>
 
 /// Textos de la recomendación para las pantallas y "Escuchar".
 extension RecommendationTexts on Recommendation {
-  /// "TE RECOMENDAMOS" o "SI EL AÑO VIENE SECO, TE CONVIENE".
-  String headline(AppLocalizations l10n) {
-    if (isMostLikelyScenario) return l10n.recommendationHeadline;
-    return switch (scenario) {
-      ClimateScenario.heavyRains => l10n.recommendationIfHeavyRains,
-      ClimateScenario.normal => l10n.recommendationIfNormal,
-      ClimateScenario.dry => l10n.recommendationIfDry,
-    };
-  }
+  /// "TE RECOMENDAMOS" en el escenario por defecto (normal) o "SI EL AÑO
+  /// VIENE SECO, TE CONVIENE" en los que explora el agricultor.
+  String headline(AppLocalizations l10n) => switch (scenario) {
+    ClimateScenario.normal => l10n.recommendationHeadline,
+    ClimateScenario.heavyRains => l10n.recommendationIfHeavyRains,
+    ClimateScenario.dry => l10n.recommendationIfDry,
+  };
 
   /// Por qué se recomienda, introducido por el escenario.
   String rationale() =>
@@ -63,7 +51,13 @@ extension RecommendationTexts on Recommendation {
   /// Qué pasa si repite el cultivo en el escenario.
   String repeatWarning() => currentPractice.repeatWarnings[scenario] ?? '';
 
+  /// Agua de la opción recomendada, en m³ ("15,600 m³").
+  String water() => AppFormatters.cubicMeters(bestResult.waterUseM3);
+
   /// Razones de la recomendación (pantalla "¿Cuándo siembro?").
+  ///
+  /// Solo se mencionan las ventajas que los datos respaldan: la tierra, si
+  /// la rotación la mejora, y el agua, si gasta menos que lo de hoy.
   List<String> reasons(AppLocalizations l10n) {
     final currentCrop = currentPractice.mainCrop.name.toLowerCase();
     final count = currentPractice.consecutiveCampaigns;
@@ -75,9 +69,11 @@ extension RecommendationTexts on Recommendation {
           currentCrop,
         ),
         SoilImpact.improves => l10n.scheduleReasonSoilHelps(count, currentCrop),
+        SoilImpact.neutral || SoilImpact.degrades => null,
       },
-      l10n.scheduleReasonWater(data.irrigationSource, currentCrop),
-    ];
+      if (bestResult.waterUseM3 < currentResult.waterUseM3)
+        l10n.scheduleReasonWater(data.irrigationSource, currentCrop),
+    ].nonNulls.toList();
   }
 
   /// "Maíz y después frejol y después algodón y menestra."
@@ -91,20 +87,16 @@ extension RecommendationTexts on Recommendation {
   }
 
   /// Narración de "Qué sembrar".
-  String recommendationNarration(AppLocalizations l10n) {
-    final outcome = bestOutcome;
-    return l10n.recommendationNarration(
-      AppFormatters.monthName(outlook.horizonEnd),
-      outlook.mostLikely.label(l10n).toLowerCase(),
-      AppFormatters.percent(outlook.probabilityOf(outlook.mostLikely)),
-      priority.phrase,
-      best.name(l10n),
-      AppFormatters.soles(outcome.expectedProfit),
-      AppFormatters.soles(outcome.maxLoss),
-      best.soilImpact.label(l10n),
-      repeatWarning(),
-    );
-  }
+  String recommendationNarration(AppLocalizations l10n) =>
+      l10n.recommendationNarration(
+        priority.phrase,
+        scenario.phrase(l10n),
+        best.name(l10n),
+        water(),
+        bestResult.climateRisk.label(l10n).toLowerCase(),
+        best.soilImpact.label(l10n),
+        repeatWarning(),
+      );
 
   /// Narración de "¿Cuándo siembro?".
   String scheduleNarration(AppLocalizations l10n) => l10n.scheduleNarration(

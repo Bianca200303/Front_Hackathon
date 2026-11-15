@@ -5,8 +5,14 @@ Documento vivo. Actualizarlo con cada decisión técnica relevante.
 ## 1. Contexto
 
 App móvil (Android + iOS) para pequeños agricultores del Medio Piura. Ayuda a
-decidir qué sembrar según el pronóstico de El Niño (ENFEN), datos satelitales
-(NASA) y modelos de rotación. Referencia visual y funcional: `../mvp.html`.
+decidir qué sembrar combinando datos de la NASA (lluvia y temperatura de
+POWER, verdor MODIS, humedad SMAP, lluvia medida GPM IMERG), el suelo del
+punto (SoilGrids más la textura que reconoce el agricultor), la ficha de cada
+cultivo (agua que pide, duración, si fija nitrógeno) y las prioridades del
+agricultor. El agricultor **explora**: marca su chacra en el mapa, dice a cuál
+de tres tierras se parece la suya, elige el escenario climático (lluvias
+fuertes / normal / seco; por defecto normal) y puede armar su propia secuencia
+de cultivos. Referencia visual y funcional: `../mvp.html`.
 
 Usuarios con baja alfabetización digital y conectividad rural, lo que exige:
 áreas táctiles grandes, lenguaje simple, lectura en voz alta y funcionamiento
@@ -42,10 +48,10 @@ lib/
 │   ├── theme/             # Tokens: colores, tipografía, espaciado, breakpoints, ThemeData
 │   └── utils/             # Formateadores, reloj inyectable, combinación de AsyncValue
 ├── shared/                # Compartido por varios features
-│   ├── domain/            # Vocabulario, CampaignCatalog, CampaignContext, CampaignPreferencesStore, SeasonalOutlook, FarmLocation
+│   ├── domain/            # Vocabulario, CampaignCatalog, CampaignContext, CampaignPreferencesStore, FarmLocation
 │   ├── data/              # MockCatalog (única fuente de datos de ejemplo del catálogo), mocks, zona piloto,
 │   │                      # almacén de preferencias (SharedPreferences / memoria) y su codec JSON
-│   ├── state/             # campaignContextProvider, campaignCatalogProvider, seasonalOutlookProvider, farmLocationProvider
+│   ├── state/             # campaignContextProvider, campaignCatalogProvider, farmLocationProvider
 │   ├── presentation/      # Textos y colores del vocabulario
 │   └── widgets/           # Design system (ver §5)
 └── features/
@@ -105,15 +111,21 @@ pantalla por pantalla.
 | Repositorio | Con `remote` | Endpoint / pendiente |
 |---|---|---|
 | `ClimateRepository` | **Backend** | `GET /api/v1/app/climate-overview` (Open-Meteo + NASA POWER) |
-| `SeasonalOutlookRepository` | Ejemplo | Probabilidades del ENFEN; el backend aún no las publica |
+| `CampaignCatalogRepository` | **Backend** | `GET /api/v1/app/catalog` (prioridades, restricciones, texturas de suelo, ficha de cada cultivo y cuántos cultivos se pueden encadenar) |
+| `CropPlanningRepository` | **Backend** | `POST /api/v1/app/recommendation` (NASA POWER + SoilGrids + la textura que reportó el agricultor + verdor MODIS + humedad SMAP + lluvia GPM IMERG + parámetros agronómicos) |
+| `RotationRankingPolicy` | **Backend** | El orden viene en la respuesta; la política local devuelve `null` (decisión 13) |
 | `FarmRepository` | Ejemplo | B4 |
-| `CampaignCatalogRepository` | Ejemplo | B12 |
-| `CropPlanningRepository`, `RotationRankingPolicy` | Ejemplo | B3, B6 |
 | `AlertsRepository` | Ejemplo | B7 |
 
-- La parcela se ubica con `farmLocationProvider` (hoy, la zona piloto de
-  `shared/data/pilot_farm_location.dart`, la misma que `DEFAULT_LAT/LON` del
-  backend).
+`submitPlantingFeedback` todavía no tiene endpoint (B6): con `remote` la
+respuesta se guarda en memoria.
+
+- La parcela se ubica con `farmLocationProvider`: las coordenadas que el
+  agricultor marcó en el mapa de Mi parcela o, si no marcó ninguna, el centro
+  de la zona piloto (`shared/data/pilot_farm_location.dart`, la misma que
+  `DEFAULT_LAT/LON` del backend). El recuadro en el que se puede marcar es
+  `pilotValleyBounds`; el nombre del valle sigue siendo el de la zona piloto
+  (la app no sabe resolverlo desde las coordenadas, B4).
 - `SourceNote(…, backedByRemote: true)` marca las notas cuyos datos ya vienen
   del backend: "Cifras de ejemplo." solo se oculta en esas y solo con
   `remote`.
@@ -123,16 +135,31 @@ pantalla por pantalla.
 ### Ejemplo: la recomendación
 
 ```
-campaignContextProvider ─┐ (ids de prioridad y restricciones, escenario)
-campaignCatalogProvider ─┤ (prioridades y restricciones disponibles)
-planningDataProvider ────┼─▶ recommendationProvider ──▶ Qué sembrar / Cuándo siembro / Rotación
-seasonalOutlookProvider ─┘      usa GetRecommendation → RotationRanker (dominio)
-                                                         └─ RotationRankingPolicy «interface»
-                                                              └─ MockRotationRankingPolicy (data)
+cropPlanningQueryProvider ─▶ planningDataProvider ─┐   (hectáreas, fecha de
+  (parcela, hectáreas, fecha de siembra,           │    siembra, campañas
+   campañas seguidas, último cultivo,              │    seguidas, parcela,
+   rotación propia)                                │    rotación propia)
+campaignContextProvider ───────────────────────────┼─▶ recommendationProvider
+  (ids de prioridad y restricciones, escenario)    │      │
+campaignCatalogProvider ───────────────────────────┘      ▼
+  (prioridades y restricciones disponibles)      Qué sembrar / Cuándo siembro / Rotación
+
+recommendationProvider usa GetRecommendation → RotationRanker (dominio)
+                                                 └─ RotationRankingPolicy «interface»
+                                                      ├─ ServerRotationRankingPolicy (remote)
+                                                      └─ MockRotationRankingPolicy (ejemplo)
 ```
 
-`recommendationProvider` es síncrono: al cambiar la prioridad o el escenario
-se recalcula al instante, sin volver a pedir datos ni mostrar "cargando".
+`recommendationProvider` es síncrono: al cambiar la **prioridad**, las
+**restricciones** o el **escenario** se recalcula al instante, sin volver a
+pedir datos ni mostrar "cargando". Por eso la petición **no** envía la
+prioridad ni las restricciones: el backend devuelve el orden de todas las
+prioridades para los tres escenarios y marca las opciones descartadas
+(`excludedBy`), y la app elige. Lo que sí vuelve a pedir datos es cambiar la
+ubicación de la chacra, las hectáreas, la fecha de siembra, las campañas
+seguidas, el último cultivo o la rotación propia: cambian el cálculo del
+servidor. `AsyncValueView` usa `skipLoadingOnReload`, así que al recalcular se
+mantiene en pantalla lo anterior en vez de parpadear "Cargando".
 
 - **DI:** providers de Riverpod. El provider del data source elige la
   implementación según `AppConfig.dataSource`. Los tests sobrescriben providers.
@@ -144,11 +171,30 @@ se recalcula al instante, sin volver a pedir datos ni mostrar "cargando".
   Escenarios climáticos y estado del suelo siguen siendo `enum`: son escalas
   ordenadas con significado visual fijo (color, medidor, titulares) y el
   backend deberá mapearse a ellas (B2).
-- **Estado de campaña:** `campaignContextProvider` guarda **identificadores**
-  (`lastCropId`, `priorityId`, `restrictionIds`) y el escenario explorado.
-  `null` significa "usar el valor sugerido por los datos" (inferencia
-  satelital, primera prioridad del catálogo, escenario más probable). Un id
-  que ya no existe en los datos se trata como `null`.
+- **Estado de campaña:** `campaignContextProvider` guarda **identificadores y
+  valores simples** (`lastCropId`, `priorityId`, `restrictionIds`,
+  `areaHectares`, `plantingDate`, `consecutiveCampaigns`, `soilTexture`) y el
+  escenario explorado. `null` significa "usar el valor sugerido" (inferencia satelital,
+  primera prioridad del catálogo, escenario normal, 1 ha, hoy, 1 campaña);
+  los providers `selectedAreaHectaresProvider`,
+  `selectedPlantingDateProvider` y `selectedConsecutiveCampaignsProvider`
+  resuelven ese valor. Un id que ya no existe en los datos se trata como
+  `null`.
+- **Tierra del agricultor:** `CampaignContext.soilTexture` guarda a cuál de
+  las texturas del catálogo (`sandy` / `loamy` / `clayey`) dijo que se parece
+  su chacra. Se envía como `reported_soil_texture` y **manda sobre SoilGrids**
+  en el cálculo del servidor: cambia cuánta lluvia aprovecha el cultivo, así
+  que al contestar se vuelven a pedir los datos. `null` = "no estoy seguro",
+  y entonces decide el satélite.
+- **Lluvia ya medida:** `CropPlanningData.measuredRainNote` es la frase con la
+  que el backend cuenta cuánto llovió sobre la chacra (GPM IMERG) y a qué
+  escenario se parece el año. Se muestra en "Explorar otros escenarios" y es
+  `null` mientras el backend no la tenga (ver §4, modo híbrido).
+- **Rotación propia:** `CampaignContext.customRotation` guarda los ids que
+  encadenó el agricultor (vacío = solo las rotaciones que propone la fuente).
+  Se envía en la petición y vuelve como una opción más con el id
+  `CropPlanningData.customRotationId` (`custom`), que compite en el ranking y
+  trae su propio calendario, agua, riesgo y plan a dos años.
 - **Persistencia:** cada cambio de preferencia se guarda al instante en el
   dispositivo mediante `CampaignPreferencesStore` (JSON versionado bajo una
   sola clave). El escenario explorado no se guarda. Si el almacenamiento falla,
@@ -196,7 +242,7 @@ Abrir la recomendación desde el mensaje del ENFEN fija el escenario del aviso
   1040 dp). Las pantallas de lectura lineal se limitan a 600 dp para no
   alargar las líneas.
 - Además, cada componente se adapta al texto grande (botón "Escuchar" solo
-  icono, barras de probabilidad apiladas, semana desplazable).
+  icono, valor y botones `−`/`+` apilados, semana desplazable).
 
 ### Design system (`shared/widgets`)
 
@@ -207,6 +253,8 @@ Abrir la recomendación desde el mensaje del ENFEN fija el escenario del aviso
 | `AppCard` (standard / highlighted / compact / flush) | `.tarjeta`, `.destacada`, `.compacta`, `.sin` |
 | `AppButton` (primary / secondary / outline) | `.btn`, `.btn2`, `.btn3` |
 | `SelectableChip`, `RadioOptionTile`, `SegmentedSelector` | `.chip`, `.prio`, `.seg` |
+| `AppButton(icon: …)` | — (abre el selector de fechas en Mi parcela) |
+| `ParcelMapCard` (mapa tocable), `SoilTextureCard`, `CustomRotationCard` | — (marcar la chacra, reconocer la tierra y armar la rotación) |
 | `StatusPill`, `ColoredBlock` | `.estado`, `.tierra`, `.etiqueta`, `.bloque` |
 | `ExplainerTile` | `<details class="significa">` |
 | `NoticeTile` | `.aviso-item` |
@@ -238,9 +286,9 @@ se usa `copyWith(color: …)`.
 | 8 | `flutter_tts` detrás de `SpeechService` | "Escuchar" es central; permite cambiar a audio del servidor (B8) | TTS directo en widgets |
 | 9 | Colores como constantes (`AppColors`) | La referencia no tiene modo oscuro: KISS | ThemeExtension (se migra si llega el modo oscuro) |
 | 10 | Strings en ARB (gen-l10n) | Sin texto fijo en widgets; formatos centralizados | Strings sueltos |
-| 11 | Agrupación de miles con coma (`S/ 2,400`) | Convención peruana y de la referencia; `intl` usa punto para `es_PE` | `NumberFormat.decimalPattern('es_PE')` |
+| 11 | Agrupación de miles con coma (`15,600 m³`) | Convención peruana y de la referencia; `intl` usa punto para `es_PE` | `NumberFormat.decimalPattern('es_PE')` |
 | 12 | Material Symbols para iconos | Incluidos en el SDK, cero dependencias | lucide / flutter_svg |
-| 13 | `RotationRanker` (dominio) solo filtra por restricciones y ordena de forma estable; el **criterio** de cada prioridad es una `RotationRankingPolicy` intercambiable. La de ejemplo (`MockRotationRankingPolicy`, reglas del HTML) vive en `data/` | Las prioridades son datos: el cliente no puede saber qué significa cada una. Si el backend ordena (B3), la política devuelve `null` y se respeta su orden | Reglas fijas por prioridad en el dominio (versión anterior) |
+| 13 | `RotationRanker` (dominio) filtra por restricciones y aplica, en este orden: el orden que manda la fuente (`CropPlanningData.ranking`, por prioridad y escenario), el criterio de la `RotationRankingPolicy` o el orden de llegada. Con `remote`, `ServerRotationRankingPolicy` devuelve `null`; con datos de ejemplo, `MockRotationRankingPolicy` replica los criterios del servidor | Las prioridades son datos: el cliente no puede saber qué significa cada una. Resuelto B3: ordena el servidor | Reglas fijas por prioridad en el dominio (versión anterior) |
 | 14 | Las restricciones que descartan una opción vienen en los datos (`RotationOption.excludedBy`) | En el HTML la regla "algodón fuera" estaba fija en el código; así la decide el backend | Reglas fijas en el cliente |
 | 15 | Reintentos automáticos solo para errores de red/tiempo (3, espera 1-2-4 s) | Conectividad rural; reintentar un 404 o un 401 no sirve | Reintentar todo (por defecto en Riverpod 3) |
 | 16 | Reloj inyectable (`clockProvider`) | Fechas relativas ("Hoy", "Ayer") deterministas en tests | `DateTime.now()` directo |
@@ -255,6 +303,17 @@ se usa `copyWith(color: …)`.
 | 25 | **`http`** detrás de `ApiClient` (`HttpApiClient`) | Solo hace falta GET/POST JSON sin autenticación; `MockClient` permite probar sin red. El cuerpo se decodifica como UTF-8 porque FastAPI no declara charset | `dio` (interceptores que todavía no se usan) |
 | 26 | Modo `remote` híbrido: backend donde hay contrato, ejemplo en el resto | Permite integrar pantalla por pantalla sin romper la app | Todo o nada (versión anterior: `remote` fallaba en todas las pantallas) |
 | 27 | Clima usa un endpoint hecho para la pantalla (`/app/climate-overview`) en lugar de combinar series en el cliente | El cálculo de anomalías y el consejo viven en el servidor (B11); la app hace una sola petición, mejor con mala señal | Pedir `/climate/forecast` y `/climate/history` y calcular en la app |
+| 28 | Sin ganancia esperada, pérdida máxima ni probabilidades por escenario. Se comparan **agua de riego (m³)**, **riesgo de clima** (`low`/`medium`/`high`) y estado de la tierra; el agricultor elige el escenario | No hay datos de precios ni costos que respalden cifras en soles, y las probabilidades del ENFEN no las publica el backend. Prometer plata que no se puede sustentar es el peor error posible frente al agricultor | Mantener cifras de ejemplo en soles (versión anterior) |
+| 29 | Las hectáreas, la fecha de siembra y las campañas seguidas son entradas del agricultor en Mi parcela, guardadas como el resto de las preferencias | Son los datos que el servidor necesita para calcular el riego y el estado del suelo, y nadie más los sabe. `Farm` ya no trae las hectáreas: las decide el agricultor | Inferirlas del registro de la parcela (no existe, B4) |
+| 30 | La fecha de siembra se elige con `showDatePicker` de Flutter | Localizado, accesible y sin dependencias; `GlobalMaterialLocalizations` ya está registrado | Campo de texto con formato (errores de tipeo) |
+| 31 | Las hectáreas y las campañas se ajustan con botones `−`/`+` (pasos de 0.5 ha y de 1 campaña) | Dos áreas táctiles grandes son más fáciles que un teclado numérico para alguien con baja alfabetización digital | `TextField` numérico; `Slider` (impreciso) |
+| 32 | La chacra se marca tocando una **ilustración** del valle acotada por `pilotValleyBounds`, no un mapa con teselas | Cumple el enunciado ("el agricultor toca su chacra") sin dependencias nuevas y funciona sin señal, que es la norma en el campo. Las coordenadas se muestran con 4 decimales y se guardan | `flutter_map` / `google_maps_flutter` (dependencia nueva, pendiente de aprobación); imagen satelital del backend (B4) |
+| 33 | El agricultor puede armar su propia secuencia (`custom_rotation`) y el servidor la devuelve como una opción más | El reto pide explorar, no dictar: cambiar un cultivo y ver cómo cambian agua y tierra. Calcularla en el servidor evita duplicar la lógica agronómica en la app | Editar solo en el cliente con cifras estimadas |
+| 34 | El suelo del punto (SoilGrids) y el verdor (MODIS NDVI) llegan como texto en `soilHealth.findings`, además de los campos estructurados | La pantalla ya pinta esos hallazgos como lista; así el backend puede sumar fuentes sin tocar la app | Modelar cada fuente en el dominio de la app |
+| 35 | La textura de la tierra es una **escala cerrada** (`SoilTexture`, tres valores) y sus textos son **datos** (`soil_textures` del catálogo) | La app dibuja una ilustración por valor, así que necesita conocerlos; los nombres y el "cómo la reconoces" los escribe el equipo agronómico sin publicar otra versión. Lista vacía en el catálogo = la pregunta no se muestra | Catálogo abierto (no habría ilustración); enum con textos en ARB |
+| 36 | Las tres tierras se dibujan con `CustomPainter` (granos, migas, terrones agrietados), no con fotos | Cumple "¿tu tierra se parece a esta?" sin sumar megas de imágenes a una app que se usa sin señal, y escala con el texto grande. Si producto consigue fotos reales del valle, se cambia el `leading` de la opción | Fotos en `assets/` (peso, y una foto equivocada confunde más que una ilustración) |
+| 37 | SMAP llega como un hallazgo más de `soilHealth.findings` y la app no lo modela | Es una observación que el backend decidió **no** meter en el cálculo del riego (los primeros 5 cm no son el agua de las raíces); como texto no obliga a tocar la app (decisión 34) | Campos estructurados de humedad en el dominio |
+| 38 | La lluvia medida (GPM IMERG) se muestra en "Explorar otros escenarios", no en Clima | Es la respuesta medida a "¿a qué escenario se parece este año?", justo donde el agricultor elige el escenario | Una tarjeta aparte en Clima (duplicaría el tema del agua) |
 
 ### Dependencias pospuestas
 
@@ -269,9 +328,10 @@ se usa `copyWith(color: …)`.
 | # | Tema | Pregunta abierta | Dónde impacta |
 |---|---|---|---|
 | B1 | Autenticación | ¿Cómo se identifica el agricultor? ¿Sesión o tokens? | `core/network`, nuevo feature `auth` |
-| B2 | Contratos | **Parcial:** Clima ya tiene contrato (§4). Falta el resto de endpoints y usar el cuerpo de error `{"error": {"code", "message"}}` del backend | `data/` de cada feature, `ApiClient` |
-| B3 | Recomendación | ¿Ranking en el servidor o en el cliente? Si es en el cliente, ¿quién define el criterio de cada prioridad? | `RotationRankingPolicy` |
-| B4 | Parcela | Geometría, imagen satelital, inferencia del último cultivo | `farm` |
+| B2 | Contratos | **Parcial:** Clima, catálogo y recomendación ya tienen contrato (§4). Faltan parcela y avisos, y usar el cuerpo de error `{"error": {"code", "message"}}` del backend | `data/` de cada feature, `ApiClient` |
+| B15 | Observaciones del satélite | La humedad (SMAP) y la lluvia (GPM IMERG) del punto necesitan credenciales de Earthdata en el backend y tardan minutos: la primera consulta de una parcela nueva llega sin ellas y la siguiente ya las trae. ¿Se avisa en la app de que todavía se están midiendo? | `crop_planning`, `SourceNote` |
+| B3 | ~~Recomendación~~ | **Resuelto:** ordena el servidor (`POST /app/recommendation` devuelve `ranking` por prioridad y escenario); la política local devuelve `null` | `RotationRankingPolicy` |
+| B4 | Parcela | Geometría e imagen satelital reales (hoy: ilustración del valle con marcador), e inferencia del último cultivo. Los cultivos de `GET /app/catalog` todavía no se usan para `lastCropOptions`, que sale de `FarmRepository`; los de la recomendación sí alimentan "Arma tu rotación" | `farm` |
 | B5 | Preferencias | Hoy en el dispositivo. ¿También en el perfil del servidor (cambio de teléfono)? | `CampaignPreferencesStore` |
 | B6 | Feedback | Endpoint "qué sembré" y nivel de detalle | `crop_planning` |
 | B7 | Avisos | ¿Polling, push o SMS? ¿Estado de leído (badge)? | `alerts`, `AppShell` |
@@ -279,7 +339,7 @@ se usa `copyWith(color: …)`.
 | B9 | Chat | ¿Existe asistente conversacional? (hoy: deshabilitado, "Próximamente") | `alerts` |
 | B10 | Offline | ¿Caché y antigüedad de datos aceptable? | `data/` de cada feature |
 | B11 | Contenido | ¿Textos explicativos (fichas, razones) del servidor? | entidades de dominio |
-| B12 | Catálogo | Endpoint de prioridades y restricciones (¿por valle? ¿por campaña?); cuál es la prioridad sugerida (hoy: la primera) | `CampaignCatalogRepository` |
+| B12 | Catálogo | **Resuelto en parte:** `GET /app/catalog` entrega prioridades, restricciones y cultivos; la prioridad sugerida es la primera. Pendiente: ¿varía por valle o por campaña? | `CampaignCatalogRepository` |
 | B13 | Color de cultivo | ¿Producto quiere un color fijo por cultivo? Si es así, el backend lo envía | `CropTone` |
 | B14 | Varias parcelas | Ver propuesta en §8b (pendiente de aprobación) | `farm`, estado de campaña, todos los repositorios |
 
@@ -287,13 +347,13 @@ se usa `copyWith(color: …)`.
 
 | Hueco | Cómo quedó en la app |
 |---|---|
-| El "último cultivo" no afecta ningún resultado en el HTML | Se guarda en `CampaignContext.lastCropId` y se usa en la narración, pero `getPlanningData()` no lo recibe: lo que se compara ("Arroz y arroz") viene de los datos. Pendiente B3 |
+| El "último cultivo" no afecta ningún resultado en el HTML | Se envía en `CropPlanningQuery` y el servidor calcula con él la práctica actual y el estado de la tierra |
 | "Otro" cultivo y "Sembré otra cosa" no dicen cuál | Se registra solo `followedRecommendation: false` (B6) |
 | Input y micrófono del chat sin comportamiento | Deshabilitados, con aviso "Podrás hacer preguntas próximamente" (B9) |
 | Badge de avisos siempre visible | Se muestra si algún aviso tiene `isRead: false`; cómo se marca como leído depende de B7 |
 | No hay login ni alta de parcela | Sin implementar; la parcela viene del repositorio (B1, B4) |
 | Sin estados de carga, error ni vacío | Implementados en todas las pantallas con `AsyncValueView` |
-| "Si al final no llueve tanto" se muestra en todos los escenarios | Se mantiene igual que la referencia; conviene revisarlo con producto |
+| "Si al final no llueve tanto" (cifra en soles) | Eliminado con el resto de las cifras económicas (decisión 28) |
 | No había forma de volver a la configuración | Botón de ajustes en cada pestaña, "Listo" para volver, "Volver a los valores sugeridos" con "Deshacer" (ver §5) |
 
 ## 8b. Propuesta: varias parcelas por agricultor (pendiente de aprobación, sin implementar)
@@ -326,10 +386,12 @@ Hoy la app asume una sola parcela. Propuesta para soportar de 1 a N:
 - `flutter analyze`: lints de `flutter_lints` + modo estricto (`strict-casts`,
   `strict-inference`, `strict-raw-types`) y reglas adicionales, incluida
   `public_member_api_docs` (todo miembro público documentado).
-- `test/` replica la estructura de `lib/` (99 tests):
+- `test/` replica la estructura de `lib/`:
   - **Unit:** config, errores, formateadores, reintentos, combinación de
-    estados, ranking genérico, política de ejemplo, caso de uso, textos
-    derivados, contexto de campaña (persistencia, restablecer, deshacer).
+    estados, ranking genérico (incluido el orden que manda el servidor),
+    política de ejemplo, caso de uso, textos derivados, contexto de campaña
+    (persistencia, restablecer, deshacer), codec de preferencias y los
+    repositorios remotos (clima, catálogo y recomendación).
   - **Widget:** cada pantalla con datos, error y vacío; navegación; envío de
     respuesta; mensaje del ENFEN; Mi parcela abierta desde una pestaña;
     arranque con configuración guardada.
@@ -351,3 +413,6 @@ Hoy la app asume una sola parcela. Propuesta para soportar de 1 a N:
 | 2026-11-10 | Fase 4: design system, los 4 features con datos mock, recomendación con ranking en dominio, estados de carga/error/vacío, accesibilidad y texto grande |
 | 2026-11-10 | Revisión de la Fase 4: catálogos como datos, criterio de orden como política intercambiable, preferencias guardadas en el dispositivo, volver a Mi parcela y restablecer, diseño adaptable (riel y dos columnas), tipografía por tokens, documentación obligatoria de código |
 | 2026-11-13 | Integración con el backend: `HttpApiClient`, modo `remote` híbrido y Clima con datos reales (Open-Meteo + NASA POWER) |
+| 2026-11-14 | Motor de recomendación en el servidor (B3): agua de riego y riesgo de clima en lugar de ganancias y probabilidades, escenario elegido por el agricultor, hectáreas/fecha de siembra/campañas seguidas como entradas, y `CropPlanningRepository` + `CampaignCatalogRepository` contra el backend |
+| 2026-11-14 | Los cuatro insumos del reto: chacra marcada en el mapa, suelo del punto (SoilGrids) y verdor (MODIS NDVI) en el estado de la tierra, y "Arma tu rotación" para explorar secuencias propias |
+| 2026-11-15 | "¿A cuál de estas se parece tu tierra?" con tres ilustraciones (manda sobre SoilGrids), ficha de cada cultivo al armar la rotación (agua, duración, si abona la tierra) y la lluvia ya medida por GPM IMERG al explorar escenarios |
