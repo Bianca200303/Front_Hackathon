@@ -10,9 +10,16 @@ class CampaignCatalog extends Equatable {
   CampaignCatalog({
     required List<CampaignPriority> priorities,
     required List<CampaignRestriction> restrictions,
+    List<SoilTextureAnswer> soilTextures = const [],
+    this.soilTextureQuestion = '',
+    this.maxRotationCrops = defaultMaxRotationCrops,
   }) : assert(priorities.isNotEmpty, 'El catálogo necesita prioridades.'),
        priorities = List.unmodifiable(priorities),
-       restrictions = List.unmodifiable(restrictions);
+       restrictions = List.unmodifiable(restrictions),
+       soilTextures = List.unmodifiable(soilTextures);
+
+  /// Cultivos que se pueden encadenar si la fuente no dice otra cosa.
+  static const defaultMaxRotationCrops = 4;
 
   /// Prioridades en el orden en que se muestran. La primera es la sugerida
   /// cuando el agricultor no eligió ninguna.
@@ -20,6 +27,21 @@ class CampaignCatalog extends Equatable {
 
   /// Restricciones opcionales, en el orden en que se muestran.
   final List<CampaignRestriction> restrictions;
+
+  /// Texturas entre las que el agricultor reconoce su tierra, en el orden
+  /// en que se muestran. Vacía = la fuente no ofrece la pregunta.
+  final List<SoilTextureAnswer> soilTextures;
+
+  /// Pregunta con la que se ofrecen las [soilTextures] (p. ej., "¿A cuál de
+  /// estas se parece tu tierra?").
+  final String soilTextureQuestion;
+
+  /// Cuántos cultivos puede encadenar el agricultor en su propia rotación.
+  final int maxRotationCrops;
+
+  /// `true` si se puede preguntar por la textura de la tierra.
+  bool get asksForSoilTexture =>
+      soilTextures.isNotEmpty && soilTextureQuestion.isNotEmpty;
 
   /// Prioridad que se usa si el agricultor no eligió ninguna.
   CampaignPriority get defaultPriority => priorities.first;
@@ -31,7 +53,13 @@ class CampaignCatalog extends Equatable {
       defaultPriority;
 
   @override
-  List<Object?> get props => [priorities, restrictions];
+  List<Object?> get props => [
+    priorities,
+    restrictions,
+    soilTextures,
+    soilTextureQuestion,
+    maxRotationCrops,
+  ];
 }
 
 /// Fuente del catálogo de campaña.

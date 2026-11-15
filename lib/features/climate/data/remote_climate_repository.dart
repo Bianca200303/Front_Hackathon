@@ -92,12 +92,11 @@ ClimateOverview _overviewFromJson(JsonObject json, String valleyName) {
   );
 }
 
-AnomalyComparison _comparisonFromJson(JsonObject json) =>
-    switch (json.string('type')) {
-      'times_normal' => TimesNormal(json.number('factor')),
-      'degrees_from_normal' => DegreesFromNormal(json.number('delta')),
-      'moisture_category' => MoistureCategory(
-        json.oneOf('level', _moistureLevels),
-      ),
-      final other => throw FormatException('Comparación desconocida.', other),
-    };
+AnomalyComparison _comparisonFromJson(JsonObject json) => switch (json.string(
+  'type',
+)) {
+  'times_normal' => TimesNormal(json.number('factor')),
+  'degrees_from_normal' => DegreesFromNormal(json.number('delta')),
+  'moisture_category' => MoistureCategory(json.oneOf('level', _moistureLevels)),
+  final other => throw FormatException('Comparación desconocida.', other),
+};

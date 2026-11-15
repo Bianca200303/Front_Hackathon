@@ -124,8 +124,7 @@ class OptionComparisonCard extends StatelessWidget {
   const OptionComparisonCard({
     required this.kind,
     required this.name,
-    required this.expectedProfit,
-    required this.waterUseM3,
+    required this.result,
     required this.soilInTwoYears,
     required this.factsheet,
     super.key,
@@ -140,8 +139,7 @@ class OptionComparisonCard extends StatelessWidget {
     return OptionComparisonCard(
       kind: OptionKind.current,
       name: current.name(l10n),
-      expectedProfit: current.expectedProfit[recommendation.scenario] ?? 0,
-      waterUseM3: current.waterUseM3,
+      result: recommendation.currentResult,
       soilInTwoYears: current.soilInTwoYears,
       factsheet: current.factsheet,
     );
@@ -157,8 +155,7 @@ class OptionComparisonCard extends StatelessWidget {
     return OptionComparisonCard(
       kind: recommended ? OptionKind.recommended : OptionKind.other,
       name: option.name(l10n),
-      expectedProfit: option.outcomeFor(recommendation.scenario).expectedProfit,
-      waterUseM3: option.waterUseM3,
+      result: option.resultFor(recommendation.scenario),
       soilInTwoYears: option.soilInTwoYears,
       factsheet: option.factsheet,
     );
@@ -170,11 +167,8 @@ class OptionComparisonCard extends StatelessWidget {
   /// Nombre de la rotación.
   final String name;
 
-  /// Ganancia esperada, en soles por hectárea.
-  final int expectedProfit;
-
-  /// Agua por hectárea, en m³.
-  final int waterUseM3;
+  /// Agua y riesgo de clima en el escenario que se está viendo.
+  final RotationScenarioResult result;
 
   /// Estado de la tierra en dos años.
   final SoilCondition soilInTwoYears;
@@ -215,12 +209,17 @@ class OptionComparisonCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Metric(
-                label: l10n.metricExpectedProfit,
-                child: _MetricValue(AppFormatters.soles(expectedProfit)),
+                label: l10n.metricWater,
+                child: _MetricValue(
+                  AppFormatters.cubicMeters(result.waterUseM3),
+                ),
               ),
               _Metric(
-                label: l10n.metricWater,
-                child: _MetricValue(AppFormatters.cubicMeters(waterUseM3)),
+                label: l10n.metricClimateRisk,
+                child: StatusPill(
+                  label: result.climateRisk.label(l10n),
+                  tone: result.climateRisk.tone,
+                ),
               ),
               _Metric(
                 label: l10n.metricSoilInTwoYears,

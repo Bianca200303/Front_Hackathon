@@ -15,7 +15,6 @@ class MockFarmRepository implements FarmRepository {
     return const Farm(
       farmerName: 'Doña Rosa',
       valleyName: 'Medio Piura',
-      areaHectares: 3.2,
       irrigationSource: 'Poechos',
       inferredLastCrop: MockCatalog.rice,
       lastCropOptions: [

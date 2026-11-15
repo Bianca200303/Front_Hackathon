@@ -10,9 +10,6 @@ import 'package:siembra_segura/features/climate/presentation/climate_labels.dart
 import 'package:siembra_segura/features/climate/presentation/providers/climate_providers.dart';
 import 'package:siembra_segura/features/climate/presentation/widgets/anomaly_comparison_card.dart';
 import 'package:siembra_segura/features/climate/presentation/widgets/weather_cards.dart';
-import 'package:siembra_segura/shared/domain/seasonal_outlook.dart';
-import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
-import 'package:siembra_segura/shared/state/seasonal_outlook_provider.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/notice_tile.dart';
@@ -55,7 +52,7 @@ class ClimateScreen extends ConsumerWidget {
               week: overview.week,
               heavyRainDay: overview.firstHeavyRainDay,
             ),
-            const _SeasonalOutlookTile(),
+            const _PlanningNotice(),
             if (overview.anomalies.isNotEmpty)
               AnomalyComparisonCard(anomalies: overview.anomalies),
           ],
@@ -79,37 +76,18 @@ class ClimateScreen extends ConsumerWidget {
   }
 }
 
-/// Acceso a la recomendación desde la perspectiva estacional. Es
-/// secundario: si no carga, simplemente no se muestra.
-class _SeasonalOutlookTile extends ConsumerWidget {
-  const _SeasonalOutlookTile();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final outlook = ref.watch(seasonalOutlookProvider).value;
-    if (outlook == null) return const SizedBox.shrink();
-    return _OutlookNotice(outlook: outlook);
-  }
-}
-
-class _OutlookNotice extends StatelessWidget {
-  const _OutlookNotice({required this.outlook});
-
-  final SeasonalOutlook outlook;
+/// Acceso a la recomendación desde Clima.
+class _PlanningNotice extends StatelessWidget {
+  const _PlanningNotice();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final scenario = outlook.mostLikely;
     return NoticeTile(
       icon: Icons.calendar_month_outlined,
       iconTone: AppColors.waterTone,
-      title: l10n.climateOutlookTitle(
-        AppFormatters.monthName(outlook.horizonEnd),
-        scenario.label(l10n).toLowerCase(),
-        AppFormatters.percent(outlook.probabilityOf(scenario)),
-      ),
-      body: l10n.climateOutlookAction,
+      title: l10n.climatePlanTitle,
+      body: l10n.climatePlanAction,
       onTap: () => context.go(AppRoutes.recommendation),
     );
   }

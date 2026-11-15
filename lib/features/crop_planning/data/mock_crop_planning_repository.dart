@@ -3,7 +3,7 @@ import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
 /// Datos de ejemplo de la referencia (mvp.html). En la app real vienen del
-/// modelo de rotaciones, los históricos NASA y el pronóstico.
+/// motor de recomendación del backend (NASA POWER + parámetros agronómicos).
 class MockCropPlanningRepository implements CropPlanningRepository {
   /// Crea el repositorio; [latency] simula la espera de la red.
   MockCropPlanningRepository({this.latency = Duration.zero});
@@ -15,9 +15,22 @@ class MockCropPlanningRepository implements CropPlanningRepository {
   final List<PlantingFeedback> submittedFeedback = [];
 
   @override
-  Future<CropPlanningData> getPlanningData() async {
+  Future<CropPlanningData> getPlanningData(CropPlanningQuery query) async {
     await Future<void>.delayed(latency);
-    return _data;
+    final custom = _customOption(query);
+    if (custom == null) return _data;
+    return CropPlanningData(
+      options: [..._data.options, custom],
+      currentPractice: _data.currentPractice,
+      soilHealth: _data.soilHealth,
+      scenarioNotes: _data.scenarioNotes,
+      riskMonths: _data.riskMonths,
+      irrigationSource: _data.irrigationSource,
+      areaHectares: _data.areaHectares,
+      availableCrops: _data.availableCrops,
+      measuredRainNote: _data.measuredRainNote,
+      ranking: _data.ranking,
+    );
   }
 
   @override
@@ -29,15 +42,179 @@ class MockCropPlanningRepository implements CropPlanningRepository {
 
 DateTime _month(int year, int month) => DateTime(year, month);
 
+DateTime _addMonths(DateTime start, int months) =>
+    DateTime(start.year, start.month + months);
+
+/// Lo mínimo que hace falta para armar una rotación a mano con los datos
+/// de ejemplo. El cálculo real lo hace el backend.
+class _CropFact {
+  const _CropFact(this.crop, this.waterPerMonth, this.soilScore);
+
+  final Crop crop;
+  final int waterPerMonth;
+  final int soilScore;
+
+  /// Duración del ciclo: la del propio cultivo del catálogo de ejemplo.
+  int get months => crop.cycleMonths ?? 1;
+}
+
+const _cropFacts = <String, _CropFact>{
+  'rice': _CropFact(MockCatalog.rice, 2900, -1),
+  'maize': _CropFact(MockCatalog.maize, 2000, 0),
+  'bean': _CropFact(MockCatalog.bean, 1900, 2),
+  'cotton': _CropFact(MockCatalog.cotton, 2100, 1),
+  'pulse': _CropFact(MockCatalog.pulse, 2800, 2),
+};
+
+const _soilScale = [
+  SoilCondition.veryTired,
+  SoilCondition.tired,
+  SoilCondition.regular,
+  SoilCondition.good,
+];
+const _soilNowScore = 1;
+const _horizonMonths = 24;
+
+SoilImpact _impactOf(int score) => switch (score) {
+  < 0 => SoilImpact.degrades,
+  0 => SoilImpact.neutral,
+  1 => SoilImpact.improves,
+  _ => SoilImpact.improvesALot,
+};
+
+SoilCondition _conditionOf(int score) =>
+    _soilScale[score.clamp(0, _soilScale.length - 1)];
+
+/// La rotación que armó el agricultor, con el mismo detalle que las demás.
+RotationOption? _customOption(CropPlanningQuery query) {
+  final facts = [
+    for (final id in query.customRotation)
+      if (_cropFacts[id] != null) _cropFacts[id]!,
+  ];
+  if (facts.isEmpty) return null;
+
+  final start = _month(query.plantingDate.year, query.plantingDate.month);
+  final periods = <CropPeriod>[];
+  var cursor = 0;
+  for (final fact in facts) {
+    periods.add(
+      CropPeriod(
+        crop: fact.crop,
+        start: _addMonths(start, cursor),
+        monthCount: fact.months,
+      ),
+    );
+    cursor += fact.months;
+  }
+
+  final plan = <CampaignStep>[];
+  var score = _soilNowScore;
+  var offset = 0;
+  var index = 0;
+  while (offset < _horizonMonths) {
+    final fact = facts[index % facts.length];
+    score = (score + fact.soilScore).clamp(0, _soilScale.length - 1);
+    plan.add(
+      CampaignStep(
+        start: _addMonths(start, offset),
+        end: _addMonths(start, offset + fact.months - 1),
+        crop: fact.crop,
+        soilAfter: _conditionOf(score),
+      ),
+    );
+    offset += fact.months;
+    index++;
+  }
+
+  final water = facts.fold(0, (sum, f) => sum + f.months * f.waterPerMonth);
+  final impactScore = facts.fold(0, (sum, f) => sum + f.soilScore);
+  final cropIds = facts.map((fact) => fact.crop.id).toSet();
+  return RotationOption(
+    id: CropPlanningData.customRotationId,
+    crops: [for (final fact in facts) fact.crop],
+    scenarios: _scenarios(waterUseM3: water, riskMonths: _riskMonths),
+    soilImpact: _impactOf(impactScore),
+    soilInTwoYears: plan.last.soilAfter,
+    factsheet: const OptionFactsheet(
+      rationale: 'Es la secuencia que armaste tú.',
+      evidence:
+          'Se calcula con los mismos datos que las demás opciones: lluvia y '
+          'temperatura de la NASA, suelo del valle y el agua que pide cada '
+          'cultivo.',
+      benefits: 'Puedes probar combinaciones y ver cómo cambian agua y tierra.',
+      unknowns:
+          'No sabemos si tienes comprador para todos estos cultivos ni si tu '
+          'turno de riego alcanza.',
+      risks: 'Conversa esta secuencia con tu técnico antes de sembrar.',
+    ),
+    schedule: PlantingSchedule(
+      decisionDeadline: query.plantingDate,
+      timelineStart: start,
+      timelineMonths: cursor,
+      periods: periods,
+      instructions:
+          'Siembra ${facts.first.crop.name.toLowerCase()} en la fecha que '
+          'elegiste y sigue con los demás cultivos al cosechar.',
+    ),
+    longTermPlan: plan,
+    excludedBy: {
+      if (cropIds.contains(MockCatalog.cotton.id)) MockCatalog.noCottonBuyer.id,
+      if (water > 18000) MockCatalog.lowWater.id,
+    },
+  );
+}
+
+final _riskMonths = [_month(2027, 2), _month(2027, 3)];
+
+ClimateRisk _riskOf(List<DateTime> riskMonths) => switch (riskMonths.length) {
+  0 => ClimateRisk.low,
+  1 => ClimateRisk.medium,
+  _ => ClimateRisk.high,
+};
+
+/// Agua y riesgo de una opción: con lluvias fuertes riega menos pero
+/// arriesga más; en un año seco, al revés.
+Map<ClimateScenario, RotationScenarioResult> _scenarios({
+  required int waterUseM3,
+  required List<DateTime> riskMonths,
+}) => {
+  ClimateScenario.heavyRains: RotationScenarioResult(
+    waterUseM3: (waterUseM3 * 0.7).round(),
+    climateRisk: _riskOf(riskMonths),
+    riskMonths: riskMonths,
+  ),
+  ClimateScenario.normal: RotationScenarioResult(
+    waterUseM3: waterUseM3,
+    climateRisk: ClimateRisk.low,
+    riskMonths: const [],
+  ),
+  ClimateScenario.dry: RotationScenarioResult(
+    waterUseM3: (waterUseM3 * 1.2).round(),
+    climateRisk: ClimateRisk.low,
+    riskMonths: const [],
+  ),
+};
+
 final _data = CropPlanningData(
   irrigationSource: 'Poechos',
+  areaHectares: 2,
+  measuredRainNote:
+      'En tu chacra llovieron 4.2 mm en los últimos 30 días medidos por el '
+      'satélite GPM: la lluvia va como en un año seco.',
+  availableCrops: const [
+    MockCatalog.rice,
+    MockCatalog.maize,
+    MockCatalog.cotton,
+    MockCatalog.bean,
+    MockCatalog.pulse,
+  ],
   scenarioNotes: const {
-    ClimateScenario.heavyRains: 'Con El Niño llueve más; ',
+    ClimateScenario.heavyRains: 'Con lluvias fuertes, ',
     ClimateScenario.normal: 'En un año normal, ',
     ClimateScenario.dry: 'En un año seco, ',
   },
   riskMonths: {
-    ClimateScenario.heavyRains: [_month(2027, 2), _month(2027, 3)],
+    ClimateScenario.heavyRains: _riskMonths,
     ClimateScenario.normal: const [],
     ClimateScenario.dry: const [],
   },
@@ -49,26 +226,22 @@ final _data = CropPlanningData(
       'Tiene poca materia orgánica.',
     ],
   ),
-  currentPractice: const CurrentPractice(
-    crops: [MockCatalog.rice, MockCatalog.rice],
-    waterUseM3: 14500,
+  currentPractice: CurrentPractice(
+    crops: const [MockCatalog.rice, MockCatalog.rice],
+    scenarios: _scenarios(waterUseM3: 29000, riskMonths: _riskMonths),
     soilInTwoYears: SoilCondition.veryTired,
     consecutiveCampaigns: 3,
-    expectedProfit: {
-      ClimateScenario.heavyRains: 3000,
-      ClimateScenario.normal: 3400,
-      ClimateScenario.dry: 1200,
-    },
-    repeatWarnings: {
+    repeatWarnings: const {
       ClimateScenario.heavyRains:
-          'Podrías ganar más, pero con El Niño es muy arriesgado: podrías '
-          'perder hasta S/ 5,000.',
+          'Con lluvias fuertes el arroz puede inundarse y pierdes la '
+          'campaña; además tu tierra se cansa más.',
       ClimateScenario.normal:
-          'Ganas parecido, pero gastas mucha más agua y cansas tu tierra.',
+          'Gastas mucha más agua que con cualquier rotación y cansas tu '
+          'tierra.',
       ClimateScenario.dry:
-          'Sin agua suficiente podrías perder la campaña: hasta S/ 6,200.',
+          'En un año seco puede faltarte agua para terminar la campaña.',
     },
-    factsheet: OptionFactsheet(
+    factsheet: const OptionFactsheet(
       rationale:
           'Es lo que siembras hoy. Lo comparamos para que veas la diferencia.',
       evidence:
@@ -77,32 +250,17 @@ final _data = CropPlanningData(
       benefits: 'Ya conoces el cultivo y tienes comprador.',
       unknowns: 'Depende de cuánta agua tenga Poechos este año.',
       risks:
-          'Con lluvias fuertes puede inundarse y perder la campaña (hasta '
-          'S/ 5,000). Tu tierra se sigue cansando.',
+          'Con lluvias fuertes puede inundarse y perder la campaña. Tu '
+          'tierra se sigue cansando.',
     ),
   ),
   options: [
     RotationOption(
       id: 'r1',
       crops: const [MockCatalog.maize, MockCatalog.bean],
-      waterUseM3: 7800,
-      waterSummary: 'usa la mitad que el arroz',
+      scenarios: _scenarios(waterUseM3: 15600, riskMonths: _riskMonths),
       soilImpact: SoilImpact.improvesALot,
       soilInTwoYears: SoilCondition.good,
-      outcomes: const {
-        ClimateScenario.heavyRains: ScenarioOutcome(
-          expectedProfit: 2400,
-          maxLoss: 600,
-        ),
-        ClimateScenario.normal: ScenarioOutcome(
-          expectedProfit: 2500,
-          maxLoss: 400,
-        ),
-        ClimateScenario.dry: ScenarioOutcome(
-          expectedProfit: 2000,
-          maxLoss: 900,
-        ),
-      },
       factsheet: const OptionFactsheet(
         rationale:
             'El frejol le devuelve fuerza a tu tierra y el maíz aguanta mejor '
@@ -171,34 +329,20 @@ final _data = CropPlanningData(
     RotationOption(
       id: 'r2',
       crops: const [MockCatalog.cotton, MockCatalog.pulse],
-      waterUseM3: 9100,
-      waterSummary: 'usa menos que el arroz',
+      scenarios: _scenarios(waterUseM3: 18200, riskMonths: _riskMonths),
       soilImpact: SoilImpact.improves,
       soilInTwoYears: SoilCondition.regular,
       excludedBy: {MockCatalog.noCottonBuyer.id, MockCatalog.lowWater.id},
-      outcomes: const {
-        ClimateScenario.heavyRains: ScenarioOutcome(
-          expectedProfit: 2300,
-          maxLoss: 1900,
-        ),
-        ClimateScenario.normal: ScenarioOutcome(
-          expectedProfit: 3100,
-          maxLoss: 700,
-        ),
-        ClimateScenario.dry: ScenarioOutcome(
-          expectedProfit: 2300,
-          maxLoss: 2000,
-        ),
-      },
       factsheet: const OptionFactsheet(
         rationale:
-            'El algodón da buena plata y la menestra después cuida tu tierra.',
+            'El algodón tolera bien el calor y la menestra después cuida tu '
+            'tierra.',
         evidence:
             'El algodón tolera bien el calor (FAO ECOCROP) y tiene historia en '
             'el valle. La menestra fija nitrógeno.',
         benefits:
-            'Buen precio. Su raíz profunda mejora la estructura de la tierra y '
-            'la menestra la abona.',
+            'Su raíz profunda mejora la estructura de la tierra y la menestra '
+            'la abona.',
         unknowns:
             'No sabemos si tienes comprador o desmotadora cerca. Los precios '
             'del algodón varían mucho.',
@@ -254,24 +398,9 @@ final _data = CropPlanningData(
     RotationOption(
       id: 'r3',
       crops: const [MockCatalog.bean, MockCatalog.maize],
-      waterUseM3: 6900,
-      waterSummary: 'usa la menor cantidad',
+      scenarios: _scenarios(waterUseM3: 13800, riskMonths: _riskMonths),
       soilImpact: SoilImpact.improves,
       soilInTwoYears: SoilCondition.good,
-      outcomes: const {
-        ClimateScenario.heavyRains: ScenarioOutcome(
-          expectedProfit: 1800,
-          maxLoss: 400,
-        ),
-        ClimateScenario.normal: ScenarioOutcome(
-          expectedProfit: 2000,
-          maxLoss: 300,
-        ),
-        ClimateScenario.dry: ScenarioOutcome(
-          expectedProfit: 1900,
-          maxLoss: 500,
-        ),
-      },
       factsheet: const OptionFactsheet(
         rationale:
             'Son los cultivos que menos riego necesitan, y el frejol prepara la '

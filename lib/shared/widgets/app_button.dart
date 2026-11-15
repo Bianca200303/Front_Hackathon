@@ -23,6 +23,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.variant = AppButtonVariant.primary,
     this.compact = false,
+    this.icon,
     super.key,
   });
 
@@ -38,6 +39,10 @@ class AppButton extends StatelessWidget {
   /// Altura de 48 dp y texto de 15 (`.btn.chico`).
   final bool compact;
 
+  /// Icono opcional antes del texto, cuando ayuda a entender la acción
+  /// (p. ej., un calendario para abrir el selector de fechas).
+  final IconData? icon;
+
   static const _compactSize = Size(
     double.infinity,
     AppSizes.compactButtonHeight,
@@ -46,7 +51,17 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = Text(label, textAlign: TextAlign.center);
+    final text = Text(label, textAlign: TextAlign.center);
+    final child = icon == null
+        ? text
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: AppSpacing.sm,
+            children: [
+              ExcludeSemantics(child: Icon(icon)),
+              Flexible(child: text),
+            ],
+          );
     return switch (variant) {
       AppButtonVariant.primary => FilledButton(
         onPressed: onPressed,

@@ -38,6 +38,46 @@ void main() {
     expect(state().selectedScenario, ClimateScenario.dry);
   });
 
+  test('guarda lo que ingresa el agricultor', () {
+    notifier()
+      ..selectArea(2.5)
+      ..selectPlantingDate(DateTime(2026, 12, 15))
+      ..selectConsecutiveCampaigns(3);
+
+    expect(state().areaHectares, 2.5);
+    expect(state().plantingDate, DateTime(2026, 12, 15));
+    expect(state().consecutiveCampaigns, 3);
+    expect(state().hasNoPreferences, isFalse);
+  });
+
+  test('guarda la chacra marcada en el mapa', () {
+    notifier().selectFarmLocation(latitude: -5.21, longitude: -80.59);
+
+    expect(state().farmLatitude, -5.21);
+    expect(state().farmLongitude, -80.59);
+    expect(store.load()?.farmLatitude, -5.21);
+  });
+
+  test('guarda y quita la rotación que armó el agricultor', () {
+    notifier().selectCustomRotation(['rice', 'bean']);
+    expect(state().customRotation, ['rice', 'bean']);
+    expect(store.load()?.customRotation, ['rice', 'bean']);
+
+    notifier().selectCustomRotation([]);
+    expect(state().customRotation, isEmpty);
+    expect(state().hasNoPreferences, isTrue);
+  });
+
+  test('guarda y quita la tierra que reconoció el agricultor', () {
+    notifier().selectSoilTexture(SoilTexture.clayey);
+    expect(state().soilTexture, SoilTexture.clayey);
+    expect(store.load()?.soilTexture, SoilTexture.clayey);
+
+    notifier().selectSoilTexture(null);
+    expect(state().soilTexture, isNull);
+    expect(state().hasNoPreferences, isTrue);
+  });
+
   test('alterna restricciones', () {
     notifier().toggleRestriction('low-water');
     expect(state().restrictionIds, {'low-water'});
@@ -60,6 +100,17 @@ void main() {
           restrictionIds: {'low-water'},
         ),
       );
+    });
+
+    test('guarda hectáreas, fecha de siembra y campañas', () {
+      notifier()
+        ..selectArea(2.5)
+        ..selectPlantingDate(DateTime(2026, 12, 15))
+        ..selectConsecutiveCampaigns(3);
+
+      expect(store.load()?.areaHectares, 2.5);
+      expect(store.load()?.plantingDate, DateTime(2026, 12, 15));
+      expect(store.load()?.consecutiveCampaigns, 3);
     });
 
     test('una nueva sesión arranca con lo guardado', () {

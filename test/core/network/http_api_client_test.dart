@@ -54,10 +54,7 @@ void main() {
       timeout: const Duration(milliseconds: 1),
     );
 
-    await expectLater(
-      client.get('x'),
-      throwsA(isA<RequestTimeoutException>()),
-    );
+    await expectLater(client.get('x'), throwsA(isA<RequestTimeoutException>()));
   });
 
   test('una respuesta que no es JSON lanza UnexpectedException', () async {

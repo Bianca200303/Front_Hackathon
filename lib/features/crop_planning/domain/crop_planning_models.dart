@@ -1,33 +1,43 @@
 import 'package:equatable/equatable.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
+import 'package:siembra_segura/shared/domain/farm_location.dart';
 
-/// Resultado económico por hectárea de una opción en un escenario.
-class ScenarioOutcome extends Equatable {
-  /// Crea el resultado de un escenario.
-  const ScenarioOutcome({required this.expectedProfit, required this.maxLoss});
+/// Agua de riego y riesgo de clima de una opción en un escenario.
+class RotationScenarioResult extends Equatable {
+  /// Crea el resultado del escenario.
+  const RotationScenarioResult({
+    required this.waterUseM3,
+    required this.climateRisk,
+    required this.riskMonths,
+  });
 
-  /// Ganancia esperada, en soles por hectárea.
-  final int expectedProfit;
+  /// Agua de riego de todo el ciclo, en m³ para el área de la parcela.
+  final int waterUseM3;
 
-  /// Pérdida máxima si va mal, en soles por hectárea.
-  final int maxLoss;
+  /// Riesgo de clima de la opción en este escenario.
+  final ClimateRisk climateRisk;
+
+  /// Meses del calendario de la opción que caen en meses de riesgo.
+  final List<DateTime> riskMonths;
 
   @override
-  List<Object?> get props => [expectedProfit, maxLoss];
+  List<Object?> get props => [waterUseM3, climateRisk, riskMonths];
 }
 
-/// Cuánto mejora la tierra una rotación.
+/// Cómo afecta una rotación a la tierra, de peor a mejor. El orden de los
+/// valores es el que usa "recuperar mi tierra" para comparar.
 enum SoilImpact {
+  /// Cansa la tierra.
+  degrades,
+
+  /// No la cansa ni la mejora.
+  neutral,
+
   /// Mejora la tierra.
-  improves(1),
+  improves,
 
   /// Mejora mucho la tierra.
-  improvesALot(2);
-
-  const SoilImpact(this.score);
-
-  /// Mayor es mejor. Se usa para ordenar por "recuperar mi tierra".
-  final int score;
+  improvesALot,
 }
 
 /// Ficha explicativa: por qué, evidencia, beneficios, vacíos y riesgos.
@@ -158,12 +168,10 @@ class RotationOption extends Equatable {
   const RotationOption({
     required this.id,
     required this.crops,
-    required this.waterUseM3,
-    required this.waterSummary,
+    required this.scenarios,
     required this.soilImpact,
     required this.soilInTwoYears,
     required this.factsheet,
-    required this.outcomes,
     required this.schedule,
     required this.longTermPlan,
     this.excludedBy = const {},
@@ -175,13 +183,10 @@ class RotationOption extends Equatable {
   /// Cultivos en orden de siembra (p. ej., maíz y después frejol).
   final List<Crop> crops;
 
-  /// Agua por hectárea y campaña, en m³.
-  final int waterUseM3;
+  /// Agua y riesgo de clima por escenario.
+  final Map<ClimateScenario, RotationScenarioResult> scenarios;
 
-  /// Comparación de agua en lenguaje simple ("usa la mitad que el arroz").
-  final String waterSummary;
-
-  /// Cuánto mejora la tierra.
+  /// Cómo afecta a la tierra.
   final SoilImpact soilImpact;
 
   /// Estado estimado de la tierra en dos años.
@@ -189,9 +194,6 @@ class RotationOption extends Equatable {
 
   /// Ficha explicativa.
   final OptionFactsheet factsheet;
-
-  /// Resultado económico por escenario.
-  final Map<ClimateScenario, ScenarioOutcome> outcomes;
 
   /// Calendario de siembra.
   final PlantingSchedule schedule;
@@ -204,12 +206,12 @@ class RotationOption extends Equatable {
 
   /// Resultado en [scenario]. Lanza [StateError] si los datos no lo
   /// incluyen: es un error de contrato, no un caso esperado.
-  ScenarioOutcome outcomeFor(ClimateScenario scenario) {
-    final outcome = outcomes[scenario];
-    if (outcome == null) {
+  RotationScenarioResult resultFor(ClimateScenario scenario) {
+    final result = scenarios[scenario];
+    if (result == null) {
       throw StateError('La opción $id no tiene resultados para $scenario.');
     }
-    return outcome;
+    return result;
   }
 
   /// `true` si ninguna de las restricciones activas descarta la opción.
@@ -220,12 +222,10 @@ class RotationOption extends Equatable {
   List<Object?> get props => [
     id,
     crops,
-    waterUseM3,
-    waterSummary,
+    scenarios,
     soilImpact,
     soilInTwoYears,
     factsheet,
-    outcomes,
     schedule,
     longTermPlan,
     excludedBy,
@@ -237,9 +237,8 @@ class CurrentPractice extends Equatable {
   /// Crea la práctica actual.
   const CurrentPractice({
     required this.crops,
-    required this.waterUseM3,
+    required this.scenarios,
     required this.soilInTwoYears,
-    required this.expectedProfit,
     required this.factsheet,
     required this.repeatWarnings,
     required this.consecutiveCampaigns,
@@ -248,14 +247,11 @@ class CurrentPractice extends Equatable {
   /// Cultivos de la rotación actual. Nunca vacío.
   final List<Crop> crops;
 
-  /// Agua por hectárea y campaña, en m³.
-  final int waterUseM3;
+  /// Agua y riesgo de clima por escenario.
+  final Map<ClimateScenario, RotationScenarioResult> scenarios;
 
   /// Estado estimado de la tierra en dos años si sigue igual.
   final SoilCondition soilInTwoYears;
-
-  /// Ganancia esperada por escenario, en soles por hectárea.
-  final Map<ClimateScenario, int> expectedProfit;
 
   /// Ficha explicativa.
   final OptionFactsheet factsheet;
@@ -269,12 +265,21 @@ class CurrentPractice extends Equatable {
   /// Cultivo principal (el primero de la rotación).
   Crop get mainCrop => crops.first;
 
+  /// Resultado en [scenario]. Lanza [StateError] si los datos no lo
+  /// incluyen: es un error de contrato, no un caso esperado.
+  RotationScenarioResult resultFor(ClimateScenario scenario) {
+    final result = scenarios[scenario];
+    if (result == null) {
+      throw StateError('La práctica actual no tiene datos para $scenario.');
+    }
+    return result;
+  }
+
   @override
   List<Object?> get props => [
     crops,
-    waterUseM3,
+    scenarios,
     soilInTwoYears,
-    expectedProfit,
     factsheet,
     repeatWarnings,
     consecutiveCampaigns,
@@ -296,6 +301,57 @@ class SoilHealth extends Equatable {
   List<Object?> get props => [condition, findings];
 }
 
+/// Lo que el agricultor ingresa y condiciona el cálculo del servidor.
+///
+/// La prioridad y las restricciones **no** van aquí: el servidor manda el
+/// orden de todas las prioridades y marca las opciones descartadas, así que
+/// cambiarlas no obliga a pedir los datos otra vez.
+class CropPlanningQuery extends Equatable {
+  /// Crea la consulta.
+  const CropPlanningQuery({
+    required this.location,
+    required this.areaHectares,
+    required this.plantingDate,
+    required this.consecutiveCampaigns,
+    this.lastCropId,
+    this.customRotation = const [],
+    this.reportedSoilTexture,
+  });
+
+  /// Dónde está la parcela.
+  final FarmLocation location;
+
+  /// Superficie de la parcela, en hectáreas.
+  final double areaHectares;
+
+  /// Cuándo quiere sembrar el agricultor.
+  final DateTime plantingDate;
+
+  /// Campañas seguidas con el mismo cultivo.
+  final int consecutiveCampaigns;
+
+  /// Cultivo de la última campaña; `null` deja que lo decida la fuente.
+  final String? lastCropId;
+
+  /// Cultivos que armó el agricultor, en orden de siembra. Vacío = ninguno.
+  final List<String> customRotation;
+
+  /// Textura que el agricultor reconoció en su chacra; `null` deja que la
+  /// estime el satélite.
+  final SoilTexture? reportedSoilTexture;
+
+  @override
+  List<Object?> get props => [
+    location,
+    areaHectares,
+    plantingDate,
+    consecutiveCampaigns,
+    lastCropId,
+    customRotation,
+    reportedSoilTexture,
+  ];
+}
+
 /// Todo lo que el backend entrega para planificar la campaña.
 class CropPlanningData extends Equatable {
   /// Crea el paquete de datos.
@@ -306,9 +362,16 @@ class CropPlanningData extends Equatable {
     required this.scenarioNotes,
     required this.riskMonths,
     required this.irrigationSource,
+    required this.areaHectares,
+    this.availableCrops = const [],
+    this.ranking = const {},
+    this.measuredRainNote,
   });
 
-  /// Rotaciones que se pueden recomendar, en el orden del backend.
+  /// Id de la opción que arma el agricultor.
+  static const customRotationId = 'custom';
+
+  /// Rotaciones que se pueden recomendar, en el orden de la fuente.
   final List<RotationOption> options;
 
   /// Lo que siembra hoy, para comparar.
@@ -317,7 +380,7 @@ class CropPlanningData extends Equatable {
   /// Estado actual de la tierra.
   final SoilHealth soilHealth;
 
-  /// Introducción por escenario ("Con El Niño llueve más; ").
+  /// Introducción por escenario ("En un año normal, ").
   final Map<ClimateScenario, String> scenarioNotes;
 
   /// Meses con riesgo climático para la cosecha, por escenario.
@@ -325,6 +388,29 @@ class CropPlanningData extends Equatable {
 
   /// Fuente de agua de riego (p. ej., "Poechos").
   final String irrigationSource;
+
+  /// Hectáreas con las que se calculó el agua.
+  final double areaHectares;
+
+  /// Cultivos entre los que el agricultor puede armar su propia rotación.
+  final List<Crop> availableCrops;
+
+  /// Orden de las opciones por prioridad y escenario, si la fuente lo
+  /// calcula. Vacío significa "ordena la app" (decisión 13).
+  final Map<String, Map<ClimateScenario, List<String>>> ranking;
+
+  /// Lluvia que el satélite ya midió sobre la chacra y a qué escenario se
+  /// parece, en una frase. `null` si la fuente todavía no la tiene.
+  final String? measuredRainNote;
+
+  /// Orden que manda la fuente para [priorityId] en [scenario]; vacío si no
+  /// lo manda.
+  List<String> orderFor(String priorityId, ClimateScenario scenario) =>
+      ranking[priorityId]?[scenario] ?? const [];
+
+  /// La opción que armó el agricultor, si la fuente la devolvió.
+  RotationOption? get customOption =>
+      options.where((option) => option.id == customRotationId).firstOrNull;
 
   @override
   List<Object?> get props => [
@@ -334,6 +420,10 @@ class CropPlanningData extends Equatable {
     scenarioNotes,
     riskMonths,
     irrigationSource,
+    areaHectares,
+    availableCrops,
+    ranking,
+    measuredRainNote,
   ];
 }
 
@@ -358,8 +448,8 @@ class PlantingFeedback extends Equatable {
 
 /// Fuente de datos de planificación de cultivos.
 abstract interface class CropPlanningRepository {
-  /// Devuelve opciones, práctica actual y estado del suelo.
-  Future<CropPlanningData> getPlanningData();
+  /// Devuelve opciones, práctica actual y estado del suelo para [query].
+  Future<CropPlanningData> getPlanningData(CropPlanningQuery query);
 
   /// Registra qué sembró el agricultor.
   Future<void> submitPlantingFeedback(PlantingFeedback feedback);

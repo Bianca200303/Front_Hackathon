@@ -8,7 +8,9 @@ import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
 import 'package:siembra_segura/features/farm/presentation/providers/farm_providers.dart';
 import 'package:siembra_segura/features/farm/presentation/widgets/campaign_choice_cards.dart';
+import 'package:siembra_segura/features/farm/presentation/widgets/campaign_inputs_card.dart';
 import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_card.dart';
+import 'package:siembra_segura/features/farm/presentation/widgets/soil_texture_card.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
@@ -111,10 +113,12 @@ class _FarmContent extends StatelessWidget {
         ),
         ResponsiveColumns(
           children: [
+            CampaignInputsCard(farm: farm),
             PriorityCard(catalog: catalog),
-            RestrictionsCard(catalog: catalog),
           ],
         ),
+        SoilTextureCard(catalog: catalog),
+        RestrictionsCard(catalog: catalog),
         const _ResetPreferencesButton(),
       ],
     );

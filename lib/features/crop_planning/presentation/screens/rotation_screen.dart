@@ -6,6 +6,7 @@ import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/custom_rotation_card.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/widgets/rotation_cards.dart';
 import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
@@ -89,9 +90,10 @@ class _RotationContent extends StatelessWidget {
               ),
           ],
         ),
+        CustomRotationCard(recommendation: recommendation),
         LongTermPlanCard(recommendation: recommendation),
         const GuideDisclaimer(),
-        const SourceNote(''),
+        const SourceNote('', backedByRemote: true),
       ],
     );
   }

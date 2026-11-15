@@ -8,28 +8,55 @@ import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 /// la capa de datos puede importar este archivo.
 abstract final class MockCatalog {
   /// Arroz.
-  static const rice = Crop(id: 'rice', name: 'Arroz');
+  static const rice = Crop(
+    id: 'rice',
+    name: 'Arroz',
+    cycleMonths: 5,
+    waterNeed: CropWaterNeed.high,
+  );
 
   /// Maíz.
-  static const maize = Crop(id: 'maize', name: 'Maíz');
+  static const maize = Crop(
+    id: 'maize',
+    name: 'Maíz',
+    cycleMonths: 4,
+    waterNeed: CropWaterNeed.medium,
+  );
 
   /// Algodón.
-  static const cotton = Crop(id: 'cotton', name: 'Algodón');
+  static const cotton = Crop(
+    id: 'cotton',
+    name: 'Algodón',
+    cycleMonths: 6,
+    waterNeed: CropWaterNeed.high,
+  );
 
   /// Frejol.
-  static const bean = Crop(id: 'bean', name: 'Frejol');
+  static const bean = Crop(
+    id: 'bean',
+    name: 'Frejol',
+    cycleMonths: 4,
+    waterNeed: CropWaterNeed.low,
+    fixesNitrogen: true,
+  );
 
   /// Menestra.
-  static const pulse = Crop(id: 'pulse', name: 'Menestra');
+  static const pulse = Crop(
+    id: 'pulse',
+    name: 'Menestra',
+    cycleMonths: 2,
+    waterNeed: CropWaterNeed.low,
+    fixesNitrogen: true,
+  );
 
   /// Opción "Otro" para corregir al satélite.
   static const otherCrop = Crop(id: 'other', name: 'Otro');
 
-  /// Prioridad "Ganar más".
-  static const maximizeProfit = CampaignPriority(
-    id: 'maximize-profit',
-    name: 'Ganar más',
-    phrase: 'ganar más',
+  /// Prioridad "Menos riesgo de clima".
+  static const lowerClimateRisk = CampaignPriority(
+    id: 'lower-climate-risk',
+    name: 'Menos riesgo de clima',
+    phrase: 'tener menos riesgo de clima',
   );
 
   /// Prioridad "Cuidar mi agua".
@@ -58,9 +85,39 @@ abstract final class MockCatalog {
     name: 'Tendré poca agua',
   );
 
+  /// Pregunta con la que se ofrecen las texturas.
+  static const soilTextureQuestion = '¿A cuál de estas se parece tu tierra?';
+
+  /// Texturas entre las que el agricultor reconoce su tierra.
+  static const soilTextures = [
+    SoilTextureAnswer(
+      texture: SoilTexture.sandy,
+      name: 'Arenosa',
+      description:
+          'Se desarma en la mano y se siente como arena. El agua se va '
+          'rápido.',
+    ),
+    SoilTextureAnswer(
+      texture: SoilTexture.loamy,
+      name: 'Franca',
+      description:
+          'Se hace bola húmeda pero se rompe sin esfuerzo. Guarda bien el '
+          'agua.',
+    ),
+    SoilTextureAnswer(
+      texture: SoilTexture.clayey,
+      name: 'Arcillosa',
+      description:
+          'Se pega en la mano y se parte en terrones duros al secarse. Se '
+          'encharca.',
+    ),
+  ];
+
   /// Catálogo completo, en el orden de la referencia.
   static final catalog = CampaignCatalog(
-    priorities: const [maximizeProfit, saveWater, restoreSoil],
+    priorities: const [lowerClimateRisk, saveWater, restoreSoil],
     restrictions: const [noCottonBuyer, lowWater],
+    soilTextures: soilTextures,
+    soilTextureQuestion: soilTextureQuestion,
   );
 }

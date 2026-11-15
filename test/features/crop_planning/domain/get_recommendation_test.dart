@@ -1,65 +1,81 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
+import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/domain/campaign_context.dart';
-import 'package:siembra_segura/shared/domain/seasonal_outlook.dart';
 
 import '../../../helpers/planning_fixtures.dart';
 
 void main() {
   const getRecommendation = referenceGetRecommendation;
   late CropPlanningData data;
-  late SeasonalOutlook outlook;
 
-  setUpAll(() async {
-    data = await referencePlanningData();
-    outlook = await referenceOutlook();
-  });
+  setUpAll(() async => data = await referencePlanningData());
 
-  test('sin elecciones usa el escenario más probable y la prioridad '
-      'sugerida', () {
-    final recommendation = getRecommendation(
-      data: data,
-      outlook: outlook,
-      catalog: referenceCatalog,
-      context: const CampaignContext(),
-    );
+  Recommendation recommend([
+    CampaignContext context = const CampaignContext(),
+  ]) => getRecommendation(
+    data: data,
+    catalog: referenceCatalog,
+    context: context,
+  );
 
-    expect(recommendation.scenario, ClimateScenario.heavyRains);
-    expect(recommendation.isMostLikelyScenario, isTrue);
+  test('sin elecciones usa el escenario normal y la prioridad sugerida', () {
+    final recommendation = recommend();
+
+    expect(recommendation.scenario, ClimateScenario.normal);
     expect(recommendation.priority, referenceCatalog.defaultPriority);
-    expect(recommendation.best.id, 'r1');
-    expect(recommendation.bestOutcome.expectedProfit, 2400);
-    expect(recommendation.riskMonths, hasLength(2));
-  });
-
-  test('respeta el escenario y la prioridad elegidos', () {
-    final recommendation = getRecommendation(
-      data: data,
-      outlook: outlook,
-      catalog: referenceCatalog,
-      context: CampaignContext(
-        priorityId: MockCatalog.saveWater.id,
-        selectedScenario: ClimateScenario.dry,
-      ),
-    );
-
-    expect(recommendation.scenario, ClimateScenario.dry);
-    expect(recommendation.isMostLikelyScenario, isFalse);
-    expect(recommendation.priority, MockCatalog.saveWater);
     expect(recommendation.best.id, 'r3');
+    expect(recommendation.bestResult.climateRisk, ClimateRisk.low);
     expect(recommendation.riskMonths, isEmpty);
   });
 
-  test('una prioridad guardada que ya no existe vuelve a la sugerida', () {
-    final recommendation = getRecommendation(
-      data: data,
-      outlook: outlook,
-      catalog: referenceCatalog,
-      context: const CampaignContext(priorityId: 'retirada'),
+  test('respeta el escenario y la prioridad elegidos', () {
+    final recommendation = recommend(
+      CampaignContext(
+        priorityId: MockCatalog.restoreSoil.id,
+        selectedScenario: ClimateScenario.heavyRains,
+      ),
     );
 
-    expect(recommendation.priority, referenceCatalog.defaultPriority);
+    expect(recommendation.scenario, ClimateScenario.heavyRains);
+    expect(recommendation.priority, MockCatalog.restoreSoil);
+    expect(recommendation.best.id, 'r1');
+    expect(recommendation.bestResult.climateRisk, ClimateRisk.high);
+    expect(recommendation.riskMonths, hasLength(2));
+  });
+
+  test('una prioridad guardada que ya no existe vuelve a la sugerida', () {
+    expect(
+      recommend(const CampaignContext(priorityId: 'retirada')).priority,
+      referenceCatalog.defaultPriority,
+    );
+  });
+
+  test('con orden del servidor se respeta ese orden', () {
+    final fromServer = CropPlanningData(
+      options: data.options,
+      currentPractice: data.currentPractice,
+      soilHealth: data.soilHealth,
+      scenarioNotes: data.scenarioNotes,
+      riskMonths: data.riskMonths,
+      irrigationSource: data.irrigationSource,
+      areaHectares: data.areaHectares,
+      ranking: {
+        MockCatalog.saveWater.id: {
+          for (final scenario in ClimateScenario.values)
+            scenario: ['r2', 'r1', 'r3'],
+        },
+      },
+    );
+
+    final recommendation = getRecommendation(
+      data: fromServer,
+      catalog: referenceCatalog,
+      context: CampaignContext(priorityId: MockCatalog.saveWater.id),
+    );
+
+    expect(recommendation.rankedOptions.ids, ['r2', 'r1', 'r3']);
   });
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/domain/campaign_context.dart';
 import 'package:siembra_segura/shared/domain/campaign_preferences_store.dart';
@@ -48,6 +49,37 @@ class CampaignContextNotifier extends Notifier<CampaignContext> {
     );
   }
 
+  /// Corrige la superficie de la parcela, en hectáreas.
+  void selectArea(double hectares) =>
+      _updatePreferences(state.copyWith(areaHectares: hectares));
+
+  /// Cambia la fecha en la que quiere sembrar.
+  void selectPlantingDate(DateTime date) =>
+      _updatePreferences(state.copyWith(plantingDate: date));
+
+  /// Cambia las campañas seguidas con el mismo cultivo.
+  void selectConsecutiveCampaigns(int campaigns) =>
+      _updatePreferences(state.copyWith(consecutiveCampaigns: campaigns));
+
+  /// Marca dónde está la parcela, en grados decimales.
+  void selectFarmLocation({
+    required double latitude,
+    required double longitude,
+  }) => _updatePreferences(
+    state.copyWith(farmLatitude: latitude, farmLongitude: longitude),
+  );
+
+  /// Guarda la textura que el agricultor reconoció en su tierra; `null`
+  /// vuelve a la que estima el satélite.
+  void selectSoilTexture(SoilTexture? texture) => _updatePreferences(
+    state.copyWith(soilTexture: texture, clearSoilTexture: texture == null),
+  );
+
+  /// Guarda la rotación que armó el agricultor; una lista vacía la quita.
+  void selectCustomRotation(List<String> cropIds) => _updatePreferences(
+    state.copyWith(customRotation: List.unmodifiable(cropIds)),
+  );
+
   /// Explora otro escenario climático. No se guarda en el dispositivo.
   void selectScenario(ClimateScenario scenario) {
     state = state.copyWith(selectedScenario: scenario);
@@ -88,3 +120,28 @@ final campaignContextProvider =
     NotifierProvider<CampaignContextNotifier, CampaignContext>(
       CampaignContextNotifier.new,
     );
+
+/// Hectáreas vigentes: las que indicó el agricultor o las sugeridas.
+final selectedAreaHectaresProvider = Provider<double>(
+  (ref) =>
+      ref.watch(campaignContextProvider.select((c) => c.areaHectares)) ??
+      CampaignContext.defaultAreaHectares,
+);
+
+/// Fecha de siembra vigente: la que eligió el agricultor o hoy.
+final selectedPlantingDateProvider = Provider<DateTime>((ref) {
+  final chosen = ref.watch(
+    campaignContextProvider.select((c) => c.plantingDate),
+  );
+  return chosen ?? dateOnly(ref.watch(clockProvider)());
+});
+
+/// Campañas seguidas vigentes: las que indicó el agricultor o las
+/// sugeridas.
+final selectedConsecutiveCampaignsProvider = Provider<int>(
+  (ref) =>
+      ref.watch(
+        campaignContextProvider.select((c) => c.consecutiveCampaigns),
+      ) ??
+      CampaignContext.defaultConsecutiveCampaigns,
+);

@@ -38,7 +38,6 @@ class RecommendationScreen extends ConsumerWidget {
         emptyMessage: l10n.emptyRecommendation,
         data: (recommendation) => ScreenContent(
           children: [
-            SeasonalOutlookCard(outlook: recommendation.outlook),
             PriorityContextRow(priority: recommendation.priority),
             RecommendedOptionCard(recommendation: recommendation),
             RepeatCropCard(recommendation: recommendation),
@@ -47,7 +46,10 @@ class RecommendationScreen extends ConsumerWidget {
               variant: AppButtonVariant.outline,
               onPressed: () => context.go(AppRoutes.rotation),
             ),
-            ScenarioExplorer(selected: recommendation.scenario),
+            ScenarioExplorer(
+              selected: recommendation.scenario,
+              measuredRainNote: recommendation.data.measuredRainNote,
+            ),
             const GuideDisclaimer(),
           ],
         ),

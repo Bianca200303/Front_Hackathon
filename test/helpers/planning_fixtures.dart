@@ -4,17 +4,20 @@ import 'package:siembra_segura/features/crop_planning/domain/crop_planning_model
 import 'package:siembra_segura/features/crop_planning/domain/get_recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/domain/rotation_ranker.dart';
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
-import 'package:siembra_segura/shared/data/mock_seasonal_outlook_repository.dart';
+import 'package:siembra_segura/shared/data/pilot_farm_location.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
-import 'package:siembra_segura/shared/domain/seasonal_outlook.dart';
+
+/// Consulta de ejemplo; los mocks la ignoran.
+final referenceQuery = CropPlanningQuery(
+  location: pilotFarmLocation,
+  areaHectares: 2,
+  plantingDate: DateTime(2026, 12, 15),
+  consecutiveCampaigns: 3,
+);
 
 /// Los datos de la referencia, que son los que usan los mocks.
 Future<CropPlanningData> referencePlanningData() =>
-    MockCropPlanningRepository().getPlanningData();
-
-/// Pronóstico de la referencia (70 % lluvias fuertes).
-Future<SeasonalOutlook> referenceOutlook() =>
-    const MockSeasonalOutlookRepository().getOutlook();
+    MockCropPlanningRepository().getPlanningData(referenceQuery);
 
 /// Catálogo de la referencia.
 CampaignCatalog get referenceCatalog => MockCatalog.catalog;

@@ -7,11 +7,11 @@ typedef RotationComparator = int Function(RotationOption a, RotationOption b);
 /// Criterio para ordenar las rotaciones según la prioridad del agricultor.
 ///
 /// La app no conoce las prioridades (son datos del catálogo), así que no
-/// puede decidir por sí misma qué significa cada una. Quién define el
-/// criterio está pendiente (decisión B3):
-/// - Hoy: `MockRotationRankingPolicy`, con las reglas de la referencia.
-/// - Si el backend devuelve las opciones ya ordenadas, la política devuelve
-///   `null` siempre y se respeta su orden.
+/// puede decidir por sí misma qué significa cada una (decisión 13):
+/// - Con el backend, el orden viene en los datos y la política devuelve
+///   siempre `null` (`ServerRotationRankingPolicy`).
+/// - Con datos de ejemplo ordena `MockRotationRankingPolicy`, que replica
+///   los criterios del servidor.
 abstract interface class RotationRankingPolicy {
   /// Comparador para [priority] en [scenario], o `null` si no hay criterio
   /// para esa prioridad (se conserva el orden en que llegaron los datos).
@@ -24,8 +24,9 @@ abstract interface class RotationRankingPolicy {
 /// Ordena las rotaciones para un agricultor concreto.
 ///
 /// 1. Descarta las opciones que alguna restricción activa excluye.
-/// 2. Ordena con el criterio de la [policy] para la prioridad elegida.
-/// 3. Los empates conservan el orden original (orden estable).
+/// 2. Si la fuente manda un orden ([serverOrder]), lo respeta.
+/// 3. Si no, ordena con el criterio de la [policy] para la prioridad.
+/// 4. Los empates conservan el orden original (orden estable).
 class RotationRanker {
   /// Crea el ordenador con el criterio indicado.
   const RotationRanker(this.policy);
@@ -39,8 +40,11 @@ class RotationRanker {
     required ClimateScenario scenario,
     required CampaignPriority priority,
     required Set<String> restrictionIds,
+    List<String> serverOrder = const [],
   }) {
-    final compare = policy.comparatorFor(priority, scenario);
+    final compare = serverOrder.isNotEmpty
+        ? _byServerOrder(serverOrder)
+        : policy.comparatorFor(priority, scenario);
     final allowed = options
         .where((option) => option.isAllowedWith(restrictionIds))
         .indexed
@@ -53,5 +57,15 @@ class RotationRanker {
       });
     }
     return [for (final (_, option) in allowed) option];
+  }
+
+  /// Una opción que la fuente no menciona va al final.
+  static RotationComparator _byServerOrder(List<String> order) {
+    int position(RotationOption option) {
+      final index = order.indexOf(option.id);
+      return index < 0 ? order.length : index;
+    }
+
+    return (a, b) => position(a).compareTo(position(b));
   }
 }

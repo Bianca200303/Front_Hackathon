@@ -4,13 +4,13 @@ import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 /// Parcela del agricultor y datos de contexto.
 ///
 /// La geometría y la imagen satelital reales dependen del backend
-/// (decisión B4); hoy la pantalla muestra una ilustración.
+/// (decisión B4); hoy la pantalla muestra una ilustración. Las hectáreas
+/// las ingresa el agricultor (`CampaignContext.areaHectares`).
 class Farm extends Equatable {
   /// Crea la parcela.
   const Farm({
     required this.farmerName,
     required this.valleyName,
-    required this.areaHectares,
     required this.irrigationSource,
     required this.inferredLastCrop,
     required this.lastCropOptions,
@@ -21,9 +21,6 @@ class Farm extends Equatable {
 
   /// Valle en el que está la parcela.
   final String valleyName;
-
-  /// Superficie, en hectáreas.
-  final double areaHectares;
 
   /// Fuente de agua de riego (p. ej., el reservorio "Poechos").
   final String irrigationSource;
@@ -38,7 +35,6 @@ class Farm extends Equatable {
   List<Object?> get props => [
     farmerName,
     valleyName,
-    areaHectares,
     irrigationSource,
     inferredLastCrop,
     lastCropOptions,

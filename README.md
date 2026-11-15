@@ -24,7 +24,7 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
 | Clave | Valores | Descripción |
 |---|---|---|
 | `APP_ENV` | `dev` · `staging` · `prod` | Entorno |
-| `DATA_SOURCE` | `mock` · `remote` | `mock` usa datos locales de ejemplo; `remote` usa el backend en las pantallas ya integradas (hoy, Clima) y datos de ejemplo en el resto |
+| `DATA_SOURCE` | `mock` · `remote` | `mock` usa datos locales de ejemplo; `remote` usa el backend en las pantallas ya integradas (Clima, Qué sembrar, ¿Cuándo siembro?, Rotación) y datos de ejemplo en el resto. Con `remote`, la recomendación combina NASA POWER, SoilGrids, la tierra que reconoció el agricultor, el verdor MODIS, la humedad SMAP y la lluvia GPM IMERG del punto que marcó en el mapa |
 | `API_BASE_URL` | URL | Obligatoria si `DATA_SOURCE=remote` |
 
 ### Con el backend local
@@ -41,6 +41,32 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
    `http://localhost:8000/`; en un iPhone físico, `config/device.json`, que
    usa el nombre Bonjour del Mac (`scutil --get LocalHostName` + `.local`). El HTTP sin TLS solo está permitido en las compilaciones de
    depuración de Android y para la red local en iOS.
+
+### En el navegador (sin celular)
+
+Con el backend levantado (`make dev` en `spaceapps-2026-core`):
+
+```bash
+flutter run -d web-server --web-port 5050 --dart-define-from-file=config/web.json
+```
+
+Abre <http://localhost:5050> en cualquier navegador. En la terminal, `r`
+recarga los cambios y `R` reinicia la app.
+
+Si prefieres que Flutter abra el navegador solo, usa `-d chrome`. Sin Chrome
+instalado, apunta Flutter a otro navegador Chromium, por ejemplo Brave:
+
+```bash
+export CHROME_EXECUTABLE="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+```
+
+`web.json` apunta a `http://localhost:8000/`. El backend permite cualquier
+origen por defecto (`CORS_ORIGINS=*`); si lo restringes, agrega
+`http://localhost:5050`. Para ver la app con tamaño de celular, abre las
+DevTools del navegador y activa el modo dispositivo (`Cmd+Shift+M`).
+
+Para probar solo la interfaz con datos de ejemplo, sin backend, usa
+`config/dev.json`.
 
 Sin `--dart-define-from-file`, la app arranca en `dev` + `mock`. Usa
 `config/prod.json.example` como plantilla. No guardes secretos en estos

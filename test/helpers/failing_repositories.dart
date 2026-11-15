@@ -10,7 +10,7 @@ class FailingClimateRepository implements ClimateRepository {
 
 class FailingCropPlanningRepository implements CropPlanningRepository {
   @override
-  Future<CropPlanningData> getPlanningData() async =>
+  Future<CropPlanningData> getPlanningData(CropPlanningQuery query) async =>
       throw const NetworkException();
 
   @override
@@ -26,7 +26,8 @@ class FixedCropPlanningRepository implements CropPlanningRepository {
   final bool failOnSubmit;
 
   @override
-  Future<CropPlanningData> getPlanningData() async => data;
+  Future<CropPlanningData> getPlanningData(CropPlanningQuery query) async =>
+      data;
 
   @override
   Future<void> submitPlantingFeedback(PlantingFeedback feedback) async {
