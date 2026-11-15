@@ -9,7 +9,7 @@ void main() {
   final l10n = AppLocalizationsEs();
 
   Future<void> openClimate(WidgetTester tester) =>
-      tester.tapText(l10n.actionStart);
+      tester.tapText(l10n.actionSeePlan);
 
   testWidgets('muestra el clima de hoy y la semana', (tester) async {
     await tester.pumpSiembraSeguraApp();

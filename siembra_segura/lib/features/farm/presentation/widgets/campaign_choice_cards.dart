@@ -1,21 +1,152 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
+import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
 import 'package:siembra_segura/features/farm/presentation/providers/farm_providers.dart';
+import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_card.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
-import 'package:siembra_segura/shared/widgets/app_card.dart';
 import 'package:siembra_segura/shared/widgets/selection_controls.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
+/// Campos del llenado manual (`#v-manual` de `semi_app.html`): todo en una
+/// pantalla, cada pregunta con sus opciones en chips. Cada cambio se guarda
+/// al instante (igual que la conversación con Semi).
+
+/// Un campo: título, ayuda opcional y opciones.
+class ChoiceField extends StatelessWidget {
+  /// Crea el campo.
+  const ChoiceField({
+    required this.label,
+    required this.child,
+    this.help,
+    this.optional = false,
+    super.key,
+  });
+
+  /// Pregunta del campo.
+  final String label;
+
+  /// Ayuda debajo de la pregunta.
+  final Widget? help;
+
+  /// Agrega "(opcional)" a la pregunta.
+  final bool optional;
+
+  /// Opciones.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
+      children: [
+        Semantics(
+          header: true,
+          child: Text.rich(
+            TextSpan(
+              style: Theme.of(context).textTheme.titleMedium,
+              children: [
+                TextSpan(text: label),
+                if (optional)
+                  TextSpan(
+                    text: ' ${l10n.optionalLabel}',
+                    style: context.text.mutedLabel,
+                  ),
+              ],
+            ),
+          ),
+        ),
+        ?help,
+        child,
+      ],
+    );
+  }
+}
+
+/// Chips en filas que se acomodan al ancho.
+class _Chips extends StatelessWidget {
+  const _Chips({required this.children, this.semanticsLabel});
+
+  final List<Widget> children;
+  final String? semanticsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: semanticsLabel,
+      container: semanticsLabel != null,
+      child: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: children,
+      ),
+    );
+  }
+}
+
+/// "Tu chacra": mapa pequeño con área, valle y riego.
+class ParcelField extends StatelessWidget {
+  /// Crea el campo para [farm].
+  const ParcelField({required this.farm, super.key});
+
+  /// Parcela marcada.
+  final Farm farm;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.colors;
+    return ChoiceField(
+      label: l10n.farmParcelLabel,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.primarySoft,
+          borderRadius: AppRadii.card,
+          border: Border.all(color: colors.semiGuideBorder),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            spacing: AppSpacing.md,
+            children: [
+              const ParcelMapThumbnail(),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.xxs,
+                  children: [
+                    Text(
+                      l10n.farmParcelSummary(
+                        AppFormatters.decimal(farm.areaHectares),
+                        farm.valleyName,
+                        farm.irrigationSource,
+                      ),
+                      style: context.text.emphasis,
+                    ),
+                    Text(l10n.farmParcelSource, style: context.text.muted),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// "¿Qué sembraste la última campaña?": el satélite propone y el agricultor
 /// corrige entre las opciones que entrega la parcela.
-class LastCropCard extends ConsumerWidget {
-  /// Crea la tarjeta para [farm].
-  const LastCropCard({required this.farm, super.key});
+class LastCropField extends ConsumerWidget {
+  /// Crea el campo para [farm].
+  const LastCropField({required this.farm, super.key});
 
   /// Parcela con el cultivo inferido y las opciones.
   final Farm farm;
@@ -24,43 +155,37 @@ class LastCropCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final selected = ref.watch(selectedLastCropProvider(farm));
-    final inferred = farm.inferredLastCrop.name;
+    final inferred = farm.inferredLastCrop;
     final notifier = ref.read(campaignContextProvider.notifier);
 
-    return AppCard(
-      children: [
-        SectionTitle(l10n.farmLastCropQuestion),
-        HighlightedText(
-          text: l10n.farmLastCropHint(inferred),
-          highlight: inferred,
-          style: AppTypography.muted,
-          highlightStyle: AppTypography.mutedEmphasis,
-        ),
-        Semantics(
-          label: l10n.farmLastCropGroupSemantics,
-          container: true,
-          child: Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              for (final crop in farm.lastCropOptions)
-                SelectableChip(
-                  label: crop.name,
-                  selected: crop == selected,
-                  onTap: () => notifier.selectLastCrop(crop.id),
-                ),
-            ],
-          ),
-        ),
-      ],
+    return ChoiceField(
+      label: l10n.farmLastCropQuestion,
+      help: HighlightedText(
+        text: l10n.farmLastCropHint(inferred.name),
+        highlight: inferred.name,
+        style: context.text.muted,
+        highlightStyle: context.text.mutedEmphasis,
+      ),
+      child: _Chips(
+        semanticsLabel: l10n.farmLastCropGroupSemantics,
+        children: [
+          for (final crop in farm.lastCropOptions)
+            SelectableChip(
+              label: crop.name,
+              badge: crop == inferred ? l10n.farmSatelliteBadge : null,
+              selected: crop == selected,
+              onTap: () => notifier.selectLastCrop(crop.id),
+            ),
+        ],
+      ),
     );
   }
 }
 
 /// "¿Qué te importa más esta campaña?": una prioridad del catálogo.
-class PriorityCard extends ConsumerWidget {
-  /// Crea la tarjeta con las prioridades de [catalog].
-  const PriorityCard({required this.catalog, super.key});
+class PriorityField extends ConsumerWidget {
+  /// Crea el campo con las prioridades de [catalog].
+  const PriorityField({required this.catalog, super.key});
 
   /// Catálogo con las prioridades disponibles.
   final CampaignCatalog catalog;
@@ -74,38 +199,27 @@ class PriorityCard extends ConsumerWidget {
     final selected = catalog.priorityOrDefault(selectedId);
     final notifier = ref.read(campaignContextProvider.notifier);
 
-    return AppCard(
-      children: [
-        SectionTitle(l10n.farmPriorityQuestion),
-        Semantics(
-          label: l10n.farmPriorityGroupSemantics,
-          container: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.sm,
-            children: [
-              for (final priority in catalog.priorities)
-                RadioOptionTile(
-                  label: priority.name,
-                  selected: priority == selected,
-                  onTap: () => notifier.selectPriority(priority.id),
-                ),
-            ],
-          ),
-        ),
-        Text(
-          l10n.farmPriorityNote,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
+    return ChoiceField(
+      label: l10n.farmPriorityQuestion,
+      child: _Chips(
+        semanticsLabel: l10n.farmPriorityGroupSemantics,
+        children: [
+          for (final priority in catalog.priorities)
+            SelectableChip(
+              label: priority.name,
+              selected: priority == selected,
+              onTap: () => notifier.selectPriority(priority.id),
+            ),
+        ],
+      ),
     );
   }
 }
 
 /// "¿Hay algo que no puedas hacer? (opcional)": restricciones del catálogo.
-class RestrictionsCard extends ConsumerWidget {
-  /// Crea la tarjeta con las restricciones de [catalog].
-  const RestrictionsCard({required this.catalog, super.key});
+class RestrictionsField extends ConsumerWidget {
+  /// Crea el campo con las restricciones de [catalog].
+  const RestrictionsField({required this.catalog, super.key});
 
   /// Catálogo con las restricciones disponibles.
   final CampaignCatalog catalog;
@@ -118,37 +232,20 @@ class RestrictionsCard extends ConsumerWidget {
     );
     final notifier = ref.read(campaignContextProvider.notifier);
 
-    return AppCard(
-      children: [
-        Semantics(
-          header: true,
-          child: Text.rich(
-            TextSpan(
-              style: Theme.of(context).textTheme.titleMedium,
-              children: [
-                TextSpan(text: '${l10n.farmRestrictionsQuestion} '),
-                TextSpan(
-                  text: l10n.optionalLabel,
-                  style: AppTypography.mutedLabel,
-                ),
-              ],
+    return ChoiceField(
+      label: l10n.farmRestrictionsQuestion,
+      optional: true,
+      child: _Chips(
+        children: [
+          for (final restriction in catalog.restrictions)
+            SelectableChip(
+              label: restriction.name,
+              role: SelectionRole.toggle,
+              selected: active.contains(restriction.id),
+              onTap: () => notifier.toggleRestriction(restriction.id),
             ),
-          ),
-        ),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            for (final restriction in catalog.restrictions)
-              SelectableChip(
-                label: restriction.name,
-                role: SelectionRole.toggle,
-                selected: active.contains(restriction.id),
-                onTap: () => notifier.toggleRestriction(restriction.id),
-              ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/alerts/domain/alert.dart';
 
@@ -14,10 +14,10 @@ extension AlertTypeStyle on AlertType {
   };
 
   /// Colores del círculo del icono.
-  Tone get tone => switch (this) {
-    AlertType.rain => AppColors.waterTone,
-    AlertType.soil => AppColors.soilTone,
-    AlertType.forecastChange => AppColors.amberTone,
+  Tone tone(AppPalette colors) => switch (this) {
+    AlertType.rain => colors.waterTone,
+    AlertType.soil => colors.soilTone,
+    AlertType.forecastChange => colors.amberTone,
   };
 }
 

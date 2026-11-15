@@ -7,9 +7,11 @@ import 'package:siembra_segura/features/crop_planning/presentation/crop_planning
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/widgets/recommendation_cards.dart';
 import 'package:siembra_segura/shared/widgets/app_button.dart';
+import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 2: ¿Qué me conviene sembrar?
@@ -24,8 +26,12 @@ class RecommendationScreen extends ConsumerWidget {
     final current = recommendation.value;
 
     return ScreenLayout(
+      guide: SemiGuide(
+        message: l10n.semiRecommendationGuide,
+        expression: SemiExpression.celebrating,
+      ),
       header: ScreenHeader(
-        actions: const [FarmSettingsButton()],
+        actions: const [AppSettingsButton()],
         title: l10n.recommendationTitle,
         listenText: current != null && current.hasOptions
             ? current.recommendationNarration(l10n)

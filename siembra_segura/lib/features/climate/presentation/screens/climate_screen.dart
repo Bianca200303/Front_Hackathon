@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/climate/domain/climate_overview.dart';
 import 'package:siembra_segura/features/climate/presentation/climate_labels.dart';
@@ -13,11 +13,12 @@ import 'package:siembra_segura/features/climate/presentation/widgets/weather_car
 import 'package:siembra_segura/shared/domain/seasonal_outlook.dart';
 import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/state/seasonal_outlook_provider.dart';
+import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/notice_tile.dart';
 import 'package:siembra_segura/shared/widgets/responsive_columns.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 1: Clima.
@@ -32,9 +33,10 @@ class ClimateScreen extends ConsumerWidget {
     final data = overview.value;
 
     return ScreenLayout(
+      guide: SemiGuide(message: l10n.semiClimateGuide),
       wide: true,
       header: ScreenHeader(
-        actions: const [FarmSettingsButton()],
+        actions: [const AppSettingsButton()],
         title: l10n.climateTitle,
         subtitle: data?.valleyName,
         listenText: data == null ? null : _narration(data, l10n),
@@ -102,7 +104,7 @@ class _OutlookNotice extends StatelessWidget {
     final scenario = outlook.mostLikely;
     return NoticeTile(
       icon: Icons.calendar_month_outlined,
-      iconTone: AppColors.waterTone,
+      iconTone: context.colors.waterTone,
       title: l10n.climateOutlookTitle(
         AppFormatters.monthName(outlook.horizonEnd),
         scenario.label(l10n).toLowerCase(),

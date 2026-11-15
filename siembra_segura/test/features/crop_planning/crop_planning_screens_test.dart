@@ -3,6 +3,7 @@ import 'package:siembra_segura/core/l10n/app_localizations_es.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_crop_planning_repository.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/rotation_cards.dart';
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
@@ -21,7 +22,7 @@ void main() {
   setUpAll(() async => reference = await referencePlanningData());
 
   Future<void> openTab(WidgetTester tester, String tab) async {
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(tab);
   }
 
@@ -35,9 +36,11 @@ void main() {
       expect(find.text('CÓMO VIENE TU VALLE HASTA MARZO'), findsOneWidget);
       expect(find.text(l10n.recommendationHeadline), findsOneWidget);
       expect(find.text('Maíz y después frejol'), findsOneWidget);
-      expect(richText('ganas unos S/ 2,400'), findsOneWidget);
-      expect(richText('pierdes hasta S/ 600'), findsOneWidget);
-      expect(richText('igual ganas unos S/ 2,500'), findsOneWidget);
+      // Cosecha esperada con datos de clima, nunca dinero.
+      expect(richText(l10n.outcomeExpectedValue('85%')), findsOneWidget);
+      expect(richText(l10n.outcomeWorstValue('70%')), findsOneWidget);
+      expect(richText(l10n.outcomeIfNormalValue('90%')), findsOneWidget);
+      expect(find.textContaining('S/'), findsNothing);
       expect(find.text('SI SIEMBRAS ARROZ OTRA VEZ'), findsOneWidget);
     });
 
@@ -202,7 +205,9 @@ void main() {
       expect(find.text(l10n.optionRecommended), findsOneWidget);
       expect(find.text(l10n.optionOther), findsOneWidget);
       expect(find.text('Arroz y arroz'), findsOneWidget);
-      expect(find.text('S/ 3,000'), findsOneWidget);
+      // Lo actual (arroz) con lluvias fuertes: 55 % de una buena campaña.
+      expect(find.text(l10n.metricExpectedHarvest), findsWidgets);
+      expect(find.text('55%'), findsOneWidget);
       expect(find.text('14,500 m³'), findsOneWidget);
     });
 
@@ -215,7 +220,13 @@ void main() {
         find.text('Maíz y después frejol y después algodón y menestra.'),
         findsOneWidget,
       );
-      expect(find.text('Dic–Mar'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(LongTermPlanCard),
+          matching: find.text('Dic–Mar'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Tierra: buena'), findsOneWidget);
     });
 

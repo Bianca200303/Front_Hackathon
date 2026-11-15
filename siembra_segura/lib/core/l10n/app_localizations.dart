@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
+import 'app_localizations_qu.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +94,11 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('es')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('es'),
+    Locale('qu'),
+  ];
 
   /// No description provided for @appTitle.
   ///
@@ -129,12 +135,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Avisos, hay avisos nuevos'**
   String get tabAlertsUnreadSemantics;
-
-  /// No description provided for @actionStart.
-  ///
-  /// In es, this message translates to:
-  /// **'Empezar'**
-  String get actionStart;
 
   /// No description provided for @actionBack.
   ///
@@ -199,7 +199,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmTitle.
   ///
   /// In es, this message translates to:
-  /// **'Tu parcela'**
+  /// **'Datos de tu chacra'**
   String get farmTitle;
 
   /// No description provided for @climateTitle.
@@ -532,12 +532,6 @@ abstract class AppLocalizations {
   /// **'Listo: usamos de nuevo los valores sugeridos.'**
   String get farmResetDone;
 
-  /// No description provided for @farmSettingsTooltip.
-  ///
-  /// In es, this message translates to:
-  /// **'Mi parcela: cambiar cultivo, prioridad o restricciones'**
-  String get farmSettingsTooltip;
-
   /// No description provided for @farmRestrictionsQuestion.
   ///
   /// In es, this message translates to:
@@ -547,7 +541,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmNarration.
   ///
   /// In es, this message translates to:
-  /// **'Hola {name}. Por el satélite creemos que la última campaña sembraste {crop}. Si no es así, toca el cultivo correcto. Luego dinos qué te importa más esta campaña: ganar más, cuidar tu agua o recuperar tu tierra.'**
+  /// **'Hola {name}. Por el satélite creemos que la última campaña sembraste {crop}. Si no es así, toca el cultivo correcto. Luego dinos qué te importa más esta campaña: que el clima no malogre tu cosecha, cuidar tu agua o recuperar tu tierra.'**
   String farmNarration(String name, String crop);
 
   /// No description provided for @weatherSunny.
@@ -812,29 +806,29 @@ abstract class AppLocalizations {
   /// **'SI EL AÑO VIENE SECO, TE CONVIENE'**
   String get recommendationIfDry;
 
-  /// No description provided for @outcomeIfGood.
+  /// No description provided for @outcomeExpected.
   ///
   /// In es, this message translates to:
-  /// **'Si va bien:'**
-  String get outcomeIfGood;
+  /// **'Cosecha esperada:'**
+  String get outcomeExpected;
 
-  /// No description provided for @outcomeIfGoodValue.
+  /// No description provided for @outcomeExpectedValue.
   ///
   /// In es, this message translates to:
-  /// **'ganas unos {amount}'**
-  String outcomeIfGoodValue(String amount);
+  /// **'{percent} de una buena campaña'**
+  String outcomeExpectedValue(String percent);
 
-  /// No description provided for @outcomeIfBad.
+  /// No description provided for @outcomeWorst.
   ///
   /// In es, this message translates to:
-  /// **'Si va mal:'**
-  String get outcomeIfBad;
+  /// **'En un mal año:'**
+  String get outcomeWorst;
 
-  /// No description provided for @outcomeIfBadValue.
+  /// No description provided for @outcomeWorstValue.
   ///
   /// In es, this message translates to:
-  /// **'pierdes hasta {amount}'**
-  String outcomeIfBadValue(String amount);
+  /// **'baja a {percent}'**
+  String outcomeWorstValue(String percent);
 
   /// No description provided for @outcomeIfNormal.
   ///
@@ -845,8 +839,8 @@ abstract class AppLocalizations {
   /// No description provided for @outcomeIfNormalValue.
   ///
   /// In es, this message translates to:
-  /// **'igual ganas unos {amount}'**
-  String outcomeIfNormalValue(String amount);
+  /// **'igual cosechas {percent}'**
+  String outcomeIfNormalValue(String percent);
 
   /// No description provided for @outcomeWater.
   ///
@@ -887,15 +881,15 @@ abstract class AppLocalizations {
   /// No description provided for @recommendationNarration.
   ///
   /// In es, this message translates to:
-  /// **'Lo más probable en tu valle hasta {month} son {scenario}, con {probability} de probabilidad. Pensando en {priority}, te recomendamos {rotation}. Si va bien, ganas unos {profit} por hectárea. Si va mal, pierdes hasta {loss}. Tu tierra {soil}. {repeatWarning}'**
+  /// **'Lo más probable en tu valle hasta {month} son {scenario}, con {probability} de probabilidad. Pensando en {priority}, te recomendamos {rotation}. Se espera cosechar {harvest} de una buena campaña; en un mal año, {worst}. Tu tierra {soil}. {repeatWarning}'**
   String recommendationNarration(
     String month,
     String scenario,
     String probability,
     String priority,
     String rotation,
-    String profit,
-    String loss,
+    String harvest,
+    String worst,
     String soil,
     String repeatWarning,
   );
@@ -1062,11 +1056,11 @@ abstract class AppLocalizations {
   /// **'OTRA OPCIÓN'**
   String get optionOther;
 
-  /// No description provided for @metricExpectedProfit.
+  /// No description provided for @metricExpectedHarvest.
   ///
   /// In es, this message translates to:
-  /// **'Ganancia esperada'**
-  String get metricExpectedProfit;
+  /// **'Cosecha esperada'**
+  String get metricExpectedHarvest;
 
   /// No description provided for @metricWater.
   ///
@@ -1213,6 +1207,894 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Podrás hacer preguntas próximamente.'**
   String get messageChatComingSoon;
+
+  /// No description provided for @semiAvatarSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Semi, tu asistente de campo'**
+  String get semiAvatarSemantics;
+
+  /// No description provided for @appModeSwitchSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo de uso'**
+  String get appModeSwitchSemantics;
+
+  /// No description provided for @appModeAssistedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistencia'**
+  String get appModeAssistedTitle;
+
+  /// No description provided for @appModeManualTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Llenado manual'**
+  String get appModeManualTitle;
+
+  /// No description provided for @semiFarmGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Hola! Soy Semi. Cuéntame qué sembraste la última campaña y qué te importa más. Con eso te ayudo a decidir.'**
+  String get semiFarmGuide;
+
+  /// No description provided for @semiClimateGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'Miré el cielo con los satélites de la NASA. Aquí te cuento cómo viene el clima para tu chacra.'**
+  String get semiClimateGuide;
+
+  /// No description provided for @semiRecommendationGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'Con tu tierra y el clima, esto es lo que más te conviene sembrar. Toca cada opción para ver por qué.'**
+  String get semiRecommendationGuide;
+
+  /// No description provided for @semiPlantingScheduleGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'Sembrar en el momento justo hace la diferencia. Aquí ves cuándo te conviene.'**
+  String get semiPlantingScheduleGuide;
+
+  /// No description provided for @semiRotationGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar de cultivo cada campaña deja descansar la tierra. Mira cómo quedaría tu suelo con cada opción.'**
+  String get semiRotationGuide;
+
+  /// No description provided for @semiAlertsGuide.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí te aviso si viene lluvia fuerte, calor o plagas. ¡Revísalos seguido!'**
+  String get semiAlertsGuide;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes: modo, idioma y tu parcela'**
+  String get settingsTooltip;
+
+  /// No description provided for @settingsModeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo quieres usar la app'**
+  String get settingsModeTitle;
+
+  /// No description provided for @settingsLanguageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma'**
+  String get settingsLanguageTitle;
+
+  /// No description provided for @settingsEditFarm.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar los datos de mi parcela'**
+  String get settingsEditFarm;
+
+  /// Opción que sigue el idioma del celular; language es el idioma que resultó.
+  ///
+  /// In es, this message translates to:
+  /// **'Automático: {language}'**
+  String languageAutomatic(String language);
+
+  /// No description provided for @languageSpanish.
+  ///
+  /// In es, this message translates to:
+  /// **'Español'**
+  String get languageSpanish;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In es, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageQuechua.
+  ///
+  /// In es, this message translates to:
+  /// **'Runasimi (quechua)'**
+  String get languageQuechua;
+
+  /// No description provided for @languageQuechuaDraftNote.
+  ///
+  /// In es, this message translates to:
+  /// **'El quechua está en revisión: lo que falta traducir se muestra en español.'**
+  String get languageQuechuaDraftNote;
+
+  /// No description provided for @languageButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma: {language}'**
+  String languageButton(String language);
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Hola, soy Semi'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Te ayudo a decidir qué sembrar para cuidar tu tierra y tu agua.'**
+  String get welcomeBody;
+
+  /// No description provided for @welcomeAiNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Semi es un personaje creado con IA'**
+  String get welcomeAiNote;
+
+  /// No description provided for @welcomeQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo prefieres empezar?'**
+  String get welcomeQuestion;
+
+  /// No description provided for @welcomeAssistedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Que Semi me pregunte'**
+  String get welcomeAssistedTitle;
+
+  /// No description provided for @welcomeAssistedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo asistido: te hago preguntas cortitas, una por una, y te explico todo.'**
+  String get welcomeAssistedBody;
+
+  /// No description provided for @welcomeManualTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Llenar yo mismo'**
+  String get welcomeManualTitle;
+
+  /// No description provided for @welcomeManualBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Llenado manual: todo en una sola pantalla, más rápido si ya conoces la app.'**
+  String get welcomeManualBody;
+
+  /// No description provided for @welcomeChangeLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes cambiarlo cuando quieras en Ajustes.'**
+  String get welcomeChangeLater;
+
+  /// No description provided for @themeToDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar a modo oscuro'**
+  String get themeToDark;
+
+  /// No description provided for @themeToLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar a modo claro'**
+  String get themeToLight;
+
+  /// No description provided for @settingsAppearanceTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Apariencia'**
+  String get settingsAppearanceTitle;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In es, this message translates to:
+  /// **'Automático'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Claro'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Oscuro'**
+  String get themeDark;
+
+  /// No description provided for @themeSwitchSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Apariencia de la pantalla'**
+  String get themeSwitchSemantics;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Conversando con Semi'**
+  String get chatTitle;
+
+  /// No description provided for @chatSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Te hago unas preguntas cortitas'**
+  String get chatSubtitle;
+
+  /// No description provided for @chatProgressSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Pregunta {current} de {total}'**
+  String chatProgressSemantics(int current, int total);
+
+  /// No description provided for @chatThinkingSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Semi está pensando'**
+  String get chatThinkingSemantics;
+
+  /// No description provided for @chatYouSaid.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú: {answer}'**
+  String chatYouSaid(String answer);
+
+  /// No description provided for @chatParcelQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Hola! Encontré tu chacra en {valley}. Mide {area} hectáreas. ¿Es esta?'**
+  String chatParcelQuestion(String valley, String area);
+
+  /// No description provided for @chatParcelWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'La veo en las fotos del satélite: sus bordes, surcos y caminos.'**
+  String get chatParcelWhy;
+
+  /// No description provided for @chatParcelYes.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí, es mi chacra'**
+  String get chatParcelYes;
+
+  /// No description provided for @chatParcelNo.
+  ///
+  /// In es, this message translates to:
+  /// **'No, es otra'**
+  String get chatParcelNo;
+
+  /// No description provided for @chatParcelNoReply.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por decirme. Pronto podrás marcarla en el mapa. Por ahora seguimos con esta.'**
+  String get chatParcelNoReply;
+
+  /// No description provided for @chatLastCropQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'Miré cómo creció lo verde en tu chacra la última vez. Parece que sembraste {crop}. ¿Es así?'**
+  String chatLastCropQuestion(String crop);
+
+  /// No description provided for @chatLastCropWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada cultivo crece distinto. Si me corriges, aprendo y te ayudo mejor a ti y a tus vecinos.'**
+  String get chatLastCropWhy;
+
+  /// No description provided for @chatLastCropYes.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí, {crop}'**
+  String chatLastCropYes(String crop);
+
+  /// No description provided for @chatLastCropNo.
+  ///
+  /// In es, this message translates to:
+  /// **'No, fue {crop}'**
+  String chatLastCropNo(String crop);
+
+  /// No description provided for @chatPriorityQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué es lo que más te importa en esta campaña?'**
+  String get chatPriorityQuestion;
+
+  /// No description provided for @chatPriorityWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Con esto ordeno las opciones según lo que tú quieres.'**
+  String get chatPriorityWhy;
+
+  /// No description provided for @chatRestrictionQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'Última pregunta: ¿hay algo que no puedas hacer?'**
+  String get chatRestrictionQuestion;
+
+  /// No description provided for @chatRestrictionWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Así no te recomiendo algo que no te sirve.'**
+  String get chatRestrictionWhy;
+
+  /// No description provided for @chatRestrictionNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Nada, todo bien'**
+  String get chatRestrictionNone;
+
+  /// No description provided for @chatDone.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Listo! Ya tengo tu plan.'**
+  String get chatDone;
+
+  /// No description provided for @actionSeePlan.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi plan'**
+  String get actionSeePlan;
+
+  /// No description provided for @farmParcelLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu chacra'**
+  String get farmParcelLabel;
+
+  /// No description provided for @farmParcelSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{area} ha en {valley}, riego de {source}'**
+  String farmParcelSummary(String area, String valley, String source);
+
+  /// No description provided for @farmParcelSource.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcada con fotos de satélite de la NASA'**
+  String get farmParcelSource;
+
+  /// No description provided for @farmSatelliteBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Satélite'**
+  String get farmSatelliteBadge;
+
+  /// No description provided for @helpButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayuda'**
+  String get helpButton;
+
+  /// No description provided for @helpButtonSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Preguntarle a Semi'**
+  String get helpButtonSemantics;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Pregúntale a Semi'**
+  String get helpTitle;
+
+  /// No description provided for @helpClose.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get helpClose;
+
+  /// No description provided for @helpIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'¿En qué te ayudo? Puedes preguntarme sobre {topic}, cambiar algo de la app o ver cómo se usa.'**
+  String helpIntro(String topic);
+
+  /// No description provided for @helpTopicClimate.
+  ///
+  /// In es, this message translates to:
+  /// **'el clima'**
+  String get helpTopicClimate;
+
+  /// No description provided for @helpTopicWhatToPlant.
+  ///
+  /// In es, this message translates to:
+  /// **'qué sembrar'**
+  String get helpTopicWhatToPlant;
+
+  /// No description provided for @helpTopicRotation.
+  ///
+  /// In es, this message translates to:
+  /// **'la rotación'**
+  String get helpTopicRotation;
+
+  /// No description provided for @helpTopicAlerts.
+  ///
+  /// In es, this message translates to:
+  /// **'los avisos'**
+  String get helpTopicAlerts;
+
+  /// No description provided for @helpGroupMeaning.
+  ///
+  /// In es, this message translates to:
+  /// **'Qué significa'**
+  String get helpGroupMeaning;
+
+  /// No description provided for @helpGroupChange.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar algo'**
+  String get helpGroupChange;
+
+  /// No description provided for @helpGroupHowTo.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo se usa'**
+  String get helpGroupHowTo;
+
+  /// No description provided for @helpYouAsked.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú preguntaste: {question}'**
+  String helpYouAsked(String question);
+
+  /// No description provided for @helpInputHint.
+  ///
+  /// In es, this message translates to:
+  /// **'O escribe, por ejemplo: abono verde'**
+  String get helpInputHint;
+
+  /// No description provided for @helpAsk.
+  ///
+  /// In es, this message translates to:
+  /// **'Preguntar'**
+  String get helpAsk;
+
+  /// No description provided for @helpUnknown.
+  ///
+  /// In es, this message translates to:
+  /// **'Uy, eso no lo sé todavía. Toca una de estas preguntas y te explico.'**
+  String get helpUnknown;
+
+  /// No description provided for @helpProbableQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué quiere decir \"lo más probable\"?'**
+  String get helpProbableQ;
+
+  /// No description provided for @helpProbableA.
+  ///
+  /// In es, this message translates to:
+  /// **'Miramos cómo vino la lluvia en tu valle en años parecidos a este. \"Lo más probable\" es lo que pasó más veces. No es seguro: por eso también te muestro las otras posibilidades.'**
+  String get helpProbableA;
+
+  /// No description provided for @helpProbableK.
+  ///
+  /// In es, this message translates to:
+  /// **'probable,seguro,acierta,porcentaje,posibilidad'**
+  String get helpProbableK;
+
+  /// No description provided for @helpSourceQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿De dónde sale el pronóstico?'**
+  String get helpSourceQ;
+
+  /// No description provided for @helpSourceA.
+  ///
+  /// In es, this message translates to:
+  /// **'La lluvia de esta semana viene del pronóstico del día. Lo de los próximos meses lo calculamos con satélites de la NASA: lluvia (GPM), calor (NASA POWER) y humedad de la tierra (SMAP) en tu valle. También revisamos los comunicados del ENFEN sobre El Niño.'**
+  String get helpSourceA;
+
+  /// No description provided for @helpSourceK.
+  ///
+  /// In es, this message translates to:
+  /// **'nasa,satelite,fuente,sale,pronostico,datos,enfen,niño'**
+  String get helpSourceK;
+
+  /// No description provided for @helpRainMmQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué son los mm de lluvia?'**
+  String get helpRainMmQ;
+
+  /// No description provided for @helpRainMmA.
+  ///
+  /// In es, this message translates to:
+  /// **'Es cuánta agua cae. 1 mm es como si se juntara una capa de agua de 1 milímetro sobre tu chacra. Con 40 mm en un día ya es lluvia fuerte: mejor no abonar ni fumigar ese día.'**
+  String get helpRainMmA;
+
+  /// No description provided for @helpRainMmK.
+  ///
+  /// In es, this message translates to:
+  /// **'mm,milimetro,cuanta lluvia,cuanto llueve'**
+  String get helpRainMmK;
+
+  /// No description provided for @helpMoistureQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo sabe el satélite si mi tierra está mojada?'**
+  String get helpMoistureQ;
+
+  /// No description provided for @helpMoistureA.
+  ///
+  /// In es, this message translates to:
+  /// **'El satélite SMAP de la NASA mide la humedad de la tierra desde el espacio, cada pocos días. Mide toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.'**
+  String get helpMoistureA;
+
+  /// No description provided for @helpMoistureK.
+  ///
+  /// In es, this message translates to:
+  /// **'humedad,mojada,humeda,seca,smap'**
+  String get helpMoistureK;
+
+  /// No description provided for @helpHarvestQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué es la cosecha esperada?'**
+  String get helpHarvestQ;
+
+  /// No description provided for @helpHarvestA.
+  ///
+  /// In es, this message translates to:
+  /// **'Es cuánto se espera cosechar comparado con una buena campaña de ese cultivo en tu valle. 100% sería una cosecha completa. Si sale menos, es porque el clima o la tierra le pueden quitar algo. La calculamos con el verdor que vieron los satélites en años parecidos.'**
+  String get helpHarvestA;
+
+  /// No description provided for @helpHarvestK.
+  ///
+  /// In es, this message translates to:
+  /// **'cosecha,rinde,rendimiento,produccion,esperada'**
+  String get helpHarvestK;
+
+  /// No description provided for @helpWaterQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué significa el agua?'**
+  String get helpWaterQ;
+
+  /// No description provided for @helpWaterA.
+  ///
+  /// In es, this message translates to:
+  /// **'Es el agua que necesitan los cultivos en una campaña, por cada hectárea. Se mide en metros cúbicos: 1 m³ es como un tanque de mil litros. Usar menos agua ayuda cuando el reservorio está bajo.'**
+  String get helpWaterA;
+
+  /// No description provided for @helpWaterK.
+  ///
+  /// In es, this message translates to:
+  /// **'agua,riego,m3,m³,metros cubicos,regar'**
+  String get helpWaterK;
+
+  /// No description provided for @helpSoilQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué quiere decir \"tu tierra: buena\"?'**
+  String get helpSoilQ;
+
+  /// No description provided for @helpSoilA.
+  ///
+  /// In es, this message translates to:
+  /// **'Es cómo quedaría tu tierra después de 2 años. Si siembras lo mismo una y otra vez, la tierra se cansa y llegan más plagas. Si cambias de cultivo y pones frejol o menestra, la tierra descansa y mejora.'**
+  String get helpSoilA;
+
+  /// No description provided for @helpSoilK.
+  ///
+  /// In es, this message translates to:
+  /// **'tierra,suelo,cansada,buena,regular'**
+  String get helpSoilK;
+
+  /// No description provided for @helpDeadlineQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué tengo que decidir antes de una fecha?'**
+  String get helpDeadlineQ;
+
+  /// No description provided for @helpDeadlineA.
+  ///
+  /// In es, this message translates to:
+  /// **'Porque hay que preparar la tierra y conseguir la semilla antes de que empiece la siembra. Si esperas más, se te puede pasar la mejor época para ese cultivo.'**
+  String get helpDeadlineA;
+
+  /// No description provided for @helpDeadlineK.
+  ///
+  /// In es, this message translates to:
+  /// **'fecha,cuando,decidir,diciembre,antes'**
+  String get helpDeadlineK;
+
+  /// No description provided for @helpBlocksQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo leo los bloques de colores?'**
+  String get helpBlocksQ;
+
+  /// No description provided for @helpBlocksA.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada bloque es una campaña. Se lee de arriba hacia abajo: el primero es lo que siembras ahora y el último es dentro de 2 años. Cada cultivo tiene su color, así ves rápido si repites lo mismo.'**
+  String get helpBlocksA;
+
+  /// No description provided for @helpBlocksK.
+  ///
+  /// In es, this message translates to:
+  /// **'color,colores,bloque,leo,leer,plan'**
+  String get helpBlocksK;
+
+  /// No description provided for @helpRotateQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué cambiar de cultivo?'**
+  String get helpRotateQ;
+
+  /// No description provided for @helpRotateA.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada cultivo saca de la tierra cosas distintas y atrae plagas distintas. Si cambias, la tierra se recupera y las plagas no se acumulan. Así tu cosecha aguanta mejor los años difíciles.'**
+  String get helpRotateA;
+
+  /// No description provided for @helpRotateK.
+  ///
+  /// In es, this message translates to:
+  /// **'rotacion,rotar,cambiar de cultivo,plagas,por que cambiar'**
+  String get helpRotateK;
+
+  /// No description provided for @helpGreenManureQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué es el abono verde?'**
+  String get helpGreenManureQ;
+
+  /// No description provided for @helpGreenManureA.
+  ///
+  /// In es, this message translates to:
+  /// **'Es una planta que se siembra para no cosecharla: se deja en la tierra para que se descomponga y la alimente. Es como darle descanso y comida a tu chacra al mismo tiempo.'**
+  String get helpGreenManureA;
+
+  /// No description provided for @helpGreenManureK.
+  ///
+  /// In es, this message translates to:
+  /// **'abono,verde,cobertura,descanso'**
+  String get helpGreenManureK;
+
+  /// No description provided for @helpAlertsQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cuándo me llegan los avisos?'**
+  String get helpAlertsQ;
+
+  /// No description provided for @helpAlertsA.
+  ///
+  /// In es, this message translates to:
+  /// **'Te aviso cuando viene lluvia fuerte, cuando tu tierra está muy mojada o muy seca, y cuando cambia el pronóstico de los próximos meses. Si nada cambia, no te molesto.'**
+  String get helpAlertsA;
+
+  /// No description provided for @helpAlertsK.
+  ///
+  /// In es, this message translates to:
+  /// **'aviso,alerta,notificacion,llegan,mensaje'**
+  String get helpAlertsK;
+
+  /// No description provided for @helpListenQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo escucho lo que dice Semi?'**
+  String get helpListenQ;
+
+  /// No description provided for @helpListenA.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca \"Escuchar\" debajo de lo que digo y te lo leo en voz alta. Sube el volumen de tu celular.'**
+  String get helpListenA;
+
+  /// No description provided for @helpListenK.
+  ///
+  /// In es, this message translates to:
+  /// **'escuchar,oir,voz,leer,audio,no veo,sonido'**
+  String get helpListenK;
+
+  /// No description provided for @helpToDarkQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Poner la pantalla oscura'**
+  String get helpToDarkQ;
+
+  /// No description provided for @helpToDarkA.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo, puse la pantalla oscura. Cansa menos la vista de noche.'**
+  String get helpToDarkA;
+
+  /// No description provided for @helpToLightQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Poner la pantalla clara'**
+  String get helpToLightQ;
+
+  /// No description provided for @helpToLightA.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo, puse la pantalla clara. Se ve mejor con sol.'**
+  String get helpToLightA;
+
+  /// No description provided for @helpThemeK.
+  ///
+  /// In es, this message translates to:
+  /// **'oscuro,oscura,claro,clara,noche,brillo,pantalla'**
+  String get helpThemeK;
+
+  /// No description provided for @helpToManualQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Llenar yo mismo, sin preguntas'**
+  String get helpToManualQ;
+
+  /// No description provided for @helpToManualA.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo. Desde ahora llenas los datos en una sola pantalla. Si me necesitas, toca mi botón.'**
+  String get helpToManualA;
+
+  /// No description provided for @helpToAssistedQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Que Semi me pregunte'**
+  String get helpToAssistedQ;
+
+  /// No description provided for @helpToAssistedA.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo. Desde ahora te acompaño en cada pantalla y te pregunto una cosa a la vez.'**
+  String get helpToAssistedA;
+
+  /// No description provided for @helpModeK.
+  ///
+  /// In es, this message translates to:
+  /// **'modo,manual,asistido,asistencia,formulario,preguntas'**
+  String get helpModeK;
+
+  /// No description provided for @helpFarmQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar los datos de mi chacra'**
+  String get helpFarmQ;
+
+  /// No description provided for @helpFarmA.
+  ///
+  /// In es, this message translates to:
+  /// **'Te vuelvo a preguntar por tu chacra. Lo demás se queda igual.'**
+  String get helpFarmA;
+
+  /// No description provided for @helpFarmK.
+  ///
+  /// In es, this message translates to:
+  /// **'datos,corregir,me equivoque,editar,chacra,parcela'**
+  String get helpFarmK;
+
+  /// No description provided for @helpLanguageQ.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar el idioma'**
+  String get helpLanguageQ;
+
+  /// No description provided for @helpLanguageA.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige el idioma en el que quieres que te hable.'**
+  String get helpLanguageA;
+
+  /// No description provided for @helpLanguageK.
+  ///
+  /// In es, this message translates to:
+  /// **'idioma,lengua,ingles,quechua,español,runasimi'**
+  String get helpLanguageK;
+
+  /// No description provided for @helpLanguageAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir idioma'**
+  String get helpLanguageAction;
+
+  /// No description provided for @simTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Prueba tu propio plan'**
+  String get simTitle;
+
+  /// No description provided for @simIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca una campaña para elegir qué sembrar. Luego mira cómo te iría.'**
+  String get simIntro;
+
+  /// No description provided for @simClimateNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Primera campaña: {scenario}. Después, años normales.'**
+  String simClimateNote(String scenario);
+
+  /// No description provided for @simSlotSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'{period}: {crop}. Toca para cambiar'**
+  String simSlotSemantics(String period, String crop);
+
+  /// No description provided for @simPickTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué siembras en {period}?'**
+  String simPickTitle(String period);
+
+  /// No description provided for @simCropUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No disponible: {reason}'**
+  String simCropUnavailable(String reason);
+
+  /// No description provided for @simRun.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver cómo te iría'**
+  String get simRun;
+
+  /// No description provided for @simHarvestStep.
+  ///
+  /// In es, this message translates to:
+  /// **'Cosecha {percent}'**
+  String simHarvestStep(String percent);
+
+  /// No description provided for @simGreenManureStep.
+  ///
+  /// In es, this message translates to:
+  /// **'Abona la tierra'**
+  String get simGreenManureStep;
+
+  /// No description provided for @simResultTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Así te iría con tu plan'**
+  String get simResultTitle;
+
+  /// No description provided for @simCompare.
+  ///
+  /// In es, this message translates to:
+  /// **'Con el plan recomendado: cosecha {harvest}, agua {water} y tierra {soil}.'**
+  String simCompare(String harvest, String water, String soil);
+
+  /// No description provided for @simNarration.
+  ///
+  /// In es, this message translates to:
+  /// **'Con tu plan, tu tierra queda {soil} y cosecharías {harvest} de una buena campaña, en promedio. Usarías {water} de agua por hectárea.'**
+  String simNarration(String soil, String harvest, String water);
+
+  /// No description provided for @simReset.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver al plan recomendado'**
+  String get simReset;
+
+  /// No description provided for @simWaterTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua en 2 años'**
+  String get simWaterTotal;
 }
 
 class _AppLocalizationsDelegate
@@ -1226,7 +2108,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['es'].contains(locale.languageCode);
+      <String>['en', 'es', 'qu'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1235,8 +2117,12 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
     case 'es':
       return AppLocalizationsEs();
+    case 'qu':
+      return AppLocalizationsQu();
   }
 
   throw FlutterError(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/shared/widgets/constrained_content.dart';
@@ -14,6 +14,7 @@ class ScreenLayout extends StatelessWidget {
   const ScreenLayout({
     required this.body,
     this.header,
+    this.guide,
     this.footer,
     this.backgroundColor,
     this.wide = false,
@@ -22,6 +23,11 @@ class ScreenLayout extends StatelessWidget {
 
   /// Cabecera fija (normalmente [ScreenHeader]).
   final Widget? header;
+
+  /// Selector de modo y Semi presentando la pantalla (normalmente
+  /// `SemiGuide`), bajo la cabecera. Se desplaza junto con el contenido: al bajar, deja todo el
+  /// espacio a la pantalla (importante con letra grande o en horizontal).
+  final Widget? guide;
 
   /// Contenido desplazable (normalmente [ScreenContent]).
   final Widget body;
@@ -51,7 +57,17 @@ class ScreenLayout extends StatelessWidget {
           child: Column(
             children: [
               ?header,
-              Expanded(child: body),
+              Expanded(
+                child: switch (guide) {
+                  final guide? => NestedScrollView(
+                    headerSliverBuilder: (context, _) => [
+                      SliverToBoxAdapter(child: guide),
+                    ],
+                    body: body,
+                  ),
+                  null => body,
+                },
+              ),
             ],
           ),
         ),
@@ -96,7 +112,7 @@ class ScreenContent extends StatelessWidget {
         AppSpacing.screenGutter,
         AppSpacing.xs,
         AppSpacing.screenGutter,
-        AppSpacing.xxl,
+        AppSizes.helpButtonClearance,
       ),
       itemCount: children.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sectionGap),
@@ -158,8 +174,12 @@ class ScreenHeader extends StatelessWidget {
   final bool showListen;
 
   /// Botones de icono extra a la derecha, antes de "Escuchar" (p. ej.,
-  /// `FarmSettingsButton`).
+  /// `AppSettingsButton`).
   final List<Widget> actions;
+
+  /// Ancho mínimo del título (a escala de texto 1) para ir junto a los
+  /// botones; por debajo, los botones van en su propia fila.
+  static const double _minTitleWidth = 110;
 
   @override
   Widget build(BuildContext context) {
@@ -173,21 +193,51 @@ class ScreenHeader extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Ancho aproximado del botón "Escuchar" con texto. Si ocupa más
-          // del 40 % de la cabecera, se muestra solo el icono.
+          // del 35 % de lo que dejan los otros botones, solo el icono.
           final listenWidth = MediaQuery.textScalerOf(context).scale(120);
+          final iconButtons = actions.length;
           final available =
-              constraints.maxWidth - actions.length * AppSizes.minTouchTarget;
-          final compactListen = listenWidth > available * 0.4;
+              constraints.maxWidth - iconButtons * AppSizes.minTouchTarget;
+          final compactListen = listenWidth > available * 0.35;
+          final buttons = [
+            ...actions,
+            if (showListen)
+              ListenButton(text: listenText, compact: compactListen),
+          ];
+          final start =
+              leading ?? ScreenTitle(title: title!, subtitle: subtitle);
+
+          // Con letra muy grande, el título junto a los botones se partiría
+          // en muchas líneas: los botones suben a su propia fila.
+          final buttonsWidth =
+              (compactListen || !showListen
+                  ? buttons.length * AppSizes.minTouchTarget
+                  : iconButtons * AppSizes.minTouchTarget + listenWidth) +
+              buttons.length * AppSpacing.sm;
+          final titleWidth = constraints.maxWidth - buttonsWidth;
+          final minTitleWidth = MediaQuery.textScalerOf(
+            context,
+          ).scale(_minTitleWidth);
+          if (buttons.isNotEmpty && titleWidth < minTitleWidth) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.xs,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  spacing: AppSpacing.sm,
+                  children: buttons,
+                ),
+                start,
+              ],
+            );
+          }
+
           return Row(
             spacing: AppSpacing.sm,
             children: [
-              Expanded(
-                child:
-                    leading ?? ScreenTitle(title: title!, subtitle: subtitle),
-              ),
-              ...actions,
-              if (showListen)
-                ListenButton(text: listenText, compact: compactListen),
+              Expanded(child: start),
+              ...buttons,
             ],
           );
         },
@@ -215,8 +265,7 @@ class ScreenTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (subtitleText != null)
-          Text(subtitleText, style: AppTypography.muted),
+        if (subtitleText != null) Text(subtitleText, style: context.text.muted),
         Semantics(
           header: true,
           child: Text(title, style: theme.textTheme.headlineMedium),
@@ -229,23 +278,19 @@ class ScreenTitle extends StatelessWidget {
 /// Botón "Volver". Si no hay historial, navega a [fallbackLocation].
 class AppBackButton extends StatelessWidget {
   /// Crea el botón.
-  const AppBackButton({
-    required this.fallbackLocation,
-    this.color = AppColors.textPrimary,
-    super.key,
-  });
+  const AppBackButton({required this.fallbackLocation, this.color, super.key});
 
   /// Ruta a la que ir si no hay pantalla anterior.
   final String fallbackLocation;
 
-  /// Color del icono.
-  final Color color;
+  /// Color del icono; por defecto, el del texto principal.
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       tooltip: AppLocalizations.of(context).actionBack,
-      color: color,
+      color: color ?? context.colors.textPrimary,
       icon: const Icon(Icons.arrow_back_ios_new_rounded),
       onPressed: () =>
           context.canPop() ? context.pop() : context.go(fallbackLocation),
@@ -267,7 +312,7 @@ class BrandMark extends StatelessWidget {
         Flexible(
           child: Text(
             AppLocalizations.of(context).appTitle,
-            style: AppTypography.cardTitle,
+            style: context.text.cardTitle,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -281,8 +326,8 @@ class AppLogo extends StatelessWidget {
   /// Crea el logo.
   const AppLogo({
     this.size = 36,
-    this.background = AppColors.primary,
-    this.foreground = AppColors.onPrimary,
+    this.background,
+    this.foreground,
     this.circular = false,
     super.key,
   });
@@ -290,11 +335,11 @@ class AppLogo extends StatelessWidget {
   /// Lado del logo, en dp.
   final double size;
 
-  /// Color de fondo.
-  final Color background;
+  /// Color de fondo; por defecto, el verde de marca.
+  final Color? background;
 
-  /// Color de la hoja.
-  final Color foreground;
+  /// Color de la hoja; por defecto, el que va sobre el verde.
+  final Color? foreground;
 
   /// Si es `true`, círculo; si no, cuadrado redondeado.
   final bool circular;
@@ -306,10 +351,14 @@ class AppLogo extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: background,
+          color: background ?? context.colors.primary,
           borderRadius: BorderRadius.circular(circular ? size / 2 : 10),
         ),
-        child: Icon(Icons.eco_rounded, color: foreground, size: size * 0.56),
+        child: Icon(
+          Icons.eco_rounded,
+          color: foreground ?? context.colors.onPrimary,
+          size: size * 0.56,
+        ),
       ),
     );
   }

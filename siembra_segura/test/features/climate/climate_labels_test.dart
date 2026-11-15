@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:siembra_segura/core/l10n/app_localizations_es.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/features/climate/domain/climate_overview.dart';
 import 'package:siembra_segura/features/climate/presentation/climate_labels.dart';
 
@@ -55,9 +55,12 @@ void main() {
     final heat = anomaly(ClimateMetric.temperature, const DegreesFromNormal(2));
     final normal = anomaly(ClimateMetric.rainfall, const TimesNormal(1));
 
-    expect(heat.barColor, AppColors.heat);
-    expect(heat.statusTone, AppColors.heatTone);
-    expect(normal.statusTone, AppColors.normalTone);
+    const colors = AppPalette.light;
+    expect(heat.barColor(colors), colors.heat);
+    expect(heat.statusTone(colors), colors.heatTone);
+    expect(normal.statusTone(colors), colors.normalTone);
+    // En oscuro cambian los colores, no la regla.
+    expect(heat.barColor(AppPalette.dark), AppPalette.dark.heat);
   });
 
   test('ClimateOverview encuentra el primer día de lluvia fuerte', () {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
@@ -83,9 +83,9 @@ class _ParcelMap extends StatelessWidget {
       label: AppLocalizations.of(context).farmMapSemantics,
       child: Stack(
         children: [
-          const AspectRatio(
+          AspectRatio(
             aspectRatio: 350 / 130,
-            child: CustomPaint(painter: _ParcelMapPainter()),
+            child: CustomPaint(painter: _ParcelMapPainter(context.colors)),
           ),
           Positioned(
             left: AppSpacing.md,
@@ -96,14 +96,16 @@ class _ParcelMap extends StatelessWidget {
                   horizontal: AppSpacing.sm,
                   vertical: AppSpacing.xs,
                 ),
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.all(Radius.circular(AppRadii.sm)),
+                decoration: BoxDecoration(
+                  color: context.colors.surface,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(AppRadii.sm),
+                  ),
                 ),
                 child: Text(
                   caption,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                 ),
               ),
@@ -117,12 +119,14 @@ class _ParcelMap extends StatelessWidget {
 
 /// Reproduce el SVG de la referencia en un lienzo de 350 × 130.
 class _ParcelMapPainter extends CustomPainter {
-  const _ParcelMapPainter();
+  _ParcelMapPainter(this.colors);
 
-  static const _field = AppColors.mapField;
-  static const _road = AppColors.mapRoad;
-  static const _canal = AppColors.mapCanal;
-  static const _plot = AppColors.mapPlot;
+  final AppPalette colors;
+
+  Color get _field => colors.mapField;
+  Color get _road => colors.mapRoad;
+  Color get _canal => colors.mapCanal;
+  Color get _plot => colors.mapPlot;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -160,12 +164,12 @@ class _ParcelMapPainter extends CustomPainter {
     canvas
       ..drawPath(
         parcel,
-        Paint()..color = AppColors.primary.withValues(alpha: 0.22),
+        Paint()..color = colors.primary.withValues(alpha: 0.22),
       )
       ..drawPath(
         parcel,
         Paint()
-          ..color = AppColors.primary
+          ..color = colors.primary
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3
           ..strokeJoin = StrokeJoin.round,
@@ -173,5 +177,30 @@ class _ParcelMapPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ParcelMapPainter oldDelegate) => false;
+  bool shouldRepaint(_ParcelMapPainter oldDelegate) =>
+      oldDelegate.colors != colors;
+}
+
+/// Mapa pequeño de la chacra (`.mapa-btn` de `semi_app.html`), decorativo:
+/// los datos van en el texto de al lado.
+class ParcelMapThumbnail extends StatelessWidget {
+  /// Crea la miniatura.
+  const ParcelMapThumbnail({this.width = 96, super.key});
+
+  /// Ancho, en dp; el alto guarda la proporción del mapa.
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: SizedBox(
+          width: width,
+          height: width * 130 / 350,
+          child: CustomPaint(painter: _ParcelMapPainter(context.colors)),
+        ),
+      ),
+    );
+  }
 }

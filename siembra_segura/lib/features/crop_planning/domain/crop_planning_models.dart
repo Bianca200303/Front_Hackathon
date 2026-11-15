@@ -1,19 +1,26 @@
 import 'package:equatable/equatable.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
-/// Resultado económico por hectárea de una opción en un escenario.
+/// Cosecha que se espera de una opción en un escenario climático.
+///
+/// Se mide contra una buena campaña de esos cultivos en el valle (1 = una
+/// cosecha completa), con datos de satélite de la NASA (verdor, lluvia y
+/// humedad del suelo). La app no muestra precios ni ganancias.
 class ScenarioOutcome extends Equatable {
   /// Crea el resultado de un escenario.
-  const ScenarioOutcome({required this.expectedProfit, required this.maxLoss});
+  const ScenarioOutcome({
+    required this.expectedHarvest,
+    required this.worstHarvest,
+  });
 
-  /// Ganancia esperada, en soles por hectárea.
-  final int expectedProfit;
+  /// Cosecha más probable (0.85 = 85 % de una buena campaña).
+  final double expectedHarvest;
 
-  /// Pérdida máxima si va mal, en soles por hectárea.
-  final int maxLoss;
+  /// Cosecha si el año sale mal dentro del escenario.
+  final double worstHarvest;
 
   @override
-  List<Object?> get props => [expectedProfit, maxLoss];
+  List<Object?> get props => [expectedHarvest, worstHarvest];
 }
 
 /// Cuánto mejora la tierra una rotación.
@@ -239,7 +246,7 @@ class CurrentPractice extends Equatable {
     required this.crops,
     required this.waterUseM3,
     required this.soilInTwoYears,
-    required this.expectedProfit,
+    required this.expectedHarvest,
     required this.factsheet,
     required this.repeatWarnings,
     required this.consecutiveCampaigns,
@@ -254,8 +261,8 @@ class CurrentPractice extends Equatable {
   /// Estado estimado de la tierra en dos años si sigue igual.
   final SoilCondition soilInTwoYears;
 
-  /// Ganancia esperada por escenario, en soles por hectárea.
-  final Map<ClimateScenario, int> expectedProfit;
+  /// Cosecha esperada por escenario (1 = una buena campaña).
+  final Map<ClimateScenario, double> expectedHarvest;
 
   /// Ficha explicativa.
   final OptionFactsheet factsheet;
@@ -274,7 +281,7 @@ class CurrentPractice extends Equatable {
     crops,
     waterUseM3,
     soilInTwoYears,
-    expectedProfit,
+    expectedHarvest,
     factsheet,
     repeatWarnings,
     consecutiveCampaigns,

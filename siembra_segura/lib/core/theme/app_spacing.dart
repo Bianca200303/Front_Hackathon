@@ -75,4 +75,8 @@ abstract final class AppSizes {
 
   /// Ancho máximo de las pantallas con dos columnas (`ScreenLayout.wide`).
   static const double maxWideContentWidth = 1040;
+
+  /// Espacio libre al final de las listas para que el botón "Ayuda" de
+  /// Semi no tape el último contenido.
+  static const double helpButtonClearance = 96;
 }

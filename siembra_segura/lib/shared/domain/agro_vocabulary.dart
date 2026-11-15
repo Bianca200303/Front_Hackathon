@@ -30,7 +30,7 @@ class Crop extends Equatable {
   List<Object?> get props => [id, name];
 }
 
-/// Lo que más le importa al agricultor esta campaña (p. ej., "Ganar más").
+/// Lo que más le importa al agricultor esta campaña (p. ej., "Cuidar mi agua").
 class CampaignPriority extends Equatable {
   /// Crea una prioridad del catálogo.
   const CampaignPriority({

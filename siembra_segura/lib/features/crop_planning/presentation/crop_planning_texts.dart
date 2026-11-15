@@ -1,6 +1,6 @@
 import 'package:flutter/painting.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
@@ -21,10 +21,10 @@ extension SoilImpactLabels on SoilImpact {
 /// Color de cada escenario en las barras de probabilidad.
 extension ScenarioColors on ClimateScenario {
   /// Color del escenario.
-  Color get color => switch (this) {
-    ClimateScenario.heavyRains => AppColors.water,
-    ClimateScenario.normal => AppColors.scenarioNormal,
-    ClimateScenario.dry => AppColors.heat,
+  Color color(AppPalette colors) => switch (this) {
+    ClimateScenario.heavyRains => colors.water,
+    ClimateScenario.normal => colors.scenarioNormal,
+    ClimateScenario.dry => colors.heat,
   };
 }
 
@@ -99,8 +99,8 @@ extension RecommendationTexts on Recommendation {
       AppFormatters.percent(outlook.probabilityOf(outlook.mostLikely)),
       priority.phrase,
       best.name(l10n),
-      AppFormatters.soles(outcome.expectedProfit),
-      AppFormatters.soles(outcome.maxLoss),
+      AppFormatters.percent(outcome.expectedHarvest),
+      AppFormatters.percent(outcome.worstHarvest),
       best.soilImpact.label(l10n),
       repeatWarning(),
     );

@@ -8,7 +8,6 @@ import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
 import 'package:siembra_segura/features/farm/presentation/providers/farm_providers.dart';
 import 'package:siembra_segura/features/farm/presentation/widgets/campaign_choice_cards.dart';
-import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_card.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
@@ -16,6 +15,7 @@ import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/responsive_columns.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 
 /// Pantalla "Mi parcela": recoge lo que condiciona la recomendación.
 ///
@@ -46,9 +46,12 @@ class FarmScreen extends ConsumerWidget {
       ),
       _ => null,
     };
-    final openedFromTabs = context.canPop();
+    // Se mira la propia página y no `context.canPop()`: una hoja abierta
+    // encima (la bienvenida de Semi) también permitiría "volver".
+    final openedFromTabs = !(ModalRoute.of(context)?.isFirst ?? true);
 
     return ScreenLayout(
+      guide: SemiGuide(message: l10n.semiFarmGuide),
       wide: true,
       header: openedFromTabs
           ? ScreenHeader.back(
@@ -57,7 +60,7 @@ class FarmScreen extends ConsumerWidget {
             )
           : ScreenHeader.brand(listenText: narration),
       footer: AppButton(
-        label: openedFromTabs ? l10n.actionDone : l10n.actionStart,
+        label: openedFromTabs ? l10n.actionDone : l10n.actionSeePlan,
         onPressed: !content.hasValue
             ? null
             : () => openedFromTabs
@@ -90,10 +93,7 @@ class _FarmContent extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.farmGreeting(farm.farmerName),
-              style: AppTypography.muted,
-            ),
+            Text(l10n.farmGreeting(farm.farmerName), style: context.text.muted),
             Semantics(
               header: true,
               child: Text(
@@ -103,16 +103,17 @@ class _FarmContent extends StatelessWidget {
             ),
           ],
         ),
+        // En tablet, dos columnas; en teléfono, una pregunta debajo de otra.
         ResponsiveColumns(
           children: [
-            ParcelMapCard(farm: farm),
-            LastCropCard(farm: farm),
+            ParcelField(farm: farm),
+            LastCropField(farm: farm),
           ],
         ),
         ResponsiveColumns(
           children: [
-            PriorityCard(catalog: catalog),
-            RestrictionsCard(catalog: catalog),
+            PriorityField(catalog: catalog),
+            RestrictionsField(catalog: catalog),
           ],
         ),
         const _ResetPreferencesButton(),

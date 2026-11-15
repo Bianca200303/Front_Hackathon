@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -37,13 +37,13 @@ class SeasonalOutlookCard extends StatelessWidget {
           l10n.recommendationOutlookOverline(
             AppFormatters.monthName(outlook.horizonEnd).toUpperCase(),
           ),
-          color: AppColors.amber,
+          color: context.colors.amber,
         ),
         HighlightedText(
           text: l10n.recommendationMostLikely(mostLikely),
           highlight: mostLikely,
           style: Theme.of(context).textTheme.titleSmall,
-          highlightStyle: const TextStyle(color: AppColors.water),
+          highlightStyle: TextStyle(color: context.colors.water),
         ),
         Column(
           spacing: AppSpacing.sm,
@@ -52,7 +52,7 @@ class SeasonalOutlookCard extends StatelessWidget {
               _ProbabilityRow(
                 label: scenario.label(l10n),
                 probability: outlook.probabilityOf(scenario),
-                color: scenario.color,
+                color: scenario.color(context.colors),
               ),
           ],
         ),
@@ -82,7 +82,7 @@ class _ProbabilityRow extends StatelessWidget {
     final labelWidth = scaler.scale(118);
     final valueWidth = scaler.scale(40);
 
-    final labelText = Text(label, style: AppTypography.rowLabel);
+    final labelText = Text(label, style: context.text.rowLabel);
     final valueText = Text(
       percent,
       textAlign: TextAlign.right,
@@ -94,7 +94,7 @@ class _ProbabilityRow extends StatelessWidget {
         value: probability,
         minHeight: 12,
         color: color,
-        backgroundColor: AppColors.surfaceMuted,
+        backgroundColor: context.colors.surfaceMuted,
         semanticsLabel: label,
         semanticsValue: percent,
       ),
@@ -137,7 +137,7 @@ class _ProbabilityRow extends StatelessWidget {
   }
 }
 
-/// "Pensando en: ganar más" + botón para cambiar la prioridad.
+/// "Pensando en: cuidar tu agua" + botón para cambiar la prioridad.
 class PriorityContextRow extends StatelessWidget {
   /// Crea la fila.
   const PriorityContextRow({required this.priority, super.key});
@@ -156,8 +156,8 @@ class PriorityContextRow extends StatelessWidget {
           child: HighlightedText(
             text: l10n.recommendationThinkingOf(phrase),
             highlight: phrase,
-            style: AppTypography.muted,
-            highlightStyle: AppTypography.mutedEmphasis,
+            style: context.text.muted,
+            highlightStyle: context.text.mutedEmphasis,
           ),
         ),
         SelectableChip(
@@ -184,7 +184,9 @@ class RecommendedOptionCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final best = recommendation.best;
     final outcome = recommendation.bestOutcome;
-    final normalProfit = best.outcomeFor(ClimateScenario.normal).expectedProfit;
+    final normalHarvest = best
+        .outcomeFor(ClimateScenario.normal)
+        .expectedHarvest;
 
     return Semantics(
       liveRegion: true,
@@ -192,7 +194,10 @@ class RecommendedOptionCard extends StatelessWidget {
       child: AppCard(
         variant: AppCardVariant.highlighted,
         children: [
-          OverlineText(recommendation.headline(l10n), color: AppColors.primary),
+          OverlineText(
+            recommendation.headline(l10n),
+            color: context.colors.primary,
+          ),
           Text(
             best.name(l10n),
             style: Theme.of(context).textTheme.headlineSmall,
@@ -206,39 +211,40 @@ class RecommendedOptionCard extends StatelessWidget {
             spacing: 6,
             children: [
               _OutcomeLine(
-                label: l10n.outcomeIfGood,
-                value: l10n.outcomeIfGoodValue(
-                  AppFormatters.soles(outcome.expectedProfit),
+                label: l10n.outcomeExpected,
+                value: l10n.outcomeExpectedValue(
+                  AppFormatters.percent(outcome.expectedHarvest),
                 ),
-                color: AppColors.positive,
+                color: context.colors.positive,
               ),
               _OutcomeLine(
-                label: l10n.outcomeIfBad,
-                value: l10n.outcomeIfBadValue(
-                  AppFormatters.soles(outcome.maxLoss),
+                label: l10n.outcomeWorst,
+                value: l10n.outcomeWorstValue(
+                  AppFormatters.percent(outcome.worstHarvest),
                 ),
-                color: AppColors.negative,
+                color: context.colors.negative,
               ),
               _OutcomeLine(
                 label: l10n.outcomeIfNormal,
                 value: l10n.outcomeIfNormalValue(
-                  AppFormatters.soles(normalProfit),
+                  AppFormatters.percent(normalHarvest),
                 ),
-                color: AppColors.textBody,
+                color: context.colors.textBody,
               ),
               _OutcomeLine(
                 label: l10n.outcomeWater,
                 value: best.waterSummary,
-                color: AppColors.water,
+                color: context.colors.water,
               ),
               _OutcomeLine(
                 label: l10n.outcomeSoil,
                 value: best.soilImpact.label(l10n),
-                color: AppColors.primary,
+                color: context.colors.primary,
               ),
             ],
           ),
-          SourceNote(l10n.perHectare),
+          // La cosecha va en % de una buena campaña: no es "por hectárea".
+          const SourceNote(''),
           AppButton(
             label: l10n.actionWhenToPlant,
             compact: true,

@@ -16,7 +16,7 @@ void main() {
 
   List<String> rank({
     ClimateScenario scenario = ClimateScenario.heavyRains,
-    CampaignPriority priority = MockCatalog.maximizeProfit,
+    CampaignPriority priority = MockCatalog.protectHarvest,
     Set<String> restrictionIds = const {},
   }) => ranker
       .rank(
@@ -27,7 +27,7 @@ void main() {
       )
       .ids;
 
-  test('"ganar más" ordena por ganancia esperada del escenario', () {
+  test('"que el clima no malogre mi cosecha" ordena por cosecha esperada', () {
     expect(rank(), ['r1', 'r2', 'r3']);
     expect(rank(scenario: ClimateScenario.normal), ['r2', 'r1', 'r3']);
     expect(rank(scenario: ClimateScenario.dry), ['r2', 'r1', 'r3']);

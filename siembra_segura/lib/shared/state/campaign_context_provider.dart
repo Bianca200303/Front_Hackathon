@@ -48,6 +48,12 @@ class CampaignContextNotifier extends Notifier<CampaignContext> {
     );
   }
 
+  /// Deja exactamente las restricciones [restrictionIds] (la conversación
+  /// con Semi pregunta una sola vez y reemplaza lo anterior).
+  void setRestrictions(Set<String> restrictionIds) => _updatePreferences(
+    state.copyWith(restrictionIds: Set.unmodifiable(restrictionIds)),
+  );
+
   /// Explora otro escenario climático. No se guarda en el dispositivo.
   void selectScenario(ClimateScenario scenario) {
     state = state.copyWith(selectedScenario: scenario);

@@ -8,7 +8,7 @@
 library;
 
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
 /// Color de un cultivo.
@@ -18,8 +18,8 @@ extension CropTone on Crop {
   /// El mismo cultivo tiene siempre el mismo color en todas las pantallas,
   /// sin que la app conozca la lista de cultivos. Si producto quiere un
   /// color fijo por cultivo, el backend debería enviarlo (decisión B13).
-  Tone get tone =>
-      AppColors.cropPalette[_stableHash(id) % AppColors.cropPalette.length];
+  Tone tone(AppPalette colors) =>
+      colors.cropPalette[_stableHash(id) % colors.cropPalette.length];
 
   /// FNV-1a de 32 bits: estable entre ejecuciones y plataformas, a
   /// diferencia de `String.hashCode`.
@@ -87,10 +87,10 @@ extension SoilConditionLabels on SoilCondition {
   };
 
   /// Color asociado, de rojo (peor) a verde (mejor).
-  Tone get tone => switch (this) {
-    SoilCondition.veryTired => AppColors.soilVeryTiredTone,
-    SoilCondition.tired => AppColors.soilTiredTone,
-    SoilCondition.regular => AppColors.soilRegularTone,
-    SoilCondition.good => AppColors.soilGoodTone,
+  Tone tone(AppPalette colors) => switch (this) {
+    SoilCondition.veryTired => colors.soilVeryTiredTone,
+    SoilCondition.tired => colors.soilTiredTone,
+    SoilCondition.regular => colors.soilRegularTone,
+    SoilCondition.good => colors.soilGoodTone,
   };
 }

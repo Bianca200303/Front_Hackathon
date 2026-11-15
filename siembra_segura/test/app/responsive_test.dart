@@ -17,7 +17,7 @@ void main() {
 
   Future<void> openClimate(WidgetTester tester, Size size) async {
     await tester.pumpSiembraSeguraApp(screenSize: size);
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
   }
 
   group('navegación adaptable', () {

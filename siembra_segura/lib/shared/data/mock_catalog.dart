@@ -22,14 +22,18 @@ abstract final class MockCatalog {
   /// Menestra.
   static const pulse = Crop(id: 'pulse', name: 'Menestra');
 
+  /// Abono verde: se siembra para abonar la tierra, no para cosechar.
+  static const greenManure = Crop(id: 'green-manure', name: 'Abono verde');
+
   /// Opción "Otro" para corregir al satélite.
   static const otherCrop = Crop(id: 'other', name: 'Otro');
 
-  /// Prioridad "Ganar más".
-  static const maximizeProfit = CampaignPriority(
-    id: 'maximize-profit',
-    name: 'Ganar más',
-    phrase: 'ganar más',
+  /// Prioridad "Que el clima no malogre mi cosecha" (como en
+  /// `semi_app.html`). La app no trabaja con precios ni ganancias.
+  static const protectHarvest = CampaignPriority(
+    id: 'protect-harvest',
+    name: 'Que el clima no malogre mi cosecha',
+    phrase: 'que el clima no malogre tu cosecha',
   );
 
   /// Prioridad "Cuidar mi agua".
@@ -60,7 +64,7 @@ abstract final class MockCatalog {
 
   /// Catálogo completo, en el orden de la referencia.
   static final catalog = CampaignCatalog(
-    priorities: const [maximizeProfit, saveWater, restoreSoil],
+    priorities: const [protectHarvest, saveWater, restoreSoil],
     restrictions: const [noCottonBuyer, lowWater],
   );
 }

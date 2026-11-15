@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/climate/domain/climate_overview.dart';
 
@@ -64,14 +64,14 @@ extension ClimateAnomalyLabels on ClimateAnomaly {
   };
 
   /// Color de la barra: calor en ámbar; lluvia y humedad en azul.
-  Color get barColor =>
-      metric == ClimateMetric.temperature ? AppColors.heat : AppColors.water;
+  Color barColor(AppPalette colors) =>
+      metric == ClimateMetric.temperature ? colors.heat : colors.water;
 
   /// Color según si está por encima, normal o por debajo.
-  Tone get statusTone {
-    if (comparison.isNormal) return AppColors.normalTone;
+  Tone statusTone(AppPalette colors) {
+    if (comparison.isNormal) return colors.normalTone;
     return metric == ClimateMetric.temperature
-        ? AppColors.heatTone
-        : AppColors.waterTone;
+        ? colors.heatTone
+        : colors.waterTone;
   }
 }

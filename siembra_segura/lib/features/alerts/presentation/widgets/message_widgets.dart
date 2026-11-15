@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
 import 'package:siembra_segura/core/services/speech/speech_service.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/features/alerts/presentation/alert_texts.dart';
@@ -18,7 +18,7 @@ class ChatHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Material(
-      color: AppColors.primary,
+      color: context.colors.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -31,14 +31,14 @@ class ChatHeader extends StatelessWidget {
           child: Row(
             spacing: AppSpacing.md,
             children: [
-              const AppBackButton(
+              AppBackButton(
                 fallbackLocation: AppRoutes.alerts,
-                color: AppColors.onPrimary,
+                color: context.colors.onPrimary,
               ),
-              const AppLogo(
+              AppLogo(
                 size: 40,
-                background: AppColors.surface,
-                foreground: AppColors.primary,
+                background: context.colors.surface,
+                foreground: context.colors.primary,
                 circular: true,
               ),
               Expanded(
@@ -50,13 +50,13 @@ class ChatHeader extends StatelessWidget {
                       child: Text(
                         l10n.appTitle,
                         style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(color: AppColors.onPrimary),
+                            ?.copyWith(color: context.colors.onPrimary),
                       ),
                     ),
                     Text(
                       l10n.messageChannel,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.onPrimary.withValues(alpha: 0.9),
+                      style: context.text.caption.copyWith(
+                        color: context.colors.onPrimary.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -93,9 +93,9 @@ class MessageBubble extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 340),
         child: Container(
           padding: padding,
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(4),
               topRight: Radius.circular(16),
               bottomLeft: Radius.circular(16),
@@ -176,22 +176,22 @@ class AudioMessageBubble extends ConsumerWidget {
             tooltip: AppLocalizations.of(context).messagePlayAudio,
             onPressed: () => _play(context, ref),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.onPrimary,
+              backgroundColor: context.colors.primary,
+              foregroundColor: context.colors.onPrimary,
               minimumSize: const Size.square(AppSizes.minTouchTarget),
             ),
             icon: const Icon(Icons.play_arrow_rounded),
           ),
-          const Flexible(
+          Flexible(
             child: ExcludeSemantics(
               child: SizedBox(
                 width: 160,
                 height: 28,
-                child: CustomPaint(painter: _WaveformPainter()),
+                child: CustomPaint(painter: _WaveformPainter(context.colors)),
               ),
             ),
           ),
-          Text(formatAudioDuration(duration), style: AppTypography.muted),
+          Text(formatAudioDuration(duration), style: context.text.muted),
         ],
       ),
     );
@@ -200,14 +200,15 @@ class AudioMessageBubble extends ConsumerWidget {
 
 /// Onda decorativa del audio, como en la referencia.
 class _WaveformPainter extends CustomPainter {
-  const _WaveformPainter();
+  _WaveformPainter(this.colors);
+
+  final AppPalette colors;
 
   static const _barHeights = [
     8, 16, 24, 12, 20, 8, 16, 24, 12, 20, //
     8, 16, 24, 12, 8, 20, 12, 8, 16, 8,
   ];
   static const _playedBars = 8;
-  static const _pendingColor = AppColors.waveformPending;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -226,13 +227,16 @@ class _WaveformPainter extends CustomPainter {
           const Radius.circular(2),
         ),
         Paint()
-          ..color = index < _playedBars ? AppColors.primary : _pendingColor,
+          ..color = index < _playedBars
+              ? colors.primary
+              : colors.waveformPending,
       );
     }
   }
 
   @override
-  bool shouldRepaint(_WaveformPainter oldDelegate) => false;
+  bool shouldRepaint(_WaveformPainter oldDelegate) =>
+      oldDelegate.colors != colors;
 }
 
 /// Campo para preguntar. Deshabilitado hasta que exista el asistente
@@ -245,7 +249,7 @@ class ChatInputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Material(
-      color: AppColors.chatBackground,
+      color: context.colors.chatBackground,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -267,9 +271,11 @@ class ChatInputBar extends StatelessWidget {
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     hintText: l10n.messageInputHint,
                     helperText: l10n.messageChatComingSoon,
-                    disabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(24)),
-                      borderSide: BorderSide(color: AppColors.borderStrong),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(24)),
+                      borderSide: BorderSide(
+                        color: context.colors.borderStrong,
+                      ),
                     ),
                   ),
                 ),
@@ -279,8 +285,8 @@ class ChatInputBar extends StatelessWidget {
                 onPressed: null,
                 style: IconButton.styleFrom(
                   minimumSize: const Size.square(52),
-                  disabledBackgroundColor: AppColors.borderStrong,
-                  disabledForegroundColor: AppColors.surface,
+                  disabledBackgroundColor: context.colors.borderStrong,
+                  disabledForegroundColor: context.colors.surface,
                 ),
                 icon: const Icon(Icons.mic_rounded),
               ),

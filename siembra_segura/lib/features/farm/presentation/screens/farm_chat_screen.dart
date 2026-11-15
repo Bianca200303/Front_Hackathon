@@ -1,0 +1,625 @@
+import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:siembra_segura/core/l10n/app_localizations.dart';
+import 'package:siembra_segura/core/router/app_routes.dart';
+import 'package:siembra_segura/core/services/speech/speech_service.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
+import 'package:siembra_segura/core/theme/app_spacing.dart';
+import 'package:siembra_segura/core/theme/app_typography.dart';
+import 'package:siembra_segura/core/utils/async_value_combine.dart';
+import 'package:siembra_segura/core/utils/formatters.dart';
+import 'package:siembra_segura/features/farm/domain/farm.dart';
+import 'package:siembra_segura/features/farm/presentation/providers/farm_providers.dart';
+import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_card.dart';
+import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
+import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
+import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
+import 'package:siembra_segura/shared/widgets/app_button.dart';
+import 'package:siembra_segura/shared/widgets/async_value_view.dart';
+import 'package:siembra_segura/shared/widgets/constrained_content.dart';
+import 'package:siembra_segura/shared/widgets/listen_button.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
+
+/// "Mi parcela" en modo asistido (`#v-chat` de `semi_app.html`): Semi hace
+/// las mismas preguntas que el formulario, una por una, y explica por qué
+/// pregunta cada cosa. Guarda lo mismo que "Mi parcela".
+class FarmChatScreen extends ConsumerWidget {
+  /// Crea la pantalla.
+  const FarmChatScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final content = combineAsync(
+      ref.watch(farmProvider),
+      ref.watch(campaignCatalogProvider),
+      (farm, catalog) => (farm: farm, catalog: catalog),
+    );
+    return Scaffold(
+      body: AsyncValueView(
+        value: content,
+        onRetry: () => ref
+          ..invalidate(farmProvider)
+          ..invalidate(campaignCatalogProvider),
+        data: (content) =>
+            _Conversation(farm: content.farm, catalog: content.catalog),
+      ),
+    );
+  }
+}
+
+/// Una respuesta posible a lo que pregunta Semi.
+class _Answer {
+  const _Answer(this.label, this.onChosen, {this.primary = false});
+
+  final String label;
+  final VoidCallback onChosen;
+
+  /// La acción principal (p. ej., "Ver mi plan").
+  final bool primary;
+}
+
+/// Lo que dice Semi en un paso de la conversación.
+class _Step {
+  const _Step({
+    required this.expression,
+    required this.message,
+    required this.answers,
+    this.why,
+    this.image,
+  });
+
+  final SemiExpression expression;
+  final String message;
+
+  /// Por qué lo pregunta (texto más pequeño debajo).
+  final String? why;
+
+  /// Imagen dentro del globo (p. ej., el mapa de la chacra).
+  final Widget? image;
+  final List<_Answer> answers;
+}
+
+class _Conversation extends ConsumerStatefulWidget {
+  const _Conversation({required this.farm, required this.catalog});
+
+  final Farm farm;
+  final CampaignCatalog catalog;
+
+  @override
+  ConsumerState<_Conversation> createState() => _ConversationState();
+}
+
+class _ConversationState extends ConsumerState<_Conversation>
+    with SingleTickerProviderStateMixin {
+  /// Preguntas antes del cierre (para la barra de progreso).
+  static const _questionCount = 4;
+
+  /// Cuánto "piensa" Semi antes de hablar.
+  static const _thinkingTime = Duration(milliseconds: 750);
+
+  late final AnimationController _thinking = AnimationController(
+    vsync: this,
+    duration: _thinkingTime,
+  );
+  final _scroll = ScrollController();
+
+  int _step = 0;
+  String? _lastAnswer;
+
+  /// Respuesta corta de Semi a algo que se le dijo, antes de la siguiente
+  /// pregunta (p. ej., "Gracias por decirme…").
+  String? _reply;
+
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Semi piensa antes de la primera pregunta, desde el primer cuadro.
+    if (!_started) {
+      _started = true;
+      _think(rebuild: false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _thinking.dispose();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  bool get _isThinking => _thinking.isAnimating;
+
+  /// Muestra los puntos de "pensando" y después el paso actual. Si el
+  /// celular pide reducir el movimiento, va directo al paso.
+  void _think({bool rebuild = true}) {
+    if (!mounted || MediaQuery.disableAnimationsOf(context)) return;
+    unawaited(
+      _thinking.forward(from: 0).then((_) {
+        if (mounted) setState(() {});
+      }),
+    );
+    if (rebuild) setState(() {});
+  }
+
+  void _answer(String label, {VoidCallback? apply, String? reply}) {
+    unawaited(ref.read(speechServiceProvider).stop());
+    apply?.call();
+    setState(() {
+      _lastAnswer = label;
+      _reply = reply;
+      _step++;
+    });
+    if (_scroll.hasClients) _scroll.jumpTo(0);
+    _think();
+  }
+
+  void _finish() {
+    // Abierta desde Ajustes (encima de las pestañas): vuelve ahí.
+    if (!(ModalRoute.of(context)?.isFirst ?? true)) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.climate);
+    }
+  }
+
+  void _back() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.welcome);
+    }
+  }
+
+  _Step _currentStep(AppLocalizations l10n) {
+    final farm = widget.farm;
+    final notifier = ref.read(campaignContextProvider.notifier);
+    String lower(String text) => text.toLowerCase();
+
+    final step = switch (_step) {
+      0 => _Step(
+        expression: SemiExpression.happy,
+        message: l10n.chatParcelQuestion(
+          farm.valleyName,
+          AppFormatters.decimal(farm.areaHectares),
+        ),
+        why: l10n.chatParcelWhy,
+        image: ParcelMapCard(farm: farm),
+        answers: [
+          _Answer(l10n.chatParcelYes, () => _answer(l10n.chatParcelYes)),
+          _Answer(
+            l10n.chatParcelNo,
+            () => _answer(l10n.chatParcelNo, reply: l10n.chatParcelNoReply),
+          ),
+        ],
+      ),
+      1 => _Step(
+        expression: SemiExpression.thinking,
+        message: l10n.chatLastCropQuestion(lower(farm.inferredLastCrop.name)),
+        why: l10n.chatLastCropWhy,
+        answers: [
+          // Primero lo que vio el satélite.
+          for (final crop in [
+            farm.inferredLastCrop,
+            ...farm.lastCropOptions.where(
+              (crop) => crop.id != farm.inferredLastCrop.id,
+            ),
+          ])
+            () {
+              final label = crop.id == farm.inferredLastCrop.id
+                  ? l10n.chatLastCropYes(lower(crop.name))
+                  : l10n.chatLastCropNo(lower(crop.name));
+              return _Answer(
+                label,
+                () => _answer(
+                  label,
+                  apply: () => notifier.selectLastCrop(crop.id),
+                ),
+              );
+            }(),
+        ],
+      ),
+      2 => _Step(
+        expression: SemiExpression.happy,
+        message: l10n.chatPriorityQuestion,
+        why: l10n.chatPriorityWhy,
+        answers: [
+          for (final priority in widget.catalog.priorities)
+            _Answer(
+              priority.name,
+              () => _answer(
+                priority.name,
+                apply: () => notifier.selectPriority(priority.id),
+              ),
+            ),
+        ],
+      ),
+      3 => _Step(
+        expression: SemiExpression.happy,
+        message: l10n.chatRestrictionQuestion,
+        why: l10n.chatRestrictionWhy,
+        answers: [
+          for (final restriction in widget.catalog.restrictions)
+            _Answer(
+              restriction.name,
+              () => _answer(
+                restriction.name,
+                apply: () => notifier.setRestrictions({restriction.id}),
+              ),
+            ),
+          _Answer(
+            l10n.chatRestrictionNone,
+            () => _answer(
+              l10n.chatRestrictionNone,
+              apply: () => notifier.setRestrictions({}),
+            ),
+          ),
+        ],
+      ),
+      _ => _Step(
+        expression: SemiExpression.celebrating,
+        message: l10n.chatDone,
+        answers: [_Answer(l10n.actionSeePlan, _finish, primary: true)],
+      ),
+    };
+    final reply = _reply;
+    if (reply == null) return step;
+    // La respuesta corta va antes de la pregunta, en el mismo globo.
+    return _Step(
+      expression: step.expression,
+      message: '$reply ${step.message}',
+      why: step.why,
+      image: step.image,
+      answers: step.answers,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final step = _currentStep(l10n);
+    final thinking = _isThinking;
+    final answered = math.min(_step, _questionCount);
+    final lastAnswer = _lastAnswer;
+
+    final semi = SemiAvatar(
+      expression: thinking ? SemiExpression.thinking : step.expression,
+      size: 132,
+      semanticLabel: l10n.semiAvatarSemantics,
+    );
+    final bubble = thinking
+        ? _ThinkingBubble(animation: _thinking)
+        : _SemiBubble(step: step);
+    final answers = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
+      children: [
+        if (!thinking)
+          for (final answer in step.answers)
+            AppButton(
+              label: answer.label,
+              variant: answer.primary
+                  ? AppButtonVariant.primary
+                  : AppButtonVariant.outline,
+              onPressed: answer.onChosen,
+            ),
+      ],
+    );
+    final conversation = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.lg,
+      children: [
+        if (lastAnswer != null) _YouSaid(answer: lastAnswer),
+        bubble,
+      ],
+    );
+
+    return Column(
+      children: [
+        _ChatHeader(answered: answered, total: _questionCount, onBack: _back),
+        Expanded(
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              controller: _scroll,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screenGutter,
+                AppSpacing.lg,
+                AppSpacing.screenGutter,
+                AppSpacing.xxl,
+              ),
+              child: ConstrainedContent(
+                // Semi a un lado y la conversación del ancho de lectura.
+                maxWidth: AppSizes.maxContentWidth + 220,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Tablet u horizontal: Semi a la izquierda.
+                    if (constraints.maxWidth >= 640) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: AppSpacing.xxl,
+                        children: [
+                          semi,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: AppSpacing.lg,
+                              children: [conversation, answers],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: AppSpacing.md,
+                      children: [
+                        conversation,
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: semi,
+                        ),
+                        answers,
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Barra verde de arriba: volver, título y progreso.
+class _ChatHeader extends StatelessWidget {
+  const _ChatHeader({
+    required this.answered,
+    required this.total,
+    required this.onBack,
+  });
+
+  final int answered;
+  final int total;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.colors;
+    final textTheme = Theme.of(context).textTheme;
+    return Material(
+      color: colors.primary,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xs,
+            AppSpacing.xs,
+            AppSpacing.screenGutter,
+            AppSpacing.md,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.sm,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    tooltip: l10n.actionBack,
+                    color: colors.onPrimary,
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: onBack,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            l10n.chatTitle,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colors.onPrimary,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          l10n.chatSubtitle,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colors.onPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: AppSpacing.lg),
+                child: Semantics(
+                  label: l10n.chatProgressSemantics(
+                    math.min(answered + 1, total),
+                    total,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadii.pill),
+                    child: LinearProgressIndicator(
+                      value: answered / total,
+                      minHeight: 6,
+                      color: colors.onPrimary,
+                      backgroundColor: colors.onPrimary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Forma del globo: la esquina de abajo a la izquierda "sale" de Semi.
+const _bubbleShape = BorderRadius.only(
+  topLeft: Radius.circular(20),
+  topRight: Radius.circular(20),
+  bottomRight: Radius.circular(20),
+  bottomLeft: Radius.circular(6),
+);
+
+/// Globo de Semi: imagen opcional, mensaje, por qué y "Escuchar".
+class _SemiBubble extends StatelessWidget {
+  const _SemiBubble({required this.step});
+
+  final _Step step;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final why = step.why;
+    final image = step.image;
+    final spoken = why == null ? step.message : '${step.message} $why';
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: _bubbleShape,
+        border: Border.all(color: colors.semiGuideBorder),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.sm,
+          children: [
+            ?image,
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                step.message,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            if (why != null)
+              Text(
+                why,
+                style: context.text.muted.copyWith(fontStyle: FontStyle.italic),
+              ),
+            ListenButton(text: spoken),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Globo con tres puntos mientras Semi "piensa".
+class _ThinkingBubble extends StatelessWidget {
+  const _ThinkingBubble({required this.animation});
+
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Semantics(
+        label: AppLocalizations.of(context).chatThinkingSemantics,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: _bubbleShape,
+            border: Border.all(color: colors.semiGuideBorder),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.lg,
+            ),
+            child: AnimatedBuilder(
+              animation: animation,
+              builder: (context, _) => Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: AppSpacing.sm,
+                children: [
+                  for (var i = 0; i < 3; i++)
+                    Opacity(
+                      // Cada punto se enciende un poco después del anterior.
+                      opacity:
+                          0.35 +
+                          0.65 *
+                              (0.5 +
+                                  0.5 *
+                                      math.sin(
+                                        (animation.value * 3 - i / 3) *
+                                            2 *
+                                            math.pi,
+                                      )),
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: colors.textMuted,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Lo que respondió el agricultor, a la derecha.
+class _YouSaid extends StatelessWidget {
+  const _YouSaid({required this.answer});
+
+  final String answer;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Align(
+      alignment: AlignmentDirectional.centerEnd,
+      child: Semantics(
+        label: AppLocalizations.of(context).chatYouSaid(answer),
+        excludeSemantics: true,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.primarySoft,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(6),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Text(
+              answer,
+              style: context.text.option.copyWith(color: colors.primaryDark),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

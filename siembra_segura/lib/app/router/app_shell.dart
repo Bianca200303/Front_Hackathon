@@ -5,6 +5,7 @@ import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_breakpoints.dart';
 import 'package:siembra_segura/features/alerts/presentation/providers/alerts_providers.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_help.dart';
 
 /// Contenedor de las 4 pestañas principales. Cada pestaña conserva su
 /// propio stack de navegación y su estado de scroll.
@@ -33,10 +34,14 @@ class AppShell extends ConsumerWidget {
     final hasUnreadAlerts = ref.watch(hasUnreadAlertsProvider);
     final destinations = _destinations(l10n, hasUnreadAlerts: hasUnreadAlerts);
     final windowWidth = MediaQuery.sizeOf(context).width;
+    final help = SemiHelpButton(
+      section: HelpSection.values[navigationShell.currentIndex],
+    );
 
     if (!AppBreakpoints.usesNavigationRail(windowWidth)) {
       return Scaffold(
         body: navigationShell,
+        floatingActionButton: help,
         bottomNavigationBar: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onDestinationSelected,
@@ -54,6 +59,7 @@ class AppShell extends ConsumerWidget {
     }
 
     return Scaffold(
+      floatingActionButton: help,
       body: Row(
         children: [
           SafeArea(

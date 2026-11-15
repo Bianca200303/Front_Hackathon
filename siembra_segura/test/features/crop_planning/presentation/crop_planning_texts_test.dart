@@ -58,7 +58,8 @@ void main() {
     final narration = (await recommendationFor()).recommendationNarration(l10n);
 
     expect(narration, contains('te recomendamos Maíz y después frejol'));
-    expect(narration, contains('S/ 2,400'));
+    expect(narration, contains('cosechar 85% de una buena campaña'));
+    expect(narration, isNot(contains('S/')));
     expect(narration, contains('marzo'));
   });
 

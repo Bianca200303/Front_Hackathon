@@ -1,5 +1,6 @@
 {
   "APP_ENV": "prod",
   "DATA_SOURCE": "remote",
-  "API_BASE_URL": "https://<pendiente-definir-por-backend>"
+  "API_BASE_URL": "https://<pendiente-definir-por-backend>",
+  "VOICE_SOURCE": "device"
 }

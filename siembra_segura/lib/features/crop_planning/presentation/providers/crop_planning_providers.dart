@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
+import 'package:siembra_segura/core/l10n/app_language_provider.dart';
 import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_crop_planning_repository.dart';
+import 'package:siembra_segura/features/crop_planning/data/mock_plan_simulator.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_rotation_ranking_policy.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/domain/get_recommendation.dart';
+import 'package:siembra_segura/features/crop_planning/domain/plan_simulation.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/domain/rotation_ranker.dart';
 import 'package:siembra_segura/shared/data/remote_pending.dart';
@@ -18,6 +21,7 @@ final cropPlanningRepositoryProvider = Provider<CropPlanningRepository>((ref) {
   return switch (ref.watch(appConfigProvider).dataSource) {
     DataSourceMode.mock => MockCropPlanningRepository(
       latency: ref.watch(mockLatencyProvider),
+      language: ref.watch(appLanguageProvider),
     ),
     DataSourceMode.remote => remoteDataSourcePending('CropPlanning'),
   };
@@ -115,3 +119,19 @@ final plantingFeedbackProvider =
     NotifierProvider<PlantingFeedbackNotifier, AsyncValue<bool>>(
       PlantingFeedbackNotifier.new,
     );
+
+/// Simulador de "Prueba tu propio plan" (decisión B17).
+final planSimulatorProvider = Provider<PlanSimulator>((ref) {
+  return switch (ref.watch(appConfigProvider).dataSource) {
+    DataSourceMode.mock => MockPlanSimulator(
+      latency: ref.watch(mockLatencyProvider),
+      language: ref.watch(appLanguageProvider),
+    ),
+    DataSourceMode.remote => remoteDataSourcePending('PlanSimulator'),
+  };
+});
+
+/// Cultivos entre los que se elige al armar un plan.
+final simulationCropsProvider = FutureProvider<List<SimulationCrop>>(
+  (ref) => ref.watch(planSimulatorProvider).availableCrops(),
+);

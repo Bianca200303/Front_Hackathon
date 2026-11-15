@@ -4,3 +4,4 @@ output-dir: lib/core/l10n
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 nullable-getter: false
+untranslated-messages-file: docs/l10n_qu_pendientes.json

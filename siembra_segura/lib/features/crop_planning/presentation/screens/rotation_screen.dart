@@ -6,12 +6,14 @@ import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_simulator_card.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/widgets/rotation_cards.dart';
 import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
+import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/responsive_columns.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 3: Tu plan de rotación.
@@ -26,9 +28,10 @@ class RotationScreen extends ConsumerWidget {
     final current = recommendation.value;
 
     return ScreenLayout(
+      guide: SemiGuide(message: l10n.semiRotationGuide),
       wide: true,
       header: ScreenHeader(
-        actions: const [FarmSettingsButton()],
+        actions: [const AppSettingsButton()],
         title: l10n.rotationTitle,
         listenText: current != null && current.hasOptions
             ? current.rotationNarration(l10n)
@@ -72,8 +75,8 @@ class _RotationContent extends StatelessWidget {
                 recommendation.scenario.phrase(l10n),
               ),
               highlight: priority,
-              style: AppTypography.muted,
-              highlightStyle: AppTypography.mutedEmphasis,
+              style: context.text.muted,
+              highlightStyle: context.text.mutedEmphasis,
             ),
           ],
         ),
@@ -90,6 +93,7 @@ class _RotationContent extends StatelessWidget {
           ],
         ),
         LongTermPlanCard(recommendation: recommendation),
+        PlanSimulatorCard(recommendation: recommendation),
         const GuideDisclaimer(),
         const SourceNote(''),
       ],

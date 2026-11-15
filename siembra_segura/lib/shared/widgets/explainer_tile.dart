@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 
 /// Bloque desplegable de explicación (`<details class="significa">`).
@@ -33,14 +33,14 @@ class ExplainerTile extends StatelessWidget {
           title,
           style: Theme.of(
             context,
-          ).textTheme.titleSmall?.copyWith(color: AppColors.primary),
+          ).textTheme.titleSmall?.copyWith(color: context.colors.primary),
         ),
         tilePadding: EdgeInsets.zero,
         minTileHeight: AppSizes.minTouchTarget,
         shape: const Border(),
         collapsedShape: const Border(),
-        iconColor: AppColors.primary,
-        collapsedIconColor: AppColors.primary,
+        iconColor: context.colors.primary,
+        collapsedIconColor: context.colors.primary,
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         expandedAlignment: Alignment.centerLeft,
         childrenPadding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -58,8 +58,8 @@ class ExplainerTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.border),
+        color: context.colors.surface,
+        border: Border.all(color: context.colors.border),
         borderRadius: const BorderRadius.all(Radius.circular(AppRadii.md)),
       ),
       child: tile,

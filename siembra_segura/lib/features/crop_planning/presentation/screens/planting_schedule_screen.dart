@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -14,6 +14,7 @@ import 'package:siembra_segura/features/crop_planning/presentation/widgets/plant
 import 'package:siembra_segura/shared/widgets/app_card.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 2b: ¿Cuándo siembro?
@@ -28,6 +29,7 @@ class PlantingScheduleScreen extends ConsumerWidget {
     final current = recommendation.value;
 
     return ScreenLayout(
+      guide: SemiGuide(message: l10n.semiPlantingScheduleGuide),
       header: ScreenHeader.back(
         fallbackLocation: AppRoutes.recommendation,
         listenText: current != null && current.hasOptions
@@ -112,18 +114,18 @@ class _DeadlineBanner extends StatelessWidget {
     return MergeSemantics(
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: const BoxDecoration(
-          color: AppColors.primary,
+        decoration: BoxDecoration(
+          color: context.colors.primary,
           borderRadius: AppRadii.card,
         ),
         child: Row(
           spacing: AppSpacing.md,
           children: [
-            const ExcludeSemantics(
+            ExcludeSemantics(
               child: Icon(
                 Icons.calendar_month_outlined,
                 size: 32,
-                color: AppColors.onPrimary,
+                color: context.colors.onPrimary,
               ),
             ),
             Expanded(
@@ -132,14 +134,14 @@ class _DeadlineBanner extends StatelessWidget {
                 children: [
                   Text(
                     l10n.scheduleDecideBefore,
-                    style: AppTypography.muted.copyWith(
-                      color: AppColors.onPrimary.withValues(alpha: 0.9),
+                    style: context.text.muted.copyWith(
+                      color: context.colors.onPrimary.withValues(alpha: 0.9),
                     ),
                   ),
                   Text(
                     deadline,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.onPrimary,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 ],

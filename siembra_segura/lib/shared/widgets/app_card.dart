@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 
 /// Variantes de `.tarjeta` en la referencia.
@@ -52,11 +52,11 @@ class AppCard extends StatelessWidget {
           ? Clip.antiAlias
           : Clip.none,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: AppRadii.card,
         border: variant == AppCardVariant.highlighted
-            ? Border.all(color: AppColors.primary, width: 2)
-            : Border.all(color: AppColors.border),
+            ? Border.all(color: context.colors.primary, width: 2)
+            : Border.all(color: context.colors.border),
       ),
       padding: padding,
       child: Column(

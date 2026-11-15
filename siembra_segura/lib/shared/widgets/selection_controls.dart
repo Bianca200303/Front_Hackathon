@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 
@@ -45,6 +45,7 @@ class SelectableChip extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.role = SelectionRole.radio,
+    this.badge,
     super.key,
   });
 
@@ -60,18 +61,22 @@ class SelectableChip extends StatelessWidget {
   /// Cómo lo anuncian los lectores de pantalla.
   final SelectionRole role;
 
+  /// Etiqueta pequeña junto al texto (p. ej., "Satélite" en lo que sugiere
+  /// el satélite).
+  final String? badge;
+
   @override
   Widget build(BuildContext context) {
     final shape = StadiumBorder(
       side: BorderSide(
-        color: selected ? AppColors.primary : AppColors.borderStrong,
+        color: selected ? context.colors.primary : context.colors.borderStrong,
       ),
     );
     return _SelectionSemantics(
       role: role,
       selected: selected,
       child: Material(
-        color: selected ? AppColors.primary : AppColors.surface,
+        color: selected ? context.colors.primary : context.colors.surface,
         shape: shape,
         child: InkWell(
           customBorder: shape,
@@ -87,13 +92,12 @@ class SelectableChip extends StatelessWidget {
               ),
               child: Center(
                 widthFactor: 1,
-                child: Text(
-                  label,
-                  style: AppTypography.chip.copyWith(
-                    color: selected
-                        ? AppColors.onPrimary
-                        : AppColors.textPrimary,
-                  ),
+                child: _ChipLabel(
+                  label: label,
+                  badge: badge,
+                  color: selected
+                      ? context.colors.onPrimary
+                      : context.colors.textPrimary,
                 ),
               ),
             ),
@@ -128,14 +132,14 @@ class RadioOptionTile extends StatelessWidget {
     final shape = RoundedRectangleBorder(
       borderRadius: AppRadii.button,
       side: selected
-          ? const BorderSide(color: AppColors.primary, width: 2)
-          : const BorderSide(color: AppColors.borderStrong),
+          ? BorderSide(color: context.colors.primary, width: 2)
+          : BorderSide(color: context.colors.borderStrong),
     );
     return _SelectionSemantics(
       role: SelectionRole.radio,
       selected: selected,
       child: Material(
-        color: selected ? AppColors.primarySoft : AppColors.surface,
+        color: selected ? context.colors.primarySoft : context.colors.surface,
         shape: shape,
         child: InkWell(
           customBorder: shape,
@@ -151,7 +155,7 @@ class RadioOptionTile extends StatelessWidget {
                 spacing: 10,
                 children: [
                   _RadioMark(selected: selected),
-                  Expanded(child: Text(label, style: AppTypography.option)),
+                  Expanded(child: Text(label, style: context.text.option)),
                 ],
               ),
             ),
@@ -176,7 +180,9 @@ class _RadioMark extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? AppColors.primary : AppColors.borderStrong,
+          color: selected
+              ? context.colors.primary
+              : context.colors.borderStrong,
           width: selected ? 6 : 2,
         ),
       ),
@@ -214,9 +220,9 @@ class SegmentedSelector<T> extends StatelessWidget {
       container: true,
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.xs),
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceMuted,
-          borderRadius: BorderRadius.all(Radius.circular(AppRadii.md)),
+        decoration: BoxDecoration(
+          color: context.colors.surfaceMuted,
+          borderRadius: const BorderRadius.all(Radius.circular(AppRadii.md)),
         ),
         child: Row(
           spacing: 6,
@@ -254,7 +260,7 @@ class _Segment extends StatelessWidget {
       role: SelectionRole.radio,
       selected: selected,
       child: Material(
-        color: selected ? AppColors.primary : Colors.transparent,
+        color: selected ? context.colors.primary : Colors.transparent,
         borderRadius: radius,
         child: InkWell(
           borderRadius: radius,
@@ -270,7 +276,9 @@ class _Segment extends StatelessWidget {
                   label,
                   textAlign: TextAlign.center,
                   style: AppTypography.compactButton.copyWith(
-                    color: selected ? AppColors.onPrimary : AppColors.textBody,
+                    color: selected
+                        ? context.colors.onPrimary
+                        : context.colors.textBody,
                   ),
                 ),
               ),
@@ -278,6 +286,46 @@ class _Segment extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Texto del chip con su etiqueta opcional.
+class _ChipLabel extends StatelessWidget {
+  const _ChipLabel({required this.label, required this.color, this.badge});
+
+  final String label;
+  final String? badge;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(label, style: AppTypography.chip.copyWith(color: color));
+    final badgeText = badge;
+    if (badgeText == null) return text;
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xxs,
+      children: [
+        text,
+        DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(color: color),
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xxs,
+            ),
+            child: Text(
+              badgeText,
+              style: AppTypography.pillDense.copyWith(color: color),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

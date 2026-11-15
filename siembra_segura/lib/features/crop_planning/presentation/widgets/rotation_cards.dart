@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -43,7 +43,7 @@ class SoilHealthCard extends StatelessWidget {
                   child: Text(
                     condition.label(l10n),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: condition.tone.foreground,
+                      color: condition.tone(context.colors).foreground,
                     ),
                   ),
                 ),
@@ -84,9 +84,9 @@ class SoilGauge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (litSegments, color) = switch (condition) {
       SoilCondition.veryTired ||
-      SoilCondition.tired => (1, AppColors.soilGaugeLow),
-      SoilCondition.regular => (2, AppColors.soilGaugeMid),
-      SoilCondition.good => (3, AppColors.soilGaugeHigh),
+      SoilCondition.tired => (1, context.colors.soilGaugeLow),
+      SoilCondition.regular => (2, context.colors.soilGaugeMid),
+      SoilCondition.good => (3, context.colors.soilGaugeHigh),
     };
     return Row(
       spacing: AppSpacing.xs,
@@ -96,7 +96,7 @@ class SoilGauge extends StatelessWidget {
             child: Container(
               height: 12,
               decoration: BoxDecoration(
-                color: i < litSegments ? color : AppColors.surfaceMuted,
+                color: i < litSegments ? color : context.colors.surfaceMuted,
                 borderRadius: const BorderRadius.all(Radius.circular(6)),
               ),
             ),
@@ -124,7 +124,7 @@ class OptionComparisonCard extends StatelessWidget {
   const OptionComparisonCard({
     required this.kind,
     required this.name,
-    required this.expectedProfit,
+    required this.expectedHarvest,
     required this.waterUseM3,
     required this.soilInTwoYears,
     required this.factsheet,
@@ -140,7 +140,7 @@ class OptionComparisonCard extends StatelessWidget {
     return OptionComparisonCard(
       kind: OptionKind.current,
       name: current.name(l10n),
-      expectedProfit: current.expectedProfit[recommendation.scenario] ?? 0,
+      expectedHarvest: current.expectedHarvest[recommendation.scenario] ?? 0,
       waterUseM3: current.waterUseM3,
       soilInTwoYears: current.soilInTwoYears,
       factsheet: current.factsheet,
@@ -157,7 +157,9 @@ class OptionComparisonCard extends StatelessWidget {
     return OptionComparisonCard(
       kind: recommended ? OptionKind.recommended : OptionKind.other,
       name: option.name(l10n),
-      expectedProfit: option.outcomeFor(recommendation.scenario).expectedProfit,
+      expectedHarvest: option
+          .outcomeFor(recommendation.scenario)
+          .expectedHarvest,
       waterUseM3: option.waterUseM3,
       soilInTwoYears: option.soilInTwoYears,
       factsheet: option.factsheet,
@@ -170,8 +172,8 @@ class OptionComparisonCard extends StatelessWidget {
   /// Nombre de la rotación.
   final String name;
 
-  /// Ganancia esperada, en soles por hectárea.
-  final int expectedProfit;
+  /// Cosecha esperada (1 = una buena campaña).
+  final double expectedHarvest;
 
   /// Agua por hectárea, en m³.
   final int waterUseM3;
@@ -187,36 +189,36 @@ class OptionComparisonCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isRecommended = kind == OptionKind.recommended;
     final (label, tone) = switch (kind) {
-      OptionKind.current => (l10n.optionCurrent, AppColors.neutralTone),
+      OptionKind.current => (l10n.optionCurrent, context.colors.neutralTone),
       OptionKind.recommended => (
         l10n.optionRecommended,
-        const Tone(AppColors.primary, AppColors.onPrimary),
+        Tone(context.colors.primary, context.colors.onPrimary),
       ),
-      OptionKind.other => (l10n.optionOther, AppColors.neutralTone),
+      OptionKind.other => (l10n.optionOther, context.colors.neutralTone),
     };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: AppRadii.card,
         border: isRecommended
-            ? Border.all(color: AppColors.primary, width: 2)
-            : Border.all(color: AppColors.border),
+            ? Border.all(color: context.colors.primary, width: 2)
+            : Border.all(color: context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           StatusPill(label: label, tone: tone, dense: true),
-          Text(name, style: AppTypography.cardTitle),
+          Text(name, style: context.text.cardTitle),
           Row(
             spacing: AppSpacing.sm,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Metric(
-                label: l10n.metricExpectedProfit,
-                child: _MetricValue(AppFormatters.soles(expectedProfit)),
+                label: l10n.metricExpectedHarvest,
+                child: _MetricValue(AppFormatters.percent(expectedHarvest)),
               ),
               _Metric(
                 label: l10n.metricWater,
@@ -226,7 +228,7 @@ class OptionComparisonCard extends StatelessWidget {
                 label: l10n.metricSoilInTwoYears,
                 child: StatusPill(
                   label: soilInTwoYears.label(l10n),
-                  tone: soilInTwoYears.tone,
+                  tone: soilInTwoYears.tone(context.colors),
                 ),
               ),
             ],
@@ -278,7 +280,7 @@ class _MetricValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(value, style: AppTypography.metricValue);
+    return Text(value, style: context.text.metricValue);
   }
 }
 
@@ -298,7 +300,7 @@ class _FactsheetSection extends StatelessWidget {
           spacing: AppSpacing.xxs,
           children: [
             Text(title, style: Theme.of(context).textTheme.labelMedium),
-            Text(body, style: AppTypography.bodyCompact),
+            Text(body, style: context.text.bodyCompact),
           ],
         ),
       ),
@@ -353,23 +355,30 @@ class _CampaignRow extends StatelessWidget {
               width: MediaQuery.textScalerOf(context).scale(76),
               child: Text(
                 periodLabel(step.start, step.end),
-                style: AppTypography.captionMuted,
+                style: context.text.captionMuted,
               ),
             ),
+            // Si no caben juntos, el estado de la tierra baja a otra línea
+            // en vez de cortar el nombre del cultivo.
             Expanded(
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: ColoredBlock(
-                  label: step.crop.name,
-                  tone: step.crop.tone,
-                ),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  ColoredBlock(
+                    label: step.crop.name,
+                    tone: step.crop.tone(context.colors),
+                  ),
+                  StatusPill(
+                    label: l10n.soilWithLabel(
+                      step.soilAfter.label(l10n).toLowerCase(),
+                    ),
+                    tone: step.soilAfter.tone(context.colors),
+                  ),
+                ],
               ),
-            ),
-            StatusPill(
-              label: l10n.soilWithLabel(
-                step.soilAfter.label(l10n).toLowerCase(),
-              ),
-              tone: step.soilAfter.tone,
             ),
           ],
         ),

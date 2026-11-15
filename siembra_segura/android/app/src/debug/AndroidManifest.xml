@@ -4,4 +4,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Solo en debug: permite probar el backend local por http://
+         (p. ej. la voz de Semi en http://10.0.2.2:8000). Release exige https. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

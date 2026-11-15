@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/features/alerts/domain/alert.dart';
 import 'package:siembra_segura/features/alerts/presentation/alert_texts.dart';
 import 'package:siembra_segura/features/alerts/presentation/providers/alerts_providers.dart';
+import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/notice_tile.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 4: Avisos.
@@ -26,8 +29,12 @@ class AlertsScreen extends ConsumerWidget {
     final loaded = alerts.value;
 
     return ScreenLayout(
+      guide: SemiGuide(
+        message: l10n.semiAlertsGuide,
+        expression: SemiExpression.alert,
+      ),
       header: ScreenHeader(
-        actions: const [FarmSettingsButton()],
+        actions: const [AppSettingsButton()],
         title: l10n.alertsTitle,
         listenText: loaded == null ? null : _narration(loaded, l10n),
       ),
@@ -42,7 +49,7 @@ class AlertsScreen extends ConsumerWidget {
             for (final alert in alerts)
               NoticeTile(
                 icon: alert.type.icon,
-                iconTone: alert.type.tone,
+                iconTone: alert.type.tone(context.colors),
                 title: alert.title,
                 body: alert.body,
                 meta: l10n.alertMeta(

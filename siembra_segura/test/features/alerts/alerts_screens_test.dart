@@ -15,7 +15,7 @@ void main() {
   const forecastChange = 'Cambió el pronóstico de El Niño';
 
   Future<void> openAlerts(WidgetTester tester) async {
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(l10n.tabAlerts);
   }
 
@@ -41,7 +41,7 @@ void main() {
 
   testWidgets('la pestaña indica que hay avisos nuevos', (tester) async {
     await tester.pumpSiembraSeguraApp();
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
 
     final badges = tester.widgetList<Badge>(
       find.descendant(of: findNavigationBar(), matching: find.byType(Badge)),

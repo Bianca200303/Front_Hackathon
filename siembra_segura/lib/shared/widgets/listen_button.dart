@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/services/speech/speech_service.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 
@@ -36,7 +36,7 @@ class ListenButton extends ConsumerWidget {
     final onPressed = content == null
         ? null
         : () => _speak(context, ref, content);
-    const side = BorderSide(color: AppColors.borderStrong);
+    final side = BorderSide(color: context.colors.borderStrong);
 
     if (compact) {
       return IconButton.outlined(
@@ -45,7 +45,7 @@ class ListenButton extends ConsumerWidget {
         icon: const Icon(Icons.volume_up_rounded),
         style: IconButton.styleFrom(
           minimumSize: const Size.square(AppSizes.minTouchTarget),
-          foregroundColor: AppColors.textPrimary,
+          foregroundColor: context.colors.textPrimary,
           side: side,
         ),
       );
@@ -61,7 +61,7 @@ class ListenButton extends ConsumerWidget {
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(0, AppSizes.minTouchTarget),
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          foregroundColor: AppColors.textPrimary,
+          foregroundColor: context.colors.textPrimary,
           side: side,
           shape: const StadiumBorder(),
           textStyle: AppTypography.compactButton,

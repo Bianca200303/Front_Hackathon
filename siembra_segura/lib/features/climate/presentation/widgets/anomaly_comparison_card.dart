@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/features/climate/domain/climate_overview.dart';
 import 'package:siembra_segura/features/climate/presentation/climate_labels.dart';
@@ -78,13 +78,16 @@ class _AnomalyRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
-              StatusPill(label: status, tone: anomaly.statusTone),
+              StatusPill(
+                label: status,
+                tone: anomaly.statusTone(context.colors),
+              ),
             ],
           ),
           ComparisonBar(
             value: anomaly.observedLevel,
             marker: anomaly.normalLevel,
-            color: anomaly.barColor,
+            color: anomaly.barColor(context.colors),
           ),
         ],
       ),
@@ -124,10 +127,10 @@ class ComparisonBar extends StatelessWidget {
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              const Positioned.fill(
+              Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceMuted,
+                    color: context.colors.surfaceMuted,
                     borderRadius: _radius,
                   ),
                 ),
@@ -149,7 +152,7 @@ class ComparisonBar extends StatelessWidget {
                 top: -4,
                 bottom: -4,
                 width: 2,
-                child: const ColoredBox(color: AppColors.textPrimary),
+                child: ColoredBox(color: context.colors.textPrimary),
               ),
             ],
           );

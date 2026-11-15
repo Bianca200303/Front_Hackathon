@@ -30,7 +30,7 @@ void main() {
     expect(recommendation.isMostLikelyScenario, isTrue);
     expect(recommendation.priority, referenceCatalog.defaultPriority);
     expect(recommendation.best.id, 'r1');
-    expect(recommendation.bestOutcome.expectedProfit, 2400);
+    expect(recommendation.bestOutcome.expectedHarvest, 0.85);
     expect(recommendation.riskMonths, hasLength(2));
   });
 

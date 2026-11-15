@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 
@@ -36,13 +36,13 @@ class NoticeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const shape = RoundedRectangleBorder(
+    final shape = RoundedRectangleBorder(
       borderRadius: AppRadii.card,
-      side: BorderSide(color: AppColors.border),
+      side: BorderSide(color: context.colors.border),
     );
     final metaText = meta;
     return Material(
-      color: AppColors.surface,
+      color: context.colors.surface,
       shape: shape,
       child: InkWell(
         customBorder: shape,
@@ -69,11 +69,11 @@ class NoticeTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSpacing.xxs,
                   children: [
-                    Text(title, style: AppTypography.emphasis),
+                    Text(title, style: context.text.emphasis),
                     Text(
                       body,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                       ),
                     ),
                     if (metaText != null)
