@@ -13,6 +13,8 @@ void main() {
   Future<void> openRotation(WidgetTester tester) async {
     await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(l10n.tabRotation);
+    // El simulador está a un toque.
+    await tester.tapText(l10n.simTitle);
   }
 
   /// Casilla del simulador para la campaña [period] (su etiqueta accesible
@@ -78,6 +80,7 @@ void main() {
     );
     // Con preferencias guardadas abre directo en las pestañas.
     await tester.tapTab(l10n.tabRotation);
+    await tester.tapText(l10n.simTitle);
 
     await tester.tapVisible(slot('Dic–Mar').first);
 

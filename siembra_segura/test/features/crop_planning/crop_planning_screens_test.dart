@@ -37,7 +37,7 @@ void main() {
       expect(find.text(l10n.waterLess('46%')), findsOneWidget);
       expect(find.text(l10n.soilGood), findsOneWidget);
       expect(find.text('15 de diciembre'), findsOneWidget);
-      expect(find.text(l10n.whyTitle), findsOneWidget);
+      expect(find.text(l10n.whyMore), findsOneWidget);
       expect(find.textContaining('S/'), findsNothing);
     });
 
@@ -180,6 +180,9 @@ void main() {
       await openTab(tester, l10n.tabRotation);
 
       expect(find.text(l10n.soilTodayOverline), findsOneWidget);
+      // A la vista solo la recomendada; las otras, a un toque.
+      expect(find.text(l10n.optionCurrentLabel), findsNothing);
+      await tester.tapText(l10n.otherOptionsMore);
       expect(find.text(l10n.soilTired), findsOneWidget);
       expect(find.text(l10n.rotationCompareTitle(3)), findsOneWidget);
       expect(find.text(l10n.optionCurrentLabel), findsOneWidget);

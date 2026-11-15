@@ -388,5 +388,8 @@
   "deleteAllConfirm": "Tap again to delete your data",
   "settingsModeAssistedNote": "Semi explains each screen and asks you one question at a time.",
   "settingsModeManualNote": "You fill in your details on one screen. Semi only shows up if you ask.",
-  "semiAlertsImportant": "The most important one: {title}."
+  "semiAlertsImportant": "The most important one: {title}.",
+  "climateMore": "See more about the weather",
+  "whyMore": "Why do I recommend it?",
+  "otherOptionsMore": "See the other options"
 }

@@ -283,6 +283,9 @@
     "deleteAllConfirm",
     "settingsModeAssistedNote",
     "settingsModeManualNote",
-    "semiAlertsImportant"
+    "semiAlertsImportant",
+    "climateMore",
+    "whyMore",
+    "otherOptionsMore"
   ]
 }

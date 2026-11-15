@@ -102,9 +102,16 @@ class _SettingsSheet extends ConsumerWidget {
           title: l10n.settingsAppearanceTitle,
           child: SegmentedSelector<ThemeMode>(
             semanticsLabel: l10n.themeSwitchSemantics,
-            selected: ref.watch(themeModeProvider),
+            // Solo claro u oscuro; mientras no se elija, se marca el que
+            // se ve (el del celular).
+            selected: switch (ref.watch(themeModeProvider)) {
+              ThemeMode.system =>
+                Theme.of(context).brightness == Brightness.dark
+                    ? ThemeMode.dark
+                    : ThemeMode.light,
+              final mode => mode,
+            },
             options: [
-              (ThemeMode.system, l10n.themeSystem),
               (ThemeMode.light, l10n.themeLight),
               (ThemeMode.dark, l10n.themeDark),
             ],

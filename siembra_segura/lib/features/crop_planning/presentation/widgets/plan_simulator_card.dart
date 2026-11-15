@@ -192,7 +192,6 @@ class _PlanSimulatorCardState extends ConsumerState<PlanSimulatorCard>
     // la lista (para quien no descubre los dos pasos).
     return AppCard(
       children: [
-        SectionTitle(l10n.simTitle),
         MutedText(l10n.simPickHint),
         LayoutBuilder(
           builder: (context, constraints) {

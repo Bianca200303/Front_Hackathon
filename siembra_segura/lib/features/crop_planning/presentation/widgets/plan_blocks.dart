@@ -9,6 +9,7 @@ import 'package:siembra_segura/features/crop_planning/presentation/crop_planning
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/widgets/app_card.dart';
+import 'package:siembra_segura/shared/widgets/expandable.dart';
 
 // Bloques de `semi_app.html` (v4) para "Qué sembrar" y "Rotación".
 
@@ -314,14 +315,8 @@ class ReasonsSection extends StatelessWidget {
     final colors = context.colors;
     final style = TextStyle(fontSize: 15, height: 1.4, color: colors.textBody);
     return AppCard(
+      variant: AppCardVariant.compact,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            l10n.whyTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ),
         for (final reason in recommendation.reasons(l10n))
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,59 +330,6 @@ class ReasonsSection extends StatelessWidget {
           l10n.whyConfidence,
           style: style.copyWith(fontStyle: FontStyle.italic),
         ),
-      ],
-    );
-  }
-}
-
-/// Texto que se despliega al tocar el título (`details.significa`).
-class Expandable extends StatefulWidget {
-  /// Crea el desplegable.
-  const Expandable({required this.title, required this.child, super.key});
-
-  /// Título (verde, tocable).
-  final String title;
-
-  /// Lo que se muestra al abrir.
-  final Widget child;
-
-  @override
-  State<Expandable> createState() => _ExpandableState();
-}
-
-class _ExpandableState extends State<Expandable> {
-  bool _open = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Semantics(
-          button: true,
-          expanded: _open,
-          child: InkWell(
-            onTap: () => setState(() => _open = !_open),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: AppSizes.minTouchTarget,
-              ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: colors.primary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        if (_open) widget.child,
       ],
     );
   }

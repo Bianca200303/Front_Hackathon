@@ -2287,6 +2287,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'El más importante: {title}.'**
   String semiAlertsImportant(String title);
+
+  /// No description provided for @climateMore.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver más del clima'**
+  String get climateMore;
+
+  /// No description provided for @whyMore.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué te lo recomiendo?'**
+  String get whyMore;
+
+  /// No description provided for @otherOptionsMore.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver las otras opciones'**
+  String get otherOptionsMore;
 }
 
 class _AppLocalizationsDelegate

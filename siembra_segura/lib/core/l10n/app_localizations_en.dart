@@ -1312,4 +1312,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String semiAlertsImportant(String title) {
     return 'The most important one: $title.';
   }
+
+  @override
+  String get climateMore => 'See more about the weather';
+
+  @override
+  String get whyMore => 'Why do I recommend it?';
+
+  @override
+  String get otherOptionsMore => 'See the other options';
 }

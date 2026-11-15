@@ -9,6 +9,7 @@ import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_
 import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
+import 'package:siembra_segura/shared/widgets/expandable.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
@@ -53,7 +54,10 @@ class RecommendationScreen extends ConsumerWidget {
               deadline: recommendation.best.schedule.decisionDeadline,
               onTap: () => context.go(AppRoutes.plantingSchedule),
             ),
-            ReasonsSection(recommendation: recommendation),
+            Expandable(
+              title: l10n.whyMore,
+              child: ReasonsSection(recommendation: recommendation),
+            ),
             AppButton(
               label: l10n.actionCompareOptions,
               variant: AppButtonVariant.outline,

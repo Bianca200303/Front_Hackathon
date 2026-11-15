@@ -10,6 +10,7 @@ import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_
 import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_simulator_card.dart';
 import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
+import 'package:siembra_segura/shared/widgets/expandable.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
@@ -68,31 +69,44 @@ class _RotationContent extends StatelessWidget {
             MutedText(l10n.compareSubtitle),
           ],
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            OptionRow(
-              kind: OptionRowKind.current,
-              crops: List.filled(4, current.mainCrop),
-              harvest: current.expectedHarvest[r.scenario] ?? 0,
-              waterM3: current.waterUseM3,
-              soil: current.soilInTwoYears,
-              factsheet: current.factsheet,
-            ),
-            for (final (index, option) in compared.indexed)
-              OptionRow(
-                kind: index == 0
-                    ? OptionRowKind.recommended
-                    : OptionRowKind.other,
-                crops: [for (final s in option.longTermPlan) s.crop],
-                harvest: option.outcomeFor(r.scenario).expectedHarvest,
-                waterM3: option.waterUseM3,
-                soil: option.soilInTwoYears,
-                factsheet: option.factsheet,
-              ),
-          ],
+        // A la vista solo la recomendada; lo demás, a un toque.
+        OptionRow(
+          kind: OptionRowKind.recommended,
+          crops: [for (final s in compared.first.longTermPlan) s.crop],
+          harvest: compared.first.outcomeFor(r.scenario).expectedHarvest,
+          waterM3: compared.first.waterUseM3,
+          soil: compared.first.soilInTwoYears,
+          factsheet: compared.first.factsheet,
         ),
-        PlanSimulatorCard(recommendation: r),
+        Expandable(
+          title: l10n.otherOptionsMore,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              OptionRow(
+                kind: OptionRowKind.current,
+                crops: List.filled(4, current.mainCrop),
+                harvest: current.expectedHarvest[r.scenario] ?? 0,
+                waterM3: current.waterUseM3,
+                soil: current.soilInTwoYears,
+                factsheet: current.factsheet,
+              ),
+              for (final option in compared.skip(1))
+                OptionRow(
+                  kind: OptionRowKind.other,
+                  crops: [for (final s in option.longTermPlan) s.crop],
+                  harvest: option.outcomeFor(r.scenario).expectedHarvest,
+                  waterM3: option.waterUseM3,
+                  soil: option.soilInTwoYears,
+                  factsheet: option.factsheet,
+                ),
+            ],
+          ),
+        ),
+        Expandable(
+          title: l10n.simTitle,
+          child: PlanSimulatorCard(recommendation: r),
+        ),
         Text(
           l10n.rotationGuideNote,
           style: TextStyle(fontSize: 13, color: context.colors.textMuted),

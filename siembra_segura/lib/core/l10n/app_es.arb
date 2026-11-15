@@ -455,5 +455,8 @@
   "settingsModeAssistedNote": "Semi te explica cada pantalla y te hace las preguntas una por una.",
   "settingsModeManualNote": "Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.",
   "semiAlertsImportant": "El más importante: {title}.",
-  "@semiAlertsImportant": { "placeholders": { "title": { "type": "String" } } }
+  "@semiAlertsImportant": { "placeholders": { "title": { "type": "String" } } },
+  "climateMore": "Ver más del clima",
+  "whyMore": "¿Por qué te lo recomiendo?",
+  "otherOptionsMore": "Ver las otras opciones"
 }

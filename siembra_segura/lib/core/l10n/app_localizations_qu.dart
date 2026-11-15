@@ -1320,4 +1320,13 @@ class AppLocalizationsQu extends AppLocalizations {
   String semiAlertsImportant(String title) {
     return 'El más importante: $title.';
   }
+
+  @override
+  String get climateMore => 'Ver más del clima';
+
+  @override
+  String get whyMore => '¿Por qué te lo recomiendo?';
+
+  @override
+  String get otherOptionsMore => 'Ver las otras opciones';
 }
