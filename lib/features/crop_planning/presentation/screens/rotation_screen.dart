@@ -79,6 +79,7 @@ class _RotationContent extends StatelessWidget {
           waterM3: compared.first.resultFor(r.scenario).waterUseM3,
           soil: compared.first.soilInTwoYears,
           factsheet: compared.first.factsheet,
+          warnings: compared.first.warnings,
         ),
         Expandable(
           title: l10n.otherOptionsMore,
@@ -92,6 +93,7 @@ class _RotationContent extends StatelessWidget {
                 waterM3: r.currentResult.waterUseM3,
                 soil: current.soilInTwoYears,
                 factsheet: current.factsheet,
+                warnings: current.warnings,
               ),
               for (final option in compared.skip(1))
                 OptionRow(
@@ -101,6 +103,7 @@ class _RotationContent extends StatelessWidget {
                   waterM3: option.resultFor(r.scenario).waterUseM3,
                   soil: option.soilInTwoYears,
                   factsheet: option.factsheet,
+                  warnings: option.warnings,
                 ),
             ],
           ),

@@ -11,6 +11,7 @@ import 'package:siembra_segura/shared/presentation/vocabulary_labels.dart';
 import 'package:siembra_segura/shared/widgets/app_card.dart';
 import 'package:siembra_segura/shared/widgets/expandable.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
+import 'package:siembra_segura/shared/widgets/warning_note.dart';
 
 // Bloques de `semi_app.html` (v4) para "Qué sembrar" y "Rotación".
 
@@ -166,6 +167,9 @@ class RecommendationBlock extends StatelessWidget {
             ),
           ),
           CropStrip(crops: [for (final s in best.longTermPlan) s.crop]),
+          // Lo que conviene saber antes de decidir: poca agua para un
+          // cultivo que pide mucha, siembra fuera de época, etc.
+          for (final warning in best.warnings) WarningNote(warning),
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -369,6 +373,7 @@ class OptionRow extends StatelessWidget {
     required this.waterM3,
     required this.soil,
     this.factsheet,
+    this.warnings = const [],
     super.key,
   });
 
@@ -389,6 +394,9 @@ class OptionRow extends StatelessWidget {
 
   /// Ficha con el porqué (no hay para la que armó el agricultor).
   final OptionFactsheet? factsheet;
+
+  /// Avisos de la opción; se ven al abrir "Ver por qué".
+  final List<String> warnings;
 
   @override
   Widget build(BuildContext context) {
@@ -493,6 +501,7 @@ class OptionRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSpacing.sm,
                   children: [
+                    for (final warning in warnings) WarningNote(warning),
                     _FichaItem(l10n.fichaWhy, sheet.rationale),
                     _FichaItem(l10n.fichaEvidence, sheet.evidence),
                     _FichaItem(l10n.fichaUnknowns, sheet.unknowns),

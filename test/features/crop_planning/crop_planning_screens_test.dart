@@ -109,6 +109,47 @@ void main() {
       );
     });
 
+    testWidgets('los avisos de la recomendada se ven sin abrir nada', (
+      tester,
+    ) async {
+      const warning =
+          'Algodón pide mucha agua y este año puede faltar. En los cerros '
+          'donde nace tu río llovió 39 % menos de lo normal.';
+      final withWarnings = CropPlanningData(
+        options: [
+          for (final option in reference.options)
+            RotationOption(
+              id: option.id,
+              crops: option.crops,
+              scenarios: option.scenarios,
+              soilImpact: option.soilImpact,
+              soilInTwoYears: option.soilInTwoYears,
+              factsheet: option.factsheet,
+              schedule: option.schedule,
+              longTermPlan: option.longTermPlan,
+              excludedBy: option.excludedBy,
+              warnings: const [warning],
+            ),
+        ],
+        currentPractice: reference.currentPractice,
+        soilHealth: reference.soilHealth,
+        scenarioNotes: reference.scenarioNotes,
+        riskMonths: reference.riskMonths,
+        irrigationSource: reference.irrigationSource,
+        areaHectares: reference.areaHectares,
+      );
+      await tester.pumpSiembraSeguraApp(
+        overrides: [
+          cropPlanningRepositoryProvider.overrideWithValue(
+            FixedCropPlanningRepository(withWarnings),
+          ),
+        ],
+      );
+      await openTab(tester, l10n.tabWhatToPlant);
+
+      expect(find.text(warning), findsOneWidget);
+    });
+
     testWidgets('cambia al instante con la prioridad', (tester) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);

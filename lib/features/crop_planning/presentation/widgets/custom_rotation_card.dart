@@ -16,6 +16,7 @@ import 'package:siembra_segura/shared/widgets/app_card.dart';
 import 'package:siembra_segura/shared/widgets/selection_controls.dart';
 import 'package:siembra_segura/shared/widgets/status_pill.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
+import 'package:siembra_segura/shared/widgets/warning_note.dart';
 
 /// "Arma tu rotación": el agricultor cambia un cultivo de la secuencia y ve
 /// cómo cambian el agua, el riesgo y su tierra.
@@ -256,7 +257,7 @@ class _CustomOutcome extends ConsumerWidget {
         ),
         // Reglas que rompe la secuencia (misma familia seguida, siembra
         // fuera de sus meses): un aviso amable, no un error.
-        for (final warning in option.warnings) _RuleWarning(warning),
+        for (final warning in option.warnings) WarningNote(warning),
         if (excluded)
           Text(
             l10n.rotationCustomExcluded,
@@ -265,41 +266,6 @@ class _CustomOutcome extends ConsumerWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _RuleWarning extends StatelessWidget {
-  const _RuleWarning(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = context.colors.warningTone;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: tone.background,
-        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.sm,
-          children: [
-            Icon(Icons.info_outline_rounded, size: 20, color: tone.foreground),
-            Expanded(
-              child: Text(
-                text,
-                style: context.text.bodyCompact.copyWith(
-                  color: tone.foreground,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
