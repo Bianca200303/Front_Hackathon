@@ -2340,12 +2340,6 @@ abstract class AppLocalizations {
   /// **'Datos de ejemplo: no son mediciones reales de tu chacra'**
   String get sampleDataBanner;
 
-  /// No description provided for @waterTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Agua en tu zona'**
-  String get waterTitle;
-
   /// No description provided for @waterLevelLow.
   ///
   /// In es, this message translates to:
@@ -2367,8 +2361,8 @@ abstract class AppLocalizations {
   /// No description provided for @waterSemantics.
   ///
   /// In es, this message translates to:
-  /// **'Agua en tu zona: {level}'**
-  String waterSemantics(String level);
+  /// **'{title}: {level}'**
+  String waterSemantics(String title, String level);
 
   /// No description provided for @waterSource.
   ///
@@ -2387,6 +2381,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{count, plural, =1{1 año} other{{count} años}}'**
   String yearsCount(int count);
+
+  /// No description provided for @waterLocalTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia y tierra de tu zona'**
+  String get waterLocalTitle;
+
+  /// No description provided for @waterIrrigationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua que llega por riego'**
+  String get waterIrrigationTitle;
+
+  /// No description provided for @waterIrrigationSource.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia de diciembre a abril en Ayabaca, Pacaipampa, Cariamanga y Catamayo, comparada con las 10 temporadas anteriores. Datos de la NASA (NASA POWER).'**
+  String get waterIrrigationSource;
 }
 
 class _AppLocalizationsDelegate

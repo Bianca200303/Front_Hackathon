@@ -1347,9 +1347,6 @@ class AppLocalizationsQu extends AppLocalizations {
       'Datos de ejemplo: no son mediciones reales de tu chacra';
 
   @override
-  String get waterTitle => 'Agua en tu zona';
-
-  @override
   String get waterLevelLow => 'Poca agua';
 
   @override
@@ -1359,8 +1356,8 @@ class AppLocalizationsQu extends AppLocalizations {
   String get waterLevelHigh => 'Más agua que de costumbre';
 
   @override
-  String waterSemantics(String level) {
-    return 'Agua en tu zona: $level';
+  String waterSemantics(String title, String level) {
+    return '$title: $level';
   }
 
   @override
@@ -1382,4 +1379,14 @@ class AppLocalizationsQu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get waterLocalTitle => 'Lluvia y tierra de tu zona';
+
+  @override
+  String get waterIrrigationTitle => 'Agua que llega por riego';
+
+  @override
+  String get waterIrrigationSource =>
+      'Lluvia de diciembre a abril en Ayabaca, Pacaipampa, Cariamanga y Catamayo, comparada con las 10 temporadas anteriores. Datos de la NASA (NASA POWER).';
 }

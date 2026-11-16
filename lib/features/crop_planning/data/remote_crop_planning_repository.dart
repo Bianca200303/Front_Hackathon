@@ -138,6 +138,16 @@ class _PlanningResponse {
       ),
       null => null,
     },
+    irrigationWater: switch (json.objectOrNull('irrigation_water')) {
+      final water? => IrrigationWater(
+        level: water.oneOf('level', _waterLevels),
+        finding: water.string('finding'),
+        note: water.string('note'),
+        seasonStart: water.date('season_start'),
+        seasonEnd: water.date('season_end'),
+      ),
+      null => null,
+    },
   );
 
   Crop _crop(String id) =>

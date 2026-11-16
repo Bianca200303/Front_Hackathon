@@ -461,16 +461,18 @@
 
   "sampleDataBanner": "Datos de ejemplo: no son mediciones reales de tu chacra",
 
-  "waterTitle": "Agua en tu zona",
   "waterLevelLow": "Poca agua",
   "waterLevelMedium": "Agua como en un año común",
   "waterLevelHigh": "Más agua que de costumbre",
-  "waterSemantics": "Agua en tu zona: {level}",
-  "@waterSemantics": {"placeholders": {"level": {"type": "String"}}},
+  "waterSemantics": "{title}: {level}",
+  "@waterSemantics": {"placeholders": {"title": {"type": "String"}, "level": {"type": "String"}}},
   "waterSource": "Lluvia y humedad de la tierra de {start} a {end}, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).",
   "@waterSource": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}},
 
   "loadingSatellite": "Estoy mirando tu chacra con los datos de los satélites de la NASA. La primera vez puede tardar hasta un minuto.",
   "yearsCount": "{count, plural, =1{1 año} other{{count} años}}",
-  "@yearsCount": {"placeholders": {"count": {"type": "int"}}}
+  "@yearsCount": {"placeholders": {"count": {"type": "int"}}},
+  "waterLocalTitle": "Lluvia y tierra de tu zona",
+  "waterIrrigationTitle": "Agua que llega por riego",
+  "waterIrrigationSource": "Lluvia de diciembre a abril en Ayabaca, Pacaipampa, Cariamanga y Catamayo, comparada con las 10 temporadas anteriores. Datos de la NASA (NASA POWER)."
 }

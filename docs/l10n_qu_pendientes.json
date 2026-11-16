@@ -296,13 +296,15 @@
     "whyMore",
     "otherOptionsMore",
     "sampleDataBanner",
-    "waterTitle",
     "waterLevelLow",
     "waterLevelMedium",
     "waterLevelHigh",
     "waterSemantics",
     "waterSource",
     "loadingSatellite",
-    "yearsCount"
+    "yearsCount",
+    "waterLocalTitle",
+    "waterIrrigationTitle",
+    "waterIrrigationSource"
   ]
 }

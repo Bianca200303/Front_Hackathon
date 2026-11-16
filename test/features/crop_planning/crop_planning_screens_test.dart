@@ -54,7 +54,8 @@ void main() {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);
       // Los datos de ejemplo no traen indicador: no se inventa uno.
-      expect(find.text(l10n.waterTitle), findsNothing);
+      expect(find.text(l10n.waterLocalTitle), findsNothing);
+      expect(find.text(l10n.waterIrrigationTitle), findsNothing);
     });
 
     testWidgets('muestra el semáforo con la frase del backend', (tester) async {
@@ -72,6 +73,13 @@ void main() {
           windowStart: DateTime(2026, 5),
           windowEnd: DateTime(2026, 10, 31),
         ),
+        irrigationWater: IrrigationWater(
+          level: WaterLevel.medium,
+          finding: 'En los cerros donde nace tu río llovió 11 % menos.',
+          note: 'Es una aproximación con la lluvia de la cuenca alta.',
+          seasonStart: DateTime(2025, 12),
+          seasonEnd: DateTime(2026, 4, 30),
+        ),
       );
       await tester.pumpSiembraSeguraApp(
         overrides: [
@@ -82,8 +90,19 @@ void main() {
       );
       await openTab(tester, l10n.tabWhatToPlant);
 
-      expect(find.text(l10n.waterTitle), findsOneWidget);
+      expect(find.text(l10n.waterLocalTitle), findsOneWidget);
       expect(find.text(l10n.waterLevelLow), findsOneWidget);
+      expect(find.text(l10n.waterIrrigationTitle), findsOneWidget);
+      expect(find.text(l10n.waterLevelMedium), findsOneWidget);
+      expect(
+        find.text('En los cerros donde nace tu río llovió 11 % menos.'),
+        findsOneWidget,
+      );
+      // Siempre aclara que es una aproximación con lluvia.
+      expect(
+        find.textContaining('aproximación con la lluvia de la cuenca alta'),
+        findsOneWidget,
+      );
       expect(
         find.text('En tu zona llovió menos de la mitad de lo normal.'),
         findsOneWidget,

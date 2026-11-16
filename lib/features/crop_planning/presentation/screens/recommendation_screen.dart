@@ -51,8 +51,12 @@ class RecommendationScreen extends ConsumerWidget {
         data: (recommendation) => ScreenContent(
           children: [
             RecommendationBlock(recommendation: recommendation),
-            if (recommendation.data.waterAvailability case final water?)
-              WaterLightCard(water: water),
+            if (recommendation.data.waterAvailability != null ||
+                recommendation.data.irrigationWater != null)
+              WaterLightCard(
+                local: recommendation.data.waterAvailability,
+                irrigation: recommendation.data.irrigationWater,
+              ),
             DeadlineBox(
               deadline: recommendation.best.schedule.decisionDeadline,
               onTap: () => context.go(AppRoutes.plantingSchedule),

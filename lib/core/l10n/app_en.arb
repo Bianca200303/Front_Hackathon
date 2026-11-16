@@ -408,13 +408,15 @@
 
   "sampleDataBanner": "Sample data: not real measurements of your field",
 
-  "waterTitle": "Water in your area",
   "waterLevelLow": "Little water",
   "waterLevelMedium": "Water like a usual year",
   "waterLevelHigh": "More water than usual",
-  "waterSemantics": "Water in your area: {level}",
+  "waterSemantics": "{title}: {level}",
   "waterSource": "Rain and soil moisture from {start} to {end}, compared with the same months of the previous 10 years. NASA data (NASA POWER).",
 
   "loadingSatellite": "I'm looking at your field with NASA satellite data. The first time it can take up to a minute.",
-  "yearsCount": "{count, plural, =1{1 year} other{{count} years}}"
+  "yearsCount": "{count, plural, =1{1 year} other{{count} years}}",
+  "waterLocalTitle": "Rain and soil in your area",
+  "waterIrrigationTitle": "Water that arrives through irrigation",
+  "waterIrrigationSource": "December-April rain at Ayabaca, Pacaipampa, Cariamanga and Catamayo, compared with the previous 10 seasons. NASA data (NASA POWER)."
 }

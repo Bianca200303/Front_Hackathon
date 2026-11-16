@@ -1341,9 +1341,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sample data: not real measurements of your field';
 
   @override
-  String get waterTitle => 'Water in your area';
-
-  @override
   String get waterLevelLow => 'Little water';
 
   @override
@@ -1353,8 +1350,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waterLevelHigh => 'More water than usual';
 
   @override
-  String waterSemantics(String level) {
-    return 'Water in your area: $level';
+  String waterSemantics(String title, String level) {
+    return '$title: $level';
   }
 
   @override
@@ -1376,4 +1373,14 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get waterLocalTitle => 'Rain and soil in your area';
+
+  @override
+  String get waterIrrigationTitle => 'Water that arrives through irrigation';
+
+  @override
+  String get waterIrrigationSource =>
+      'December-April rain at Ayabaca, Pacaipampa, Cariamanga and Catamayo, compared with the previous 10 seasons. NASA data (NASA POWER).';
 }

@@ -193,6 +193,21 @@ Map<String, Object?> _recommendationJson() => {
     'finding': 'En tu zona llovió menos de la mitad de lo normal estos meses.',
     'source': 'nasa_power',
   },
+  'irrigation_water': {
+    'level': 'medium',
+    'season_start': '2023-12-01',
+    'season_end': '2024-04-30',
+    'rain_mm': 301.5,
+    'rain_normal_mm': 340.4,
+    'percent_vs_normal': -11.4,
+    'rain_percentile': 40.0,
+    'reference_seasons': [2014, 2023],
+    'points': <Object?>[],
+    'finding':
+        'En los cerros donde nace tu río llovió 11 % menos de lo normal.',
+    'note': 'Es una aproximación con la lluvia de la cuenca alta.',
+    'source': 'nasa_power',
+  },
 };
 
 void main() {
@@ -382,6 +397,18 @@ void main() {
       ),
     ).getPlanningData(_query);
     expect(withoutWater.waterAvailability, isNull);
+
+    expect(
+      data.irrigationWater,
+      IrrigationWater(
+        level: WaterLevel.medium,
+        finding:
+            'En los cerros donde nace tu río llovió 11 % menos de lo normal.',
+        note: 'Es una aproximación con la lluvia de la cuenca alta.',
+        seasonStart: DateTime(2023, 12),
+        seasonEnd: DateTime(2024, 4, 30),
+      ),
+    );
   });
 
   test('trae el orden de cada prioridad y escenario', () async {

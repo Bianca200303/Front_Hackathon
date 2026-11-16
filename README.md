@@ -28,6 +28,23 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
 | `API_BASE_URL` | URL | Obligatoria si `DATA_SOURCE=remote` |
 | `VOICE_SOURCE` | `device` · `backend` | Voz de Semi. `backend` requiere `API_BASE_URL` (ver abajo) |
 
+### Semáforos de agua (con `DATA_SOURCE=remote`)
+
+"Qué sembrar" muestra dos indicadores que calcula el backend con NASA POWER:
+
+- **Lluvia y tierra de tu zona:** lluvia y humedad de la tierra en la zona de
+  las raíces de los últimos 6 meses, frente a los mismos meses de los 10 años
+  anteriores.
+- **Agua que llega por riego:** lluvia de la última temporada (diciembre a
+  abril) en cuatro puntos de la cuenca alta del Chira-Catamayo (Ayabaca,
+  Pacaipampa, Cariamanga y Catamayo), frente a las 10 temporadas anteriores.
+  **Es una aproximación con lluvia, no el nivel real del reservorio de
+  Poechos**; la app lo dice junto al semáforo.
+
+El orden de las rotaciones usa el más desfavorable de los dos. Con datos de
+ejemplo no hay semáforos. La validación con la sequía 2024-2025 está en el
+backend: `scripts/validate_drought_2024.py`.
+
 ### Voz de Semi
 
 Por defecto Semi habla con la voz del celular (`VOICE_SOURCE=device`), ajustada

@@ -42,6 +42,7 @@ class MockCropPlanningRepository implements CropPlanningRepository {
       measuredRainNote: data.measuredRainNote,
       ranking: data.ranking,
       waterAvailability: data.waterAvailability,
+      irrigationWater: data.irrigationWater,
     );
   }
 

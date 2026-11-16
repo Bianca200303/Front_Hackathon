@@ -203,6 +203,38 @@ class WaterAvailability extends Equatable {
   List<Object?> get props => [level, finding, windowStart, windowEnd];
 }
 
+/// Agua que llega por riego, aproximada con la lluvia de la última
+/// temporada en la cuenca alta del río (NASA POWER). No es el nivel real del
+/// reservorio: [note] lo dice. Lo calcula el backend.
+class IrrigationWater extends Equatable {
+  /// Crea el indicador.
+  const IrrigationWater({
+    required this.level,
+    required this.finding,
+    required this.note,
+    required this.seasonStart,
+    required this.seasonEnd,
+  });
+
+  /// Nivel del semáforo.
+  final WaterLevel level;
+
+  /// Frase armada con las cifras ("En los cerros donde nace tu río…").
+  final String finding;
+
+  /// Aclaración de que es una aproximación con lluvia.
+  final String note;
+
+  /// Primer día de la temporada de lluvias observada.
+  final DateTime seasonStart;
+
+  /// Último día de la temporada de lluvias observada.
+  final DateTime seasonEnd;
+
+  @override
+  List<Object?> get props => [level, finding, note, seasonStart, seasonEnd];
+}
+
 /// Rotación de cultivos que se puede recomendar.
 class RotationOption extends Equatable {
   /// Crea una opción de rotación.
@@ -421,6 +453,7 @@ class CropPlanningData extends Equatable {
     this.ranking = const {},
     this.measuredRainNote,
     this.waterAvailability,
+    this.irrigationWater,
   });
 
   /// Id de la opción que arma el agricultor.
@@ -458,8 +491,13 @@ class CropPlanningData extends Equatable {
   /// parece, en una frase. `null` si la fuente todavía no la tiene.
   final String? measuredRainNote;
 
-  /// Semáforo de agua de la zona; `null` si la fuente no lo tiene.
+  /// Semáforo de lluvia y tierra de la zona; `null` si la fuente no lo
+  /// tiene.
   final WaterAvailability? waterAvailability;
+
+  /// Semáforo del agua que llega por riego; `null` si la fuente no lo
+  /// tiene.
+  final IrrigationWater? irrigationWater;
 
   /// Orden que manda la fuente para [priorityId] en [scenario]; vacío si no
   /// lo manda.
@@ -483,6 +521,7 @@ class CropPlanningData extends Equatable {
     ranking,
     measuredRainNote,
     waterAvailability,
+    irrigationWater,
   ];
 }
 

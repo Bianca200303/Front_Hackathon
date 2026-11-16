@@ -626,14 +626,61 @@ class SoilTodaySection extends StatelessWidget {
   }
 }
 
-/// Semáforo de agua de la zona (NASA POWER), con la frase que arma el
-/// backend a partir de las cifras. Solo aparece con datos reales.
+/// Los dos semáforos de agua (NASA POWER), con las frases que arma el
+/// backend a partir de las cifras: lluvia y tierra de la zona, y el agua que
+/// llega por riego (lluvia de la cuenca alta). Solo con datos reales.
 class WaterLightCard extends StatelessWidget {
-  /// Crea el semáforo.
-  const WaterLightCard({required this.water, super.key});
+  /// Crea la tarjeta; al menos uno de los dos indicadores no es nulo.
+  const WaterLightCard({this.local, this.irrigation, super.key})
+    : assert(local != null || irrigation != null, 'Sin indicadores');
 
-  /// Indicador calculado por el backend.
-  final WaterAvailability water;
+  /// Lluvia y tierra de la zona de la chacra.
+  final WaterAvailability? local;
+
+  /// Agua que llega por riego (aproximación con lluvia de la cuenca alta).
+  final IrrigationWater? irrigation;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final local = this.local;
+    final irrigation = this.irrigation;
+    return AppCard(
+      children: [
+        if (local != null)
+          _WaterLight(
+            title: l10n.waterLocalTitle,
+            level: local.level,
+            finding: local.finding,
+            source: l10n.waterSource(
+              AppFormatters.monthName(local.windowStart),
+              AppFormatters.monthName(local.windowEnd),
+            ),
+          ),
+        if (irrigation != null)
+          _WaterLight(
+            title: l10n.waterIrrigationTitle,
+            level: irrigation.level,
+            finding: irrigation.finding,
+            source: '${irrigation.note} ${l10n.waterIrrigationSource}',
+          ),
+      ],
+    );
+  }
+}
+
+class _WaterLight extends StatelessWidget {
+  const _WaterLight({
+    required this.title,
+    required this.level,
+    required this.finding,
+    required this.source,
+  });
+
+  final String title;
+  final WaterLevel level;
+  final String finding;
+  final String source;
 
   @override
   Widget build(BuildContext context) {
@@ -644,28 +691,30 @@ class WaterLightCard extends StatelessWidget {
       (WaterLevel.medium, colors.amber),
       (WaterLevel.high, colors.positive),
     ];
-    final label = switch (water.level) {
+    final label = switch (level) {
       WaterLevel.low => l10n.waterLevelLow,
       WaterLevel.medium => l10n.waterLevelMedium,
       WaterLevel.high => l10n.waterLevelHigh,
     };
-    final lit = lights.firstWhere((light) => light.$1 == water.level).$2;
-    return AppCard(
+    final lit = lights.firstWhere((light) => light.$1 == level).$2;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.sm,
       children: [
-        Overline(l10n.waterTitle),
+        Overline(title),
         Semantics(
-          label: l10n.waterSemantics(label),
+          label: l10n.waterSemantics(title, label),
           excludeSemantics: true,
           child: Row(
             spacing: AppSpacing.sm,
             children: [
-              for (final (level, color) in lights)
+              for (final (lightLevel, color) in lights)
                 Container(
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: level == water.level ? color : colors.surfaceMuted,
+                    color: lightLevel == level ? color : colors.surfaceMuted,
                     border: Border.all(color: color, width: 2),
                   ),
                 ),
@@ -684,16 +733,10 @@ class WaterLightCard extends StatelessWidget {
           ),
         ),
         Text(
-          water.finding,
+          finding,
           style: TextStyle(fontSize: 15, height: 1.4, color: colors.textBody),
         ),
-        Text(
-          l10n.waterSource(
-            AppFormatters.monthName(water.windowStart),
-            AppFormatters.monthName(water.windowEnd),
-          ),
-          style: TextStyle(fontSize: 12, color: colors.textMuted),
-        ),
+        Text(source, style: TextStyle(fontSize: 12, color: colors.textMuted)),
       ],
     );
   }
