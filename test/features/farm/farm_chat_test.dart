@@ -30,7 +30,7 @@ void main() {
     await tester.tapText(l10n.welcomeAssistedTitle);
 
     expect(find.text(l10n.chatTitle), findsOneWidget);
-    expect(find.text(l10n.chatParcelQuestion('Medio Piura')), findsOne);
+    expect(find.text(l10n.chatParcelQuestion('Valle del Chira')), findsOne);
     await tester.tapText(l10n.chatParcelYes);
 
     expect(find.text(l10n.chatLastCropQuestion('arroz')), findsOneWidget);
@@ -135,7 +135,7 @@ void main() {
       find.bySemanticsLabel(l10n.semiAvatarSemantics),
     );
     final question = tester.getCenter(
-      find.text(l10n.chatParcelQuestion('Medio Piura')),
+      find.text(l10n.chatParcelQuestion('Valle del Chira')),
     );
     expect(question.dy, lessThan(semi.dy));
     expect(find.byType(NavigationRail), findsNothing);

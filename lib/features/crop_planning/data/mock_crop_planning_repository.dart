@@ -59,22 +59,25 @@ DateTime _addMonths(DateTime start, int months) =>
 /// Lo mínimo que hace falta para armar una rotación a mano con los datos
 /// de ejemplo. El cálculo real lo hace el backend.
 class _CropFact {
-  const _CropFact(this.crop, this.waterPerMonth, this.soilScore);
+  const _CropFact(this.crop, this.waterPerMonth, this.soilScore, this.family);
 
   final Crop crop;
   final int waterPerMonth;
   final int soilScore;
+
+  /// Familia botánica: dos de la misma familia seguidas cansan la tierra.
+  final String family;
 
   /// Duración del ciclo: la del propio cultivo del catálogo de ejemplo.
   int get months => crop.cycleMonths ?? 1;
 }
 
 const _cropFacts = <String, _CropFact>{
-  'rice': _CropFact(MockCatalog.rice, 2900, -1),
-  'maize': _CropFact(MockCatalog.maize, 2000, 0),
-  'bean': _CropFact(MockCatalog.bean, 1900, 2),
-  'cotton': _CropFact(MockCatalog.cotton, 2100, 1),
-  'pulse': _CropFact(MockCatalog.pulse, 2800, 2),
+  'rice': _CropFact(MockCatalog.rice, 2900, -1, 'Poaceae'),
+  'maize': _CropFact(MockCatalog.maize, 2000, 0, 'Poaceae'),
+  'bean': _CropFact(MockCatalog.bean, 1900, 2, 'Fabaceae'),
+  'cotton': _CropFact(MockCatalog.cotton, 2100, 1, 'Malvaceae'),
+  'pulse': _CropFact(MockCatalog.pulse, 2800, 2, 'Fabaceae'),
 };
 
 const _soilScale = [
@@ -138,12 +141,16 @@ RotationOption? _customOption(CropPlanningQuery query, MockText t) {
   }
 
   final water = facts.fold(0, (sum, f) => sum + f.months * f.waterPerMonth);
+  final warnings = _familyWarnings(facts, t);
   final impactScore = facts.fold(0, (sum, f) => sum + f.soilScore);
   final cropIds = facts.map((fact) => fact.crop.id).toSet();
   return RotationOption(
     id: CropPlanningData.customRotationId,
     crops: [for (final fact in facts) t.crop(fact.crop)],
-    scenarios: _scenarios(waterUseM3: water, riskMonths: _riskMonths),
+    scenarios: _withRuleRisk(
+      _scenarios(waterUseM3: water, riskMonths: _riskMonths),
+      warnings,
+    ),
     soilImpact: _impactOf(impactScore),
     soilInTwoYears: plan.last.soilAfter,
     factsheet: OptionFactsheet(
@@ -172,12 +179,57 @@ RotationOption? _customOption(CropPlanningQuery query, MockText t) {
       ).replaceAll('{crop}', t.crop(facts.first.crop).name.toLowerCase()),
     ),
     longTermPlan: plan,
+    warnings: warnings,
     excludedBy: {
       if (cropIds.contains(MockCatalog.cotton.id)) MockCatalog.noCottonBuyer.id,
       if (water > 18000) MockCatalog.lowWater.id,
     },
   );
 }
+
+/// Misma regla que el backend: dos cultivos de la misma familia seguidos
+/// (también al volver a empezar la secuencia) dan un aviso amable.
+List<String> _familyWarnings(List<_CropFact> facts, MockText t) {
+  final warnings = <String>{};
+  final seenPairs = <Set<String>>[];
+  for (var i = 0; i < facts.length; i++) {
+    final first = facts[i];
+    final second = facts[(i + 1) % facts.length];
+    final pair = {first.crop.id, second.crop.id};
+    if (first.family != second.family ||
+        seenPairs.any((seen) => seen.containsAll(pair))) {
+      continue;
+    }
+    seenPairs.add(pair);
+    warnings.add(
+      t(
+            '{first} y {second} son de la misma familia de plantas. '
+            'Sembrarlas seguidas cansa la tierra y deja más plagas: prueba '
+            'poner una menestra entre ellas.',
+          )
+          .replaceAll('{first}', t.crop(first.crop).name)
+          .replaceAll('{second}', t.crop(second.crop).name.toLowerCase()),
+    );
+  }
+  return warnings.toList();
+}
+
+/// Una secuencia que rompe una regla nunca tiene riesgo bajo.
+Map<ClimateScenario, RotationScenarioResult> _withRuleRisk(
+  Map<ClimateScenario, RotationScenarioResult> results,
+  List<String> warnings,
+) => warnings.isEmpty
+    ? results
+    : {
+        for (final MapEntry(:key, :value) in results.entries)
+          key: value.climateRisk == ClimateRisk.low
+              ? RotationScenarioResult(
+                  waterUseM3: value.waterUseM3,
+                  climateRisk: ClimateRisk.medium,
+                  riskMonths: value.riskMonths,
+                )
+              : value,
+      };
 
 final _riskMonths = [_month(2027, 2), _month(2027, 3)];
 

@@ -254,6 +254,9 @@ class _CustomOutcome extends ConsumerWidget {
             ),
           ],
         ),
+        // Reglas que rompe la secuencia (misma familia seguida, siembra
+        // fuera de sus meses): un aviso amable, no un error.
+        for (final warning in option.warnings) _RuleWarning(warning),
         if (excluded)
           Text(
             l10n.rotationCustomExcluded,
@@ -262,6 +265,41 @@ class _CustomOutcome extends ConsumerWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _RuleWarning extends StatelessWidget {
+  const _RuleWarning(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final tone = context.colors.warningTone;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: tone.background,
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.sm,
+          children: [
+            Icon(Icons.info_outline_rounded, size: 20, color: tone.foreground),
+            Expanded(
+              child: Text(
+                text,
+                style: context.text.bodyCompact.copyWith(
+                  color: tone.foreground,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -51,7 +51,7 @@ class MockClimateRepository implements ClimateRepository {
     final dayAfterStorm = today.add(const Duration(days: 4));
 
     return ClimateOverview(
-      valleyName: 'Medio Piura',
+      valleyName: 'Valle del Chira',
       today: TodayWeather(
         date: today,
         condition: WeatherCondition.moderateRain,

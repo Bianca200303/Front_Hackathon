@@ -9,7 +9,7 @@ class FarmLocation extends Equatable {
     required this.longitude,
   });
 
-  /// Valle en el que está la parcela (p. ej., "Medio Piura").
+  /// Valle en el que está la parcela (p. ej., "Valle del Chira").
   final String valleyName;
 
   /// Latitud, de -90 a 90.

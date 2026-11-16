@@ -20,7 +20,7 @@ void main() {
     await tester.pumpSiembraSeguraApp();
 
     expect(find.text('Hola, Doña Rosa'), findsOneWidget);
-    expect(find.text('Medio Piura'), findsOneWidget);
+    expect(find.text('Valle del Chira'), findsOneWidget);
     expect(find.text('Poechos'), findsOneWidget);
     // La sugerencia se marca como tal.
     expect(find.text(l10n.farmSatelliteBadge), findsOneWidget);
@@ -33,15 +33,22 @@ void main() {
   testWidgets('muestra las opciones que entrega el catálogo', (tester) async {
     await tester.pumpSiembraSeguraApp();
 
+    // La pantalla es una lista: se desplaza hasta cada opción antes de
+    // buscarla, en vez de suponer que todo cabe sin mover.
+    Future<void> expectShown(String text) async {
+      await tester.scrollIntoView(find.text(text));
+      expect(find.text(text), findsOneWidget);
+    }
+
     for (final priority in MockCatalog.catalog.priorities) {
-      expect(find.text(priority.name), findsOneWidget);
+      await expectShown(priority.name);
     }
     for (final restriction in MockCatalog.catalog.restrictions) {
-      expect(find.text(restriction.name), findsOneWidget);
+      await expectShown(restriction.name);
     }
-    expect(find.text(MockCatalog.soilTextureQuestion), findsOneWidget);
+    await expectShown(MockCatalog.soilTextureQuestion);
     for (final texture in MockCatalog.soilTextures) {
-      expect(find.text(texture.name), findsOneWidget);
+      await expectShown(texture.name);
     }
   });
 
@@ -134,7 +141,7 @@ void main() {
     testWidgets('marca la chacra tocando el mapa', (tester) async {
       await tester.pumpSiembraSeguraApp();
 
-      expect(find.text('-5.1900, -80.6300'), findsOneWidget);
+      expect(find.text('-4.8650, -80.7200'), findsOneWidget);
 
       final map = find.ancestor(
         of: find.text(l10n.farmSatelliteCaption),
@@ -146,9 +153,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final location = tester.container.read(farmLocationProvider);
-      expect(location.latitude, closeTo(-4.95, 0.02));
-      expect(location.longitude, closeTo(-80.90, 0.02));
-      expect(find.text('-5.1900, -80.6300'), findsNothing);
+      expect(location.latitude, closeTo(-4.70, 0.02));
+      expect(location.longitude, closeTo(-81.10, 0.02));
+      expect(find.text('-4.8650, -80.7200'), findsNothing);
     });
 
     testWidgets('la fecha de siembra abre el calendario de Flutter', (

@@ -24,7 +24,7 @@ class MockFarmRepository implements FarmRepository {
     final t = MockText(language);
     return Farm(
       farmerName: 'Doña Rosa',
-      valleyName: 'Medio Piura',
+      valleyName: 'Valle del Chira',
       irrigationSource: 'Poechos',
       inferredLastCrop: t.crop(MockCatalog.rice),
       lastCropOptions: [

@@ -180,6 +180,12 @@ const mockTextsEn = <String, String>{
   'Si vienen **lluvias fuertes**, te mostraremos qué te conviene sembrar en ese caso.':
       'If **heavy rains** are coming, we\'ll show you what suits you best to plant in that case.',
   'Toca el botón para verlo ahora.': 'Tap the button to see it now.',
+  '{first} y {second} son de la misma familia de plantas. Sembrarlas '
+          'seguidas cansa la tierra y deja más plagas: prueba poner una '
+          'menestra entre ellas.':
+      '{first} and {second} belong to the same plant family. Planting them '
+      'one after the other tires the soil and brings more pests: try putting '
+      'a pulse crop between them.',
 };
 
 /// Quechua (borrador, pendiente de revisión): solo nombres de cultivos. El

@@ -276,6 +276,20 @@ void main() {
       expect(find.text(l10n.optionCustom), findsOneWidget);
       // Arroz 5 meses y maíz 4, con el agua de ejemplo de cada uno.
       expect(find.text('22,500 m³'), findsOneWidget);
+      // Arroz y maíz son de la misma familia: aviso amable y el riesgo
+      // deja de ser bajo.
+      final card = find.byType(CustomRotationCard);
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.textContaining('misma familia de plantas'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text(l10n.climateRiskMedium)),
+        findsOneWidget,
+      );
 
       await tester.tapText(l10n.rotationCustomClear);
 

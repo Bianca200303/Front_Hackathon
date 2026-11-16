@@ -215,7 +215,7 @@ class ClimateOverview extends Equatable {
     required this.anomalies,
   });
 
-  /// Nombre del valle (p. ej., "Medio Piura").
+  /// Nombre del valle (p. ej., "Valle del Chira").
   final String valleyName;
 
   /// El tiempo de hoy.

@@ -140,6 +140,7 @@ class _PlanningResponse {
     factsheet: _factsheet(practice.object('factsheet')),
     repeatWarnings: _textsByScenario(practice.object('repeat_warnings')),
     consecutiveCampaigns: practice.integer('consecutive_campaigns'),
+    warnings: practice.stringsOrEmpty('warnings'),
   );
 
   RotationOption _option(JsonObject option) => RotationOption(
@@ -160,6 +161,7 @@ class _PlanningResponse {
         ),
     ],
     excludedBy: Set.unmodifiable(option.strings('excluded_by')),
+    warnings: option.stringsOrEmpty('warnings'),
   );
 
   PlantingSchedule _schedule(JsonObject calendar) => PlantingSchedule(

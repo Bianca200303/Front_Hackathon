@@ -37,6 +37,11 @@ extension type const JsonObject._(Map<String, Object?> _fields) {
       )
       .toList();
 
+  /// Lista de textos del campo [key], o vacía si el campo no viene (un
+  /// backend anterior que todavía no lo envía).
+  List<String> stringsOrEmpty(String key) =>
+      _fields[key] == null ? const [] : strings(key);
+
   /// Lista de fechas ISO (`YYYY-MM-DD`) del campo [key], en hora local.
   List<DateTime> dates(String key) => [
     for (final raw in strings(key)) DateTime.parse(raw),

@@ -1,16 +1,19 @@
 import 'package:siembra_segura/shared/domain/farm_location.dart';
 
-/// Zona piloto del proyecto; coincide con `DEFAULT_LAT/LON` del backend.
+/// Chacra demo del proyecto: margen norte del valle del Chira, frente a
+/// Sullana (Marcavelica). El backend la deja en caché con
+/// `scripts/warm_demo_farms.py`.
 const pilotFarmLocation = FarmLocation(
-  valleyName: 'Medio Piura',
-  latitude: -5.19,
-  longitude: -80.63,
+  valleyName: 'Valle del Chira',
+  latitude: -4.865,
+  longitude: -80.72,
 );
 
-/// Recuadro del valle piloto en el que se puede marcar la parcela.
+/// Recuadro del valle del Chira en el que se puede marcar la parcela:
+/// desde Poechos hasta el Chira bajo; Sullana y Amotape quedan dentro.
 const pilotValleyBounds = FarmBounds(
-  south: -5.45,
-  north: -4.95,
-  west: -80.90,
-  east: -80.35,
+  south: -5,
+  north: -4.7,
+  west: -81.1,
+  east: -80.5,
 );

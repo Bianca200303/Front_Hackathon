@@ -131,6 +131,7 @@ Map<String, Object?> _recommendationJson() => {
       'soil_in_two_years': 'good',
       'factsheet': _factsheet(),
       'excluded_by': ['low-water'],
+      'warnings': ['Frijol se sembraría en marzo.'],
       'calendar': {
         'planting_date': '2026-12-15',
         'decision_deadline': '2026-12-15',
@@ -189,8 +190,8 @@ void main() {
 
     expect(api.path, RemoteCropPlanningRepository.path);
     expect(api.body, {
-      'lat': -5.19,
-      'lon': -80.63,
+      'lat': -4.865,
+      'lon': -80.72,
       'area_ha': 2.0,
       'planting_date': '2026-12-15',
       'consecutive_campaigns': 3,
@@ -317,6 +318,7 @@ void main() {
     expect(option.soilImpact, SoilImpact.improvesALot);
     expect(option.soilInTwoYears, SoilCondition.good);
     expect(option.excludedBy, {'low-water'});
+    expect(option.warnings, ['Frijol se sembraría en marzo.']);
     expect(option.factsheet.rationale, startsWith('El frejol'));
     expect(
       option.resultFor(ClimateScenario.dry).climateRisk,

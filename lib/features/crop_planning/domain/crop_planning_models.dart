@@ -175,6 +175,7 @@ class RotationOption extends Equatable {
     required this.schedule,
     required this.longTermPlan,
     this.excludedBy = const {},
+    this.warnings = const [],
   });
 
   /// Identificador estable de la opción.
@@ -204,6 +205,11 @@ class RotationOption extends Equatable {
   /// Restricciones del agricultor que descartan esta opción.
   final Set<String> excludedBy;
 
+  /// Reglas agronómicas que la secuencia rompe (misma familia seguida,
+  /// siembra fuera de sus meses), en palabras del agricultor. Si hay
+  /// alguna, el riesgo nunca es bajo.
+  final List<String> warnings;
+
   /// Resultado en [scenario]. Lanza [StateError] si los datos no lo
   /// incluyen: es un error de contrato, no un caso esperado.
   RotationScenarioResult resultFor(ClimateScenario scenario) {
@@ -229,6 +235,7 @@ class RotationOption extends Equatable {
     schedule,
     longTermPlan,
     excludedBy,
+    warnings,
   ];
 }
 
@@ -242,6 +249,7 @@ class CurrentPractice extends Equatable {
     required this.factsheet,
     required this.repeatWarnings,
     required this.consecutiveCampaigns,
+    this.warnings = const [],
   });
 
   /// Cultivos de la rotación actual. Nunca vacío.
@@ -261,6 +269,10 @@ class CurrentPractice extends Equatable {
 
   /// Campañas seguidas con el mismo cultivo.
   final int consecutiveCampaigns;
+
+  /// Reglas agronómicas que rompe repetir el cultivo (ver
+  /// [RotationOption.warnings]).
+  final List<String> warnings;
 
   /// Cultivo principal (el primero de la rotación).
   Crop get mainCrop => crops.first;
@@ -283,6 +295,7 @@ class CurrentPractice extends Equatable {
     factsheet,
     repeatWarnings,
     consecutiveCampaigns,
+    warnings,
   ];
 }
 
