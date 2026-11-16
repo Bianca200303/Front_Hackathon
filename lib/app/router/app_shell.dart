@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_breakpoints.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/features/alerts/presentation/providers/alerts_providers.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_help.dart';
 
 /// Contenedor de las 4 pestañas principales. Cada pestaña conserva su
 /// propio stack de navegación y su estado de scroll.
@@ -33,27 +35,38 @@ class AppShell extends ConsumerWidget {
     final hasUnreadAlerts = ref.watch(hasUnreadAlertsProvider);
     final destinations = _destinations(l10n, hasUnreadAlerts: hasUnreadAlerts);
     final windowWidth = MediaQuery.sizeOf(context).width;
+    final help = SemiHelpButton(
+      section: HelpSection.values[navigationShell.currentIndex],
+    );
 
     if (!AppBreakpoints.usesNavigationRail(windowWidth)) {
       return Scaffold(
         body: navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: _onDestinationSelected,
-          destinations: [
-            for (final destination in destinations)
-              NavigationDestination(
-                icon: destination.icon,
-                selectedIcon: destination.selectedIcon,
-                label: destination.label,
-                tooltip: destination.tooltip,
-              ),
-          ],
+        floatingActionButton: help,
+        // Pestañas de `semi_app.html`: sin pastilla, con una raya verde
+        // arriba de la activa.
+        bottomNavigationBar: _TopLineIndicator(
+          index: navigationShell.currentIndex,
+          count: destinations.length,
+          child: NavigationBar(
+            selectedIndex: navigationShell.currentIndex,
+            onDestinationSelected: _onDestinationSelected,
+            destinations: [
+              for (final destination in destinations)
+                NavigationDestination(
+                  icon: destination.icon,
+                  selectedIcon: destination.selectedIcon,
+                  label: destination.label,
+                  tooltip: destination.tooltip,
+                ),
+            ],
+          ),
         ),
       );
     }
 
     return Scaffold(
+      floatingActionButton: help,
       body: Row(
         children: [
           SafeArea(
@@ -138,4 +151,45 @@ class _Destination {
   final Widget selectedIcon;
   final String label;
   final String? tooltip;
+}
+
+/// Raya verde arriba de la pestaña activa.
+class _TopLineIndicator extends StatelessWidget {
+  const _TopLineIndicator({
+    required this.index,
+    required this.count,
+    required this.child,
+  });
+
+  final int index;
+  final int count;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: colors.border)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth / count;
+          return Stack(
+            children: [
+              child,
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                top: 0,
+                left: width * index,
+                width: width,
+                height: 3,
+                child: ColoredBox(color: colors.primary),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }

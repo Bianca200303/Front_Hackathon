@@ -10,7 +10,10 @@ import 'package:siembra_segura/features/climate/presentation/screens/climate_scr
 import 'package:siembra_segura/features/crop_planning/presentation/screens/planting_schedule_screen.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/screens/recommendation_screen.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/screens/rotation_screen.dart';
+import 'package:siembra_segura/features/farm/presentation/screens/farm_chat_screen.dart';
 import 'package:siembra_segura/features/farm/presentation/screens/farm_screen.dart';
+import 'package:siembra_segura/features/onboarding/presentation/screens/welcome_screen.dart';
+import 'package:siembra_segura/shared/state/app_mode_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 
 /// Composición de la navegación. Es el único lugar que conoce las
@@ -27,8 +30,16 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.farm}) {
     initialLocation: initialLocation,
     routes: [
       GoRoute(
+        path: AppRoutes.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.farm,
         builder: (context, state) => const FarmScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.farmChat,
+        builder: (context, state) => const FarmChatScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -104,13 +115,18 @@ String _childPath(String fullPath, String parentPath) {
 
 /// Router de la app.
 ///
-/// Si el agricultor ya configuró su campaña en una sesión anterior, abre
-/// directamente en Clima; si no, en "Mi parcela".
+/// La primera vez abre la bienvenida. Después, si el agricultor ya configuró
+/// su campaña, abre directamente en Clima; si no, en "Mi parcela".
 final appRouterProvider = Provider<GoRouter>((ref) {
   final hasSavedPreferences =
       ref.read(campaignPreferencesStoreProvider).load() != null;
+  final hasChosenMode = ref.read(appModeStoreProvider).load() != null;
   final router = createAppRouter(
-    initialLocation: hasSavedPreferences ? AppRoutes.climate : AppRoutes.farm,
+    initialLocation: !hasChosenMode
+        ? AppRoutes.welcome
+        : hasSavedPreferences
+        ? AppRoutes.climate
+        : AppRoutes.farm,
   );
   final speech = ref.read(speechServiceProvider);
 

@@ -7,6 +7,7 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  audioplayers: ^6.7.1
   equatable: ^3.0.0
   flutter:
     sdk: flutter
@@ -31,13 +32,17 @@ flutter:
   generate: true
 
   fonts:
-    - family: Figtree
+    # Atkinson Hyperlegible (OFL), la letra de semi_app.html: pensada para
+    # leerse bien con poca vista. Solo trae normal y negrita.
+    - family: AtkinsonHyperlegible
       fonts:
-        - asset: assets/fonts/Figtree-Regular.ttf
+        - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Figtree-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Figtree-Bold.ttf
+        - asset: assets/fonts/AtkinsonHyperlegible-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Figtree-ExtraBold.ttf
-          weight: 800
+        - asset: assets/fonts/AtkinsonHyperlegible-BoldItalic.ttf
+          weight: 700
+          style: italic

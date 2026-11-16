@@ -1,12 +1,25 @@
 import 'package:intl/intl.dart';
+import 'package:siembra_segura/core/l10n/app_language.dart';
 
-/// Formatos numéricos y de fecha para Perú. Centralizados para no repetir
-/// lógica de presentación en los widgets.
+/// Formatos numéricos y de fecha. Centralizados para no repetir lógica de
+/// presentación en los widgets.
 ///
-/// Las funciones de fecha requieren `initializeDateFormatting('es')`
-/// (lo hace `main.dart`; en tests, el helper de pruebas).
+/// Siguen el idioma de la app ([useLanguage], lo llama `SiembraSeguraApp`).
+/// `intl` no tiene nombres de días ni meses en quechua: con quechua se usan
+/// los de español, como es habitual en el habla bilingüe.
+///
+/// Las funciones de fecha requieren `initializeDateFormatting()` (lo hace
+/// `main.dart`; en tests, el helper de pruebas).
 abstract final class AppFormatters {
-  static const _locale = 'es';
+  static AppLanguage _language = AppLanguage.spanish;
+
+  /// Idioma en uso para fechas.
+  static AppLanguage get language => _language;
+
+  /// Cambia el idioma de las fechas.
+  static void useLanguage(AppLanguage language) => _language = language;
+
+  static String get _locale => _language == AppLanguage.english ? 'en' : 'es';
 
   /// En Perú las cifras se agrupan con coma (`15,600 m³`), como en la
   /// referencia. Los datos de `intl` para `es_PE` usan punto, así que se
@@ -50,9 +63,11 @@ abstract final class AppFormatters {
   static String shortMonth(DateTime date) =>
       _capitalize(_stripDot(DateFormat('MMM', _locale).format(date)));
 
-  /// `15 de diciembre`
-  static String dayAndMonth(DateTime date) =>
-      DateFormat("d 'de' MMMM", _locale).format(date);
+  /// `15 de diciembre` / `December 15`
+  static String dayAndMonth(DateTime date) => DateFormat(
+    _language == AppLanguage.english ? 'MMMM d' : "d 'de' MMMM",
+    _locale,
+  ).format(date);
 
   /// Espacio no separable: evita que "a. m." se parta entre líneas.
   static final String nonBreakingSpace = String.fromCharCode(0x00A0);

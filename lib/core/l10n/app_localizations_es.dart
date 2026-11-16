@@ -27,9 +27,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tabAlertsUnreadSemantics => 'Avisos, hay avisos nuevos';
 
   @override
-  String get actionStart => 'Empezar';
-
-  @override
   String get actionBack => 'Volver';
 
   @override
@@ -60,7 +57,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actionSeeMyRecommendation => 'Ver mi recomendación';
 
   @override
-  String get farmTitle => 'Tu parcela';
+  String get farmTitle => 'Datos de tu chacra';
 
   @override
   String get climateTitle => 'Cómo viene tu valle';
@@ -216,9 +213,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get farmSatelliteCaption => 'Tu chacra en el valle';
 
   @override
-  String get farmMapSemantics => 'Mapa del valle con tu chacra marcada';
-
-  @override
   String get farmMapQuestion => '¿Dónde está tu chacra?';
 
   @override
@@ -307,18 +301,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get farmPriorityGroupSemantics => 'Prioridad';
 
   @override
-  String get farmPriorityNote =>
-      'Puedes cambiarlo después desde el botón de ajustes de cada pantalla.';
-
-  @override
   String get farmResetAction => 'Volver a los valores sugeridos';
 
   @override
   String get farmResetDone => 'Listo: usamos de nuevo los valores sugeridos.';
-
-  @override
-  String get farmSettingsTooltip =>
-      'Mi parcela: cambiar cultivo, prioridad o restricciones';
 
   @override
   String get farmRestrictionsQuestion => '¿Hay algo que no puedas hacer?';
@@ -627,11 +613,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String rotationCompareSubtitle(String priority, String scenario) {
-    return 'Pensando en $priority y en $scenario.';
-  }
-
-  @override
   String get optionCurrent => 'LO QUE SIEMBRAS HOY';
 
   @override
@@ -793,4 +774,575 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messageChatComingSoon => 'Podrás hacer preguntas próximamente.';
+
+  @override
+  String get semiAvatarSemantics => 'Semi, tu asistente de campo';
+
+  @override
+  String get appModeSwitchSemantics => 'Modo de uso';
+
+  @override
+  String get appModeAssistedTitle => 'Asistencia';
+
+  @override
+  String get appModeManualTitle => 'Llenado manual';
+
+  @override
+  String get semiFarmGuide =>
+      '¡Hola! Soy Semi. Cuéntame qué sembraste la última campaña y qué te importa más. Con eso te ayudo a decidir.';
+
+  @override
+  String get semiClimateGuide =>
+      'Miré el cielo con los satélites de la NASA. Aquí te cuento cómo viene el clima para tu chacra.';
+
+  @override
+  String get semiRecommendationGuide =>
+      'Con tu tierra y el clima, esto es lo que más te conviene sembrar. Toca cada opción para ver por qué.';
+
+  @override
+  String get semiPlantingScheduleGuide =>
+      'Sembrar en el momento justo hace la diferencia. Aquí ves cuándo te conviene.';
+
+  @override
+  String get semiRotationGuide =>
+      'Cambiar de cultivo cada campaña deja descansar la tierra. Mira cómo quedaría tu suelo con cada opción.';
+
+  @override
+  String get semiAlertsGuide =>
+      'Aquí te aviso si viene lluvia fuerte, calor o plagas. ¡Revísalos seguido!';
+
+  @override
+  String get settingsTitle => 'Ajustes';
+
+  @override
+  String get settingsTooltip => 'Ajustes: modo, idioma y tu parcela';
+
+  @override
+  String get settingsModeTitle => 'Cómo quieres usar la app';
+
+  @override
+  String get settingsLanguageTitle => 'Idioma';
+
+  @override
+  String get settingsEditFarm => 'Cambiar los datos de mi parcela';
+
+  @override
+  String languageAutomatic(String language) {
+    return 'Automático: $language';
+  }
+
+  @override
+  String get languageSpanish => 'Español';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageQuechua => 'Runasimi (quechua)';
+
+  @override
+  String get languageQuechuaDraftNote =>
+      'El quechua está en revisión: lo que falta traducir se muestra en español.';
+
+  @override
+  String languageButton(String language) {
+    return 'Idioma: $language';
+  }
+
+  @override
+  String get welcomeTitle => 'Hola, soy Semi';
+
+  @override
+  String get welcomeBody =>
+      'Te ayudo a decidir qué sembrar para cuidar tu tierra y tu agua.';
+
+  @override
+  String get welcomeAiNote => 'Semi es un personaje creado con IA';
+
+  @override
+  String get welcomeQuestion => '¿Cómo prefieres empezar?';
+
+  @override
+  String get welcomeAssistedTitle => 'Que Semi me pregunte';
+
+  @override
+  String get welcomeAssistedBody =>
+      'Modo asistido: te hago preguntas cortitas, una por una, y te explico todo.';
+
+  @override
+  String get welcomeManualTitle => 'Llenar yo mismo';
+
+  @override
+  String get welcomeManualBody =>
+      'Llenado manual: todo en una sola pantalla, más rápido si ya conoces la app.';
+
+  @override
+  String get welcomeChangeLater =>
+      'Puedes cambiarlo cuando quieras en Ajustes.';
+
+  @override
+  String get themeToDark => 'Cambiar a modo oscuro';
+
+  @override
+  String get themeToLight => 'Cambiar a modo claro';
+
+  @override
+  String get settingsAppearanceTitle => 'Apariencia';
+
+  @override
+  String get themeSystem => 'Automático';
+
+  @override
+  String get themeLight => 'Claro';
+
+  @override
+  String get themeDark => 'Oscuro';
+
+  @override
+  String get themeSwitchSemantics => 'Apariencia de la pantalla';
+
+  @override
+  String get chatTitle => 'Conversando con Semi';
+
+  @override
+  String get chatSubtitle => 'Te hago unas preguntas cortitas';
+
+  @override
+  String chatProgressSemantics(int current, int total) {
+    return 'Pregunta $current de $total';
+  }
+
+  @override
+  String get chatThinkingSemantics => 'Semi está pensando';
+
+  @override
+  String chatYouSaid(String answer) {
+    return 'Tú: $answer';
+  }
+
+  @override
+  String chatParcelQuestion(String valley) {
+    return '¡Hola! Encontré tu chacra en $valley. ¿Es esta?';
+  }
+
+  @override
+  String get chatParcelWhy =>
+      'La veo en las fotos del satélite: sus bordes, surcos y caminos.';
+
+  @override
+  String get chatParcelYes => 'Sí, es mi chacra';
+
+  @override
+  String get chatParcelNo => 'No, es otra';
+
+  @override
+  String get chatParcelNoReply =>
+      'Gracias por decirme. Pronto podrás marcarla en el mapa. Por ahora seguimos con esta.';
+
+  @override
+  String chatLastCropQuestion(String crop) {
+    return 'Miré cómo creció lo verde en tu chacra la última vez. Parece que sembraste $crop. ¿Es así?';
+  }
+
+  @override
+  String get chatLastCropWhy =>
+      'Cada cultivo crece distinto. Si me corriges, aprendo y te ayudo mejor a ti y a tus vecinos.';
+
+  @override
+  String chatLastCropYes(String crop) {
+    return 'Sí, $crop';
+  }
+
+  @override
+  String chatLastCropNo(String crop) {
+    return 'No, fue $crop';
+  }
+
+  @override
+  String get chatPriorityQuestion =>
+      '¿Qué es lo que más te importa en esta campaña?';
+
+  @override
+  String get chatPriorityWhy =>
+      'Con esto ordeno las opciones según lo que tú quieres.';
+
+  @override
+  String get chatRestrictionQuestion =>
+      'Última pregunta: ¿hay algo que no puedas hacer?';
+
+  @override
+  String get chatRestrictionWhy => 'Así no te recomiendo algo que no te sirve.';
+
+  @override
+  String get chatRestrictionNone => 'Nada, todo bien';
+
+  @override
+  String get chatDone => '¡Listo! Ya tengo tu plan.';
+
+  @override
+  String get actionSeePlan => 'Ver mi plan';
+
+  @override
+  String get farmSatelliteBadge => 'Satélite';
+
+  @override
+  String get helpButton => 'Ayuda';
+
+  @override
+  String get helpButtonSemantics => 'Preguntarle a Semi';
+
+  @override
+  String get helpTitle => 'Pregúntale a Semi';
+
+  @override
+  String get helpClose => 'Cerrar';
+
+  @override
+  String helpIntro(String topic) {
+    return '¿En qué te ayudo? Puedes preguntarme sobre $topic, cambiar algo de la app o ver cómo se usa.';
+  }
+
+  @override
+  String get helpTopicClimate => 'el clima';
+
+  @override
+  String get helpTopicWhatToPlant => 'qué sembrar';
+
+  @override
+  String get helpTopicRotation => 'la rotación';
+
+  @override
+  String get helpTopicAlerts => 'los avisos';
+
+  @override
+  String get helpGroupMeaning => 'Qué significa';
+
+  @override
+  String get helpGroupChange => 'Cambiar algo';
+
+  @override
+  String get helpGroupHowTo => 'Cómo se usa';
+
+  @override
+  String helpYouAsked(String question) {
+    return 'Tú preguntaste: $question';
+  }
+
+  @override
+  String get helpInputHint => 'O escribe, por ejemplo: abono verde';
+
+  @override
+  String get helpAsk => 'Preguntar';
+
+  @override
+  String get helpUnknown =>
+      'Uy, eso no lo sé todavía. Toca una de estas preguntas y te explico.';
+
+  @override
+  String get helpProbableQ => '¿Qué quiere decir \"lo más probable\"?';
+
+  @override
+  String get helpProbableA =>
+      'Miramos cómo vino la lluvia en tu valle en años parecidos a este. \"Lo más probable\" es lo que pasó más veces. No es seguro: por eso también te muestro las otras posibilidades.';
+
+  @override
+  String get helpProbableK => 'probable,seguro,acierta,porcentaje,posibilidad';
+
+  @override
+  String get helpSourceQ => '¿De dónde sale el pronóstico?';
+
+  @override
+  String get helpSourceA =>
+      'La lluvia de esta semana viene del pronóstico del día. Lo de los próximos meses lo calculamos con satélites de la NASA: lluvia (GPM), calor (NASA POWER) y humedad de la tierra (SMAP) en tu valle. También revisamos los comunicados del ENFEN sobre El Niño.';
+
+  @override
+  String get helpSourceK =>
+      'nasa,satelite,fuente,sale,pronostico,datos,enfen,niño';
+
+  @override
+  String get helpRainMmQ => '¿Qué son los mm de lluvia?';
+
+  @override
+  String get helpRainMmA =>
+      'Es cuánta agua cae. 1 mm es como si se juntara una capa de agua de 1 milímetro sobre tu chacra. Con 40 mm en un día ya es lluvia fuerte: mejor no abonar ni fumigar ese día.';
+
+  @override
+  String get helpRainMmK => 'mm,milimetro,cuanta lluvia,cuanto llueve';
+
+  @override
+  String get helpMoistureQ =>
+      '¿Cómo sabe el satélite si mi tierra está mojada?';
+
+  @override
+  String get helpMoistureA =>
+      'El satélite SMAP de la NASA mide la humedad de la tierra desde el espacio, cada pocos días. Mide toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.';
+
+  @override
+  String get helpMoistureK => 'humedad,mojada,humeda,seca,smap';
+
+  @override
+  String get helpHarvestQ => '¿Qué es la cosecha esperada?';
+
+  @override
+  String get helpHarvestA =>
+      'Es cuánto se espera cosechar comparado con una buena campaña de ese cultivo en tu valle. 100% sería una cosecha completa. Si sale menos, es porque el clima o la tierra le pueden quitar algo. La calculamos con el verdor que vieron los satélites en años parecidos.';
+
+  @override
+  String get helpHarvestK => 'cosecha,rinde,rendimiento,produccion,esperada';
+
+  @override
+  String get helpWaterQ => '¿Qué significa el agua?';
+
+  @override
+  String get helpWaterA =>
+      'Es el agua que necesitan los cultivos en una campaña, por cada hectárea. Se mide en metros cúbicos: 1 m³ es como un tanque de mil litros. Usar menos agua ayuda cuando el reservorio está bajo.';
+
+  @override
+  String get helpWaterK => 'agua,riego,m3,m³,metros cubicos,regar';
+
+  @override
+  String get helpSoilQ => '¿Qué quiere decir \"tu tierra: buena\"?';
+
+  @override
+  String get helpSoilA =>
+      'Es cómo quedaría tu tierra después de 2 años. Si siembras lo mismo una y otra vez, la tierra se cansa y llegan más plagas. Si cambias de cultivo y pones frejol o menestra, la tierra descansa y mejora.';
+
+  @override
+  String get helpSoilK => 'tierra,suelo,cansada,buena,regular';
+
+  @override
+  String get helpDeadlineQ => '¿Por qué tengo que decidir antes de una fecha?';
+
+  @override
+  String get helpDeadlineA =>
+      'Porque hay que preparar la tierra y conseguir la semilla antes de que empiece la siembra. Si esperas más, se te puede pasar la mejor época para ese cultivo.';
+
+  @override
+  String get helpDeadlineK => 'fecha,cuando,decidir,diciembre,antes';
+
+  @override
+  String get helpBlocksQ => '¿Cómo leo los bloques de colores?';
+
+  @override
+  String get helpBlocksA =>
+      'Cada bloque es una campaña. Se lee de arriba hacia abajo: el primero es lo que siembras ahora y el último es dentro de 2 años. Cada cultivo tiene su color, así ves rápido si repites lo mismo.';
+
+  @override
+  String get helpBlocksK => 'color,colores,bloque,leo,leer,plan';
+
+  @override
+  String get helpRotateQ => '¿Por qué cambiar de cultivo?';
+
+  @override
+  String get helpRotateA =>
+      'Cada cultivo saca de la tierra cosas distintas y atrae plagas distintas. Si cambias, la tierra se recupera y las plagas no se acumulan. Así tu cosecha aguanta mejor los años difíciles.';
+
+  @override
+  String get helpRotateK =>
+      'rotacion,rotar,cambiar de cultivo,plagas,por que cambiar';
+
+  @override
+  String get helpGreenManureQ => '¿Qué es el abono verde?';
+
+  @override
+  String get helpGreenManureA =>
+      'Es una planta que se siembra para no cosecharla: se deja en la tierra para que se descomponga y la alimente. Es como darle descanso y comida a tu chacra al mismo tiempo.';
+
+  @override
+  String get helpGreenManureK => 'abono,verde,cobertura,descanso';
+
+  @override
+  String get helpAlertsQ => '¿Cuándo me llegan los avisos?';
+
+  @override
+  String get helpAlertsA =>
+      'Te aviso cuando viene lluvia fuerte, cuando tu tierra está muy mojada o muy seca, y cuando cambia el pronóstico de los próximos meses. Si nada cambia, no te molesto.';
+
+  @override
+  String get helpAlertsK => 'aviso,alerta,notificacion,llegan,mensaje';
+
+  @override
+  String get helpListenQ => '¿Cómo escucho lo que dice Semi?';
+
+  @override
+  String get helpListenA =>
+      'Toca \"Escuchar\" debajo de lo que digo y te lo leo en voz alta. Sube el volumen de tu celular.';
+
+  @override
+  String get helpListenK => 'escuchar,oir,voz,leer,audio,no veo,sonido';
+
+  @override
+  String get helpToDarkQ => 'Poner la pantalla oscura';
+
+  @override
+  String get helpToDarkA =>
+      'Listo, puse la pantalla oscura. Cansa menos la vista de noche.';
+
+  @override
+  String get helpToLightQ => 'Poner la pantalla clara';
+
+  @override
+  String get helpToLightA =>
+      'Listo, puse la pantalla clara. Se ve mejor con sol.';
+
+  @override
+  String get helpThemeK => 'oscuro,oscura,claro,clara,noche,brillo,pantalla';
+
+  @override
+  String get helpToManualQ => 'Llenar yo mismo, sin preguntas';
+
+  @override
+  String get helpToManualA =>
+      'Listo. Desde ahora llenas los datos en una sola pantalla. Si me necesitas, toca mi botón.';
+
+  @override
+  String get helpToAssistedQ => 'Que Semi me pregunte';
+
+  @override
+  String get helpToAssistedA =>
+      'Listo. Desde ahora te acompaño en cada pantalla y te pregunto una cosa a la vez.';
+
+  @override
+  String get helpModeK =>
+      'modo,manual,asistido,asistencia,formulario,preguntas';
+
+  @override
+  String get helpFarmQ => 'Cambiar los datos de mi chacra';
+
+  @override
+  String get helpFarmA =>
+      'Te vuelvo a preguntar por tu chacra. Lo demás se queda igual.';
+
+  @override
+  String get helpFarmK => 'datos,corregir,me equivoque,editar,chacra,parcela';
+
+  @override
+  String get helpLanguageQ => 'Cambiar el idioma';
+
+  @override
+  String get helpLanguageA => 'Elige el idioma en el que quieres que te hable.';
+
+  @override
+  String get helpLanguageK => 'idioma,lengua,ingles,quechua,español,runasimi';
+
+  @override
+  String get helpLanguageAction => 'Elegir idioma';
+
+  @override
+  String get simTitle => 'Prueba tu propio plan';
+
+  @override
+  String get recoOverline => 'Te recomiendo';
+
+  @override
+  String get stripNext => 'Próxima siembra';
+
+  @override
+  String get stripLater => 'En 2 años';
+
+  @override
+  String get recoSoil => 'Tu tierra';
+
+  @override
+  String waterLess(String percent) {
+    return '$percent menos';
+  }
+
+  @override
+  String get waterSimilar => 'Parecida';
+
+  @override
+  String recoNote(String priority, String crop) {
+    return 'Pensando en: $priority. Comparado con seguir con $crop.';
+  }
+
+  @override
+  String get whyTitle => '¿Por qué?';
+
+  @override
+  String get whyConfidence =>
+      'Es lo que más veces funciona en años así, pero el clima puede cambiar.';
+
+  @override
+  String semiPlantSay(String priority, String rotation) {
+    return 'Pensando en $priority, te recomiendo $rotation. Abajo te explico por qué.';
+  }
+
+  @override
+  String get semiRotationSay =>
+      'Aquí comparas lo que siembras hoy con otras dos opciones. Toca \"Ver por qué\" en cada una. Y si quieres, arma tu propio plan.';
+
+  @override
+  String get soilTodayOverline => 'Tu tierra hoy';
+
+  @override
+  String soilReason(int count, String crop) {
+    return 'Lleva $count siembras seguidas de $crop.';
+  }
+
+  @override
+  String get howDoIKnow => '¿Cómo lo sé?';
+
+  @override
+  String get compareSubtitle =>
+      'Para las próximas 4 siembras (2 años), con el clima más probable.';
+
+  @override
+  String get optionCurrentLabel => 'Si sigues como ahora';
+
+  @override
+  String get optionRecommendedLabel => 'La que te recomiendo';
+
+  @override
+  String get optionOtherLabel => 'Otra opción';
+
+  @override
+  String get optionMineLabel => 'La que tú armaste';
+
+  @override
+  String get seeWhy => 'Ver por qué';
+
+  @override
+  String get fichaWhy => 'Por qué se sugiere';
+
+  @override
+  String get fichaEvidence => 'Qué lo respalda';
+
+  @override
+  String get fichaUnknowns => 'Lo que no sabemos';
+
+  @override
+  String get fichaCheck => 'Revísalo con tu técnico';
+
+  @override
+  String get rotationGuideNote =>
+      'Esto es una guía, no una orden. Revisa las opciones con tu técnico.';
+
+  @override
+  String get deleteAll => 'Borrar todo y empezar de nuevo';
+
+  @override
+  String get deleteAllConfirm => 'Toca otra vez para borrar tus datos';
+
+  @override
+  String get settingsModeAssistedNote =>
+      'Semi te explica cada pantalla y te hace las preguntas una por una.';
+
+  @override
+  String get settingsModeManualNote =>
+      'Tú llenas tus datos en una pantalla. Semi solo aparece si le preguntas.';
+
+  @override
+  String semiAlertsImportant(String title) {
+    return 'El más importante: $title.';
+  }
+
+  @override
+  String get climateMore => 'Ver más del clima';
+
+  @override
+  String get whyMore => '¿Por qué te lo recomiendo?';
+
+  @override
+  String get otherOptionsMore => 'Ver las otras opciones';
 }

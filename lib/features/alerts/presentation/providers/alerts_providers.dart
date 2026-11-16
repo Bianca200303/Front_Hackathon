@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
+import 'package:siembra_segura/core/l10n/app_language_provider.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/features/alerts/data/mock_alerts_repository.dart';
 import 'package:siembra_segura/features/alerts/domain/alert.dart';
@@ -10,6 +11,7 @@ final alertsRepositoryProvider = Provider<AlertsRepository>(
   (ref) => MockAlertsRepository(
     clock: ref.watch(clockProvider),
     latency: ref.watch(mockLatencyProvider),
+    language: ref.watch(appLanguageProvider),
   ),
 );
 

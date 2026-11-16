@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -233,7 +233,7 @@ class _CustomOutcome extends ConsumerWidget {
       children: [
         StatusPill(
           label: l10n.optionCustom,
-          tone: const Tone(AppColors.primary, AppColors.onPrimary),
+          tone: Tone(context.colors.primary, context.colors.onPrimary),
           dense: true,
         ),
         Row(
@@ -257,8 +257,8 @@ class _CustomOutcome extends ConsumerWidget {
         if (excluded)
           Text(
             l10n.rotationCustomExcluded,
-            style: AppTypography.captionMuted.copyWith(
-              color: AppColors.negative,
+            style: context.text.captionMuted.copyWith(
+              color: context.colors.negative,
             ),
           ),
       ],
@@ -281,7 +281,7 @@ class _Metric extends StatelessWidget {
           spacing: AppSpacing.xxs,
           children: [
             Text(label, style: Theme.of(context).textTheme.bodySmall),
-            Text(value, style: AppTypography.metricValue),
+            Text(value, style: context.text.metricValue),
           ],
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 
@@ -58,10 +58,10 @@ class MutedText extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Text(text, style: AppTypography.muted);
+  Widget build(BuildContext context) => Text(text, style: context.text.muted);
 }
 
-/// Texto con un fragmento resaltado (p. ej., "Pensando en: **ganar más**").
+/// Texto con un fragmento resaltado (p. ej., "Pensando en: **cuidar tu agua**").
 ///
 /// El fragmento se busca dentro del texto ya traducido, así el orden de las
 /// palabras lo decide el ARB y no el código.
@@ -125,14 +125,14 @@ class TermDefinition extends StatelessWidget {
   /// Color del término.
   final Color? termColor;
 
-  /// Estilo del conjunto; por defecto, [AppTypography.bodyCompact].
+  /// Estilo del conjunto; por defecto, [context.text.bodyCompact].
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: style ?? AppTypography.bodyCompact,
+        style: style ?? context.text.bodyCompact,
         children: [
           TextSpan(
             text: '$term ',
@@ -157,7 +157,7 @@ class BulletList extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = Theme.of(
       context,
-    ).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary);
+    ).textTheme.bodyMedium?.copyWith(color: context.colors.textPrimary);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 6,
@@ -219,13 +219,13 @@ class GuideDisclaimer extends StatelessWidget {
         horizontal: AppSpacing.md,
         vertical: 10,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.all(Radius.circular(AppRadii.md)),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceSoft,
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.md)),
       ),
       child: Text(
         AppLocalizations.of(context).guideDisclaimer,
-        style: AppTypography.caption,
+        style: context.text.caption,
       ),
     );
   }
@@ -250,14 +250,14 @@ class AdviceBox extends StatelessWidget {
         vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: AppColors.adviceTone.background,
+        color: context.colors.adviceTone.background,
         borderRadius: const BorderRadius.all(Radius.circular(AppRadii.lg)),
       ),
       child: TermDefinition(
         term: lead,
         definition: text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: AppColors.adviceTone.foreground,
+          color: context.colors.adviceTone.foreground,
         ),
       ),
     );

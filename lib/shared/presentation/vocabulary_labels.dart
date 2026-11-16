@@ -8,7 +8,7 @@
 library;
 
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 
 /// Color de un cultivo.
@@ -18,8 +18,22 @@ extension CropTone on Crop {
   /// El mismo cultivo tiene siempre el mismo color en todas las pantallas,
   /// sin que la app conozca la lista de cultivos. Si producto quiere un
   /// color fijo por cultivo, el backend debería enviarlo (decisión B13).
-  Tone get tone =>
-      AppColors.cropPalette[_stableHash(id) % AppColors.cropPalette.length];
+  Tone tone(AppPalette colors) {
+    // Los cultivos de `semi_app.html` tienen su color fijo; uno nuevo toma
+    // uno estable según su identificador.
+    final known = _knownIndex[id];
+    final palette = colors.cropPalette;
+    return palette[(known ?? _stableHash(id)) % palette.length];
+  }
+
+  static const _knownIndex = {
+    'rice': 0,
+    'maize': 1,
+    'bean': 2,
+    'cotton': 3,
+    'pulse': 4,
+    'green-manure': 5,
+  };
 
   /// FNV-1a de 32 bits: estable entre ejecuciones y plataformas, a
   /// diferencia de `String.hashCode`.
@@ -105,10 +119,10 @@ extension ClimateRiskLabels on ClimateRisk {
   };
 
   /// Color asociado, de verde (bajo) a rojo (alto).
-  Tone get tone => switch (this) {
-    ClimateRisk.low => AppColors.normalTone,
-    ClimateRisk.medium => AppColors.warningTone,
-    ClimateRisk.high => AppColors.soilTiredTone,
+  Tone tone(AppPalette colors) => switch (this) {
+    ClimateRisk.low => colors.normalTone,
+    ClimateRisk.medium => colors.warningTone,
+    ClimateRisk.high => colors.soilTiredTone,
   };
 }
 
@@ -123,10 +137,10 @@ extension SoilConditionLabels on SoilCondition {
   };
 
   /// Color asociado, de rojo (peor) a verde (mejor).
-  Tone get tone => switch (this) {
-    SoilCondition.veryTired => AppColors.soilVeryTiredTone,
-    SoilCondition.tired => AppColors.soilTiredTone,
-    SoilCondition.regular => AppColors.soilRegularTone,
-    SoilCondition.good => AppColors.soilGoodTone,
+  Tone tone(AppPalette colors) => switch (this) {
+    SoilCondition.veryTired => colors.soilVeryTiredTone,
+    SoilCondition.tired => colors.soilTiredTone,
+    SoilCondition.regular => colors.soilRegularTone,
+    SoilCondition.good => colors.soilGoodTone,
   };
 }

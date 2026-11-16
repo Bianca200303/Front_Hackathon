@@ -1,5 +1,6 @@
 {
   "APP_ENV": "dev",
   "DATA_SOURCE": "mock",
-  "API_BASE_URL": ""
+  "API_BASE_URL": "",
+  "VOICE_SOURCE": "device"
 }

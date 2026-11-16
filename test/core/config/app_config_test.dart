@@ -48,4 +48,44 @@ void main() {
       );
     });
   });
+
+  group('voz de Semi', () {
+    test('por defecto usa la voz del celular', () {
+      final config = AppConfig.parse(environment: 'dev', dataSource: 'mock');
+      expect(config.voiceSource, VoiceSource.device);
+    });
+
+    test('la voz del backend se puede probar con datos de ejemplo', () {
+      final config = AppConfig.parse(
+        environment: 'dev',
+        dataSource: 'mock',
+        apiBaseUrl: 'http://10.0.2.2:8000',
+        voiceSource: 'backend',
+      );
+      expect(config.voiceSource, VoiceSource.backend);
+      expect(config.usesMocks, isTrue);
+    });
+
+    test('la voz del backend exige API_BASE_URL', () {
+      expect(
+        () => AppConfig.parse(
+          environment: 'dev',
+          dataSource: 'mock',
+          voiceSource: 'backend',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('rechaza un origen de voz desconocido', () {
+      expect(
+        () => AppConfig.parse(
+          environment: 'dev',
+          dataSource: 'mock',
+          voiceSource: 'eleven',
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
 }

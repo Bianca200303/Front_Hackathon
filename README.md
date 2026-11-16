@@ -26,6 +26,24 @@ La configuración se inyecta en tiempo de compilación desde `config/<entorno>.j
 | `APP_ENV` | `dev` · `staging` · `prod` | Entorno |
 | `DATA_SOURCE` | `mock` · `remote` | `mock` usa datos locales de ejemplo; `remote` usa el backend en las pantallas ya integradas (Clima, Qué sembrar, ¿Cuándo siembro?, Rotación) y datos de ejemplo en el resto. Con `remote`, la recomendación combina NASA POWER, SoilGrids, la tierra que reconoció el agricultor, el verdor MODIS, la humedad SMAP y la lluvia GPM IMERG del punto que marcó en el mapa |
 | `API_BASE_URL` | URL | Obligatoria si `DATA_SOURCE=remote` |
+| `VOICE_SOURCE` | `device` · `backend` | Voz de Semi. `backend` requiere `API_BASE_URL` (ver abajo) |
+
+### Voz de Semi
+
+Por defecto Semi habla con la voz del celular (`VOICE_SOURCE=device`), ajustada
+para sonar cercana. Con `VOICE_SOURCE=backend` la app pide el audio a
+`POST {API_BASE_URL}/v1/speech` (contrato en `docs/contracts/voz.md`), lo
+guarda en el celular y, si no hay señal o el backend falla, vuelve a la voz del
+celular. La voz del backend se puede probar aunque los datos sigan en `mock`.
+La app no guarda claves de servicios de voz: las tiene el backend.
+
+### Idiomas
+
+Español, inglés y quechua (borrador). La app elige según el idioma y la región
+del celular, y se puede cambiar en Ajustes. Para agregar o corregir textos,
+edita `lib/core/l10n/app_<idioma>.arb` y ejecuta `flutter gen-l10n`; lo que
+falta traducir al quechua queda en `docs/l10n_qu_pendientes.json`. Detalles en
+`docs/ARCHITECTURE.md`, §5c.
 
 ### Con el backend local
 

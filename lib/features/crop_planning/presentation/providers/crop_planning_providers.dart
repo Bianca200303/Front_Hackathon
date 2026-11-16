@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
+import 'package:siembra_segura/core/l10n/app_language_provider.dart';
 import 'package:siembra_segura/core/network/http_api_client.dart';
 import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_crop_planning_repository.dart';
@@ -18,7 +19,10 @@ import 'package:siembra_segura/shared/state/farm_location_provider.dart';
 /// Repositorio de planificación: el backend con `DATA_SOURCE=remote`.
 final cropPlanningRepositoryProvider = Provider<CropPlanningRepository>((ref) {
   if (ref.watch(appConfigProvider).usesMocks) {
-    return MockCropPlanningRepository(latency: ref.watch(mockLatencyProvider));
+    return MockCropPlanningRepository(
+      latency: ref.watch(mockLatencyProvider),
+      language: ref.watch(appLanguageProvider),
+    );
   }
   return RemoteCropPlanningRepository(apiClient: ref.watch(apiClientProvider));
 });

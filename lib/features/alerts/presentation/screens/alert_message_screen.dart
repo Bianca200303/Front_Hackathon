@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -29,7 +29,7 @@ class AlertMessageScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final message = ref.watch(alertMessageProvider(alertId));
     return Scaffold(
-      backgroundColor: AppColors.chatBackground,
+      backgroundColor: context.colors.chatBackground,
       body: Column(
         children: [
           const ChatHeader(),
@@ -87,7 +87,7 @@ class _MessageThread extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.sm,
             children: [
-              OverlineText(message.headline, color: AppColors.amber),
+              OverlineText(message.headline, color: context.colors.amber),
               for (final paragraph in message.paragraphs)
                 EmphasisText(
                   paragraph,
@@ -127,9 +127,9 @@ class _TimeChip extends StatelessWidget {
         horizontal: 10,
         vertical: AppSpacing.xs,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.all(Radius.circular(AppRadii.sm)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
       ),
       child: Text(
         label,

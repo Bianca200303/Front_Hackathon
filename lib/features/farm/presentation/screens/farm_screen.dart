@@ -18,6 +18,7 @@ import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/responsive_columns.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
 
 /// Pantalla "Mi parcela": recoge lo que condiciona la recomendación.
 ///
@@ -48,9 +49,12 @@ class FarmScreen extends ConsumerWidget {
       ),
       _ => null,
     };
-    final openedFromTabs = context.canPop();
+    // Se mira la propia página y no `context.canPop()`: una hoja abierta
+    // encima (la bienvenida de Semi) también permitiría "volver".
+    final openedFromTabs = !(ModalRoute.of(context)?.isFirst ?? true);
 
     return ScreenLayout(
+      guide: SemiGuide(message: l10n.semiFarmGuide),
       wide: true,
       header: openedFromTabs
           ? ScreenHeader.back(
@@ -59,7 +63,7 @@ class FarmScreen extends ConsumerWidget {
             )
           : ScreenHeader.brand(listenText: narration),
       footer: AppButton(
-        label: openedFromTabs ? l10n.actionDone : l10n.actionStart,
+        label: openedFromTabs ? l10n.actionDone : l10n.actionSeePlan,
         onPressed: !content.hasValue
             ? null
             : () => openedFromTabs
@@ -92,10 +96,7 @@ class _FarmContent extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.farmGreeting(farm.farmerName),
-              style: AppTypography.muted,
-            ),
+            Text(l10n.farmGreeting(farm.farmerName), style: context.text.muted),
             Semantics(
               header: true,
               child: Text(
@@ -105,20 +106,23 @@ class _FarmContent extends StatelessWidget {
             ),
           ],
         ),
+        // En tablet, dos columnas; en teléfono, una pregunta debajo de otra.
+        // El mapa, las hectáreas, la fecha y la tierra son lo que el backend
+        // necesita para calcular (decisiones 29, 32 y 35).
         ResponsiveColumns(
           children: [
             ParcelMapCard(farm: farm),
-            LastCropCard(farm: farm),
+            LastCropField(farm: farm),
           ],
         ),
         ResponsiveColumns(
           children: [
             CampaignInputsCard(farm: farm),
-            PriorityCard(catalog: catalog),
+            PriorityField(catalog: catalog),
           ],
         ),
         SoilTextureCard(catalog: catalog),
-        RestrictionsCard(catalog: catalog),
+        RestrictionsField(catalog: catalog),
         const _ResetPreferencesButton(),
       ],
     );

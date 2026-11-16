@@ -26,6 +26,16 @@ enum DataSourceMode {
   remote,
 }
 
+/// De dónde sale la voz de Semi.
+enum VoiceSource {
+  /// Motor de voz del celular (`flutter_tts`).
+  device,
+
+  /// Audio generado por el backend (`POST v1/speech`, decisión B8), con la
+  /// voz del celular como respaldo si falla la red.
+  backend,
+}
+
 /// Configuración de la app, inyectada en tiempo de compilación con
 /// `--dart-define-from-file=config/<entorno>.json`.
 class AppConfig extends Equatable {
@@ -34,6 +44,7 @@ class AppConfig extends Equatable {
     required this.environment,
     required this.dataSource,
     this.apiBaseUrl,
+    this.voiceSource = VoiceSource.device,
   });
 
   /// Lee la configuración de `--dart-define-from-file` (ver `config/`).
@@ -44,6 +55,10 @@ class AppConfig extends Equatable {
       defaultValue: 'mock',
     ),
     apiBaseUrl: const String.fromEnvironment('API_BASE_URL'),
+    voiceSource: const String.fromEnvironment(
+      'VOICE_SOURCE',
+      defaultValue: 'device',
+    ),
   );
 
   /// Construye y valida la configuración a partir de valores en texto.
@@ -54,6 +69,7 @@ class AppConfig extends Equatable {
     required String environment,
     required String dataSource,
     String apiBaseUrl = '',
+    String voiceSource = 'device',
   }) {
     final env = Environment.values.asNameMap()[environment];
     if (env == null) {
@@ -82,7 +98,20 @@ class AppConfig extends Equatable {
       throw ArgumentError('DATA_SOURCE=remote requiere API_BASE_URL.');
     }
 
-    return AppConfig(environment: env, dataSource: mode, apiBaseUrl: baseUrl);
+    final voice = VoiceSource.values.asNameMap()[voiceSource];
+    if (voice == null) {
+      throw ArgumentError.value(voiceSource, 'VOICE_SOURCE', 'Voz desconocida');
+    }
+    if (voice == VoiceSource.backend && baseUrl == null) {
+      throw ArgumentError('VOICE_SOURCE=backend requiere API_BASE_URL.');
+    }
+
+    return AppConfig(
+      environment: env,
+      dataSource: mode,
+      apiBaseUrl: baseUrl,
+      voiceSource: voice,
+    );
   }
 
   /// Entorno de ejecución.
@@ -95,11 +124,15 @@ class AppConfig extends Equatable {
   /// mocks.
   final Uri? apiBaseUrl;
 
-  /// `true` si toda la app muestra datos de ejemplo.
+  /// De dónde sale la voz de Semi. Es independiente de [dataSource]: la voz
+  /// del backend puede probarse aunque los datos sigan siendo de ejemplo.
+  final VoiceSource voiceSource;
+
+  /// `true` si la app muestra datos de ejemplo.
   bool get usesMocks => dataSource == DataSourceMode.mock;
 
   @override
-  List<Object?> get props => [environment, dataSource, apiBaseUrl];
+  List<Object?> get props => [environment, dataSource, apiBaseUrl, voiceSource];
 }
 
 /// Configuración vigente. `main.dart` la inyecta con `overrideWithValue`.

@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/features/alerts/domain/alert.dart';
 import 'package:siembra_segura/features/alerts/presentation/alert_texts.dart';
 import 'package:siembra_segura/features/alerts/presentation/providers/alerts_providers.dart';
+import 'package:siembra_segura/shared/widgets/app_settings.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
-import 'package:siembra_segura/shared/widgets/farm_settings_button.dart';
 import 'package:siembra_segura/shared/widgets/notice_tile.dart';
 import 'package:siembra_segura/shared/widgets/screen_layout.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_guide.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
 /// Pantalla 4: Avisos.
@@ -26,10 +29,19 @@ class AlertsScreen extends ConsumerWidget {
     final loaded = alerts.value;
 
     return ScreenLayout(
+      guide: SemiGuide(
+        // Como en el prototipo: cuántos avisos hay y cuál importa más (el
+        // cambio de pronóstico, si llegó uno).
+        message: loaded == null || loaded.isEmpty
+            ? l10n.semiAlertsGuide
+            : '${l10n.alertsCount(loaded.length)} '
+                  '${l10n.semiAlertsImportant(_mostImportant(loaded).title)}',
+        expression: SemiExpression.alert,
+      ),
       header: ScreenHeader(
-        actions: const [FarmSettingsButton()],
+        actions: const [AppSettingsButton()],
         title: l10n.alertsTitle,
-        listenText: loaded == null ? null : _narration(loaded, l10n),
+        showListen: false,
       ),
       body: AsyncValueView(
         value: alerts,
@@ -39,18 +51,23 @@ class AlertsScreen extends ConsumerWidget {
         data: (alerts) => ScreenContent(
           onRefresh: () => ref.refresh(alertsProvider.future),
           children: [
-            for (final alert in alerts)
-              NoticeTile(
-                icon: alert.type.icon,
-                iconTone: alert.type.tone,
-                title: alert.title,
-                body: alert.body,
-                meta: l10n.alertMeta(
-                  relativeDayLabel(alert.receivedAt, now, l10n),
-                  alert.source,
-                ),
-                onTap: () => _open(context, alert),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final alert in alerts)
+                  NoticeTile(
+                    icon: alert.type.icon,
+                    iconTone: alert.type.tone(context.colors),
+                    title: alert.title,
+                    body: alert.body,
+                    meta: l10n.alertMeta(
+                      relativeDayLabel(alert.receivedAt, now, l10n),
+                      alert.source,
+                    ),
+                    onTap: () => _open(context, alert),
+                  ),
+              ],
+            ),
             SourceNote(l10n.alertsFooter),
           ],
         ),
@@ -66,9 +83,9 @@ class AlertsScreen extends ConsumerWidget {
         context.go(AppRoutes.alertDetail(alert.id));
     }
   }
-
-  String _narration(List<Alert> alerts, AppLocalizations l10n) => [
-    l10n.alertsCount(alerts.length),
-    for (final alert in alerts) '${alert.title}.',
-  ].join(' ');
 }
+
+/// El aviso más importante: el cambio de pronóstico; si no hay, el primero.
+Alert _mostImportant(List<Alert> alerts) =>
+    alerts.where((a) => a.type == AlertType.forecastChange).firstOrNull ??
+    alerts.first;

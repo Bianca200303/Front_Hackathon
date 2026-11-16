@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Claves locales (voz de Semi). Nunca se suben al repositorio.
+/config/secrets.json
+
+# Backend local (no forma parte de este repo)
+spaceapps-2026-core/

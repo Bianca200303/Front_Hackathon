@@ -9,7 +9,7 @@ void main() {
   final l10n = AppLocalizationsEs();
 
   Future<void> openClimate(WidgetTester tester) =>
-      tester.tapText(l10n.actionStart);
+      tester.tapText(l10n.actionSeePlan);
 
   testWidgets('muestra el clima de hoy y la semana', (tester) async {
     await tester.pumpSiembraSeguraApp();
@@ -38,6 +38,8 @@ void main() {
   testWidgets('compara con un año normal', (tester) async {
     await tester.pumpSiembraSeguraApp();
     await openClimate(tester);
+    // Está a un toque: "Ver más del clima".
+    await tester.tapText(l10n.climateMore);
 
     expect(find.text('3 veces más'), findsOneWidget);
     expect(find.text('2 °C más'), findsOneWidget);
@@ -48,6 +50,7 @@ void main() {
   testWidgets('el aviso de planificación lleva a Qué sembrar', (tester) async {
     await tester.pumpSiembraSeguraApp();
     await openClimate(tester);
+    await tester.tapText(l10n.climateMore);
 
     await tester.tapText(l10n.climatePlanTitle);
 

@@ -53,10 +53,10 @@ abstract final class AppRadii {
   static const double pill = 999;
 
   /// Borde de tarjeta.
-  static const BorderRadius card = BorderRadius.all(Radius.circular(xl));
+  static const BorderRadius card = BorderRadius.all(Radius.circular(md));
 
   /// Borde de botón.
-  static const BorderRadius button = BorderRadius.all(Radius.circular(lg));
+  static const BorderRadius button = BorderRadius.all(Radius.circular(10));
 }
 
 /// Tamaños fijos de componentes.
@@ -75,4 +75,8 @@ abstract final class AppSizes {
 
   /// Ancho máximo de las pantallas con dos columnas (`ScreenLayout.wide`).
   static const double maxWideContentWidth = 1040;
+
+  /// Espacio libre al final de las listas para que el botón "Ayuda" de
+  /// Semi no tape el último contenido.
+  static const double helpButtonClearance = 96;
 }

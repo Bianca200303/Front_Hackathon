@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
@@ -84,12 +84,17 @@ class _SoilSwatch extends StatelessWidget {
         dimension: SoilTextureCard.swatchSize,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppColors.soilTone.background,
+            color: context.colors.soilTone.background,
             borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
-            child: CustomPaint(painter: _SoilTexturePainter(texture)),
+            child: CustomPaint(
+              painter: _SoilTexturePainter(
+                texture,
+                context.colors.soilTone.foreground,
+              ),
+            ),
           ),
         ),
       ),
@@ -98,9 +103,12 @@ class _SoilSwatch extends StatelessWidget {
 }
 
 class _SoilTexturePainter extends CustomPainter {
-  const _SoilTexturePainter(this.texture);
+  const _SoilTexturePainter(this.texture, this.color);
 
   final SoilTexture texture;
+
+  /// Color de los granos y grietas (cambia con el modo oscuro).
+  final Color color;
 
   /// Semilla fija: el dibujo no debe cambiar entre reconstrucciones.
   static const _seed = 7;
@@ -108,7 +116,7 @@ class _SoilTexturePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final random = Random(_seed);
-    final paint = Paint()..color = AppColors.soilTone.foreground;
+    final paint = Paint()..color = color;
     switch (texture) {
       case SoilTexture.sandy:
         _grains(canvas, size, random, paint, count: 90, radius: 0.9);
@@ -167,5 +175,5 @@ class _SoilTexturePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SoilTexturePainter oldDelegate) =>
-      oldDelegate.texture != texture;
+      oldDelegate.texture != texture || oldDelegate.color != color;
 }

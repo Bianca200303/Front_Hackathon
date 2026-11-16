@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -73,7 +73,7 @@ class ParcelMapCard extends ConsumerWidget {
                 ],
               ),
               ExcludeSemantics(
-                child: Text(coordinates, style: AppTypography.captionMuted),
+                child: Text(coordinates, style: context.text.captionMuted),
               ),
             ],
           ),
@@ -148,17 +148,19 @@ class _ValleyMap extends StatelessWidget {
             },
             child: Stack(
               children: [
-                const Positioned.fill(
-                  child: CustomPaint(painter: _ValleyPainter()),
+                Positioned.fill(
+                  child: CustomPaint(painter: _ValleyPainter(context.colors)),
                 ),
                 Positioned(
                   left: x * constraints.maxWidth - _pinSize / 2,
                   top: y * constraints.maxHeight - _pinSize,
-                  child: const Icon(
+                  child: Icon(
                     Icons.place,
                     size: _pinSize,
-                    color: AppColors.primary,
-                    shadows: [Shadow(color: AppColors.surface, blurRadius: 4)],
+                    color: context.colors.primary,
+                    shadows: [
+                      Shadow(color: context.colors.surface, blurRadius: 4),
+                    ],
                   ),
                 ),
                 Positioned(
@@ -187,15 +189,15 @@ class _MapCaption extends StatelessWidget {
         horizontal: AppSpacing.sm,
         vertical: AppSpacing.xs,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.all(Radius.circular(AppRadii.sm)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.sm)),
       ),
       child: Text(
         text,
         style: Theme.of(
           context,
-        ).textTheme.labelSmall?.copyWith(color: AppColors.textPrimary),
+        ).textTheme.labelSmall?.copyWith(color: context.colors.textPrimary),
       ),
     );
   }
@@ -204,7 +206,9 @@ class _MapCaption extends StatelessWidget {
 /// Ilustración del valle (campos, carretera y canal) en un lienzo de
 /// 350 × 130, tomada de la referencia.
 class _ValleyPainter extends CustomPainter {
-  const _ValleyPainter();
+  const _ValleyPainter(this.colors);
+
+  final AppPalette colors;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -212,23 +216,23 @@ class _ValleyPainter extends CustomPainter {
 
     canvas.drawRect(
       const Rect.fromLTWH(0, 0, 350, 130),
-      Paint()..color = AppColors.mapField,
+      Paint()..color = colors.mapField,
     );
     canvas.drawLine(
       const Offset(0, 35),
       const Offset(350, 60),
       Paint()
-        ..color = AppColors.mapRoad
+        ..color = colors.mapRoad
         ..strokeWidth = 10,
     );
     canvas.drawLine(
       const Offset(0, 100),
       const Offset(350, 112),
       Paint()
-        ..color = AppColors.mapCanal
+        ..color = colors.mapCanal
         ..strokeWidth = 6,
     );
-    final plotPaint = Paint()..color = AppColors.mapPlot;
+    final plotPaint = Paint()..color = colors.mapPlot;
     canvas
       ..drawRect(const Rect.fromLTWH(20, 68, 70, 26), plotPaint)
       ..drawRect(const Rect.fromLTWH(250, 8, 80, 34), plotPaint)
@@ -236,5 +240,94 @@ class _ValleyPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ValleyPainter oldDelegate) => false;
+  bool shouldRepaint(_ValleyPainter oldDelegate) =>
+      oldDelegate.colors != colors;
+}
+
+/// La chacra marcada sobre el valle (350 × 130), para la miniatura.
+class _ParcelMapPainter extends CustomPainter {
+  _ParcelMapPainter(this.colors);
+
+  final AppPalette colors;
+
+  Color get _field => colors.mapField;
+  Color get _road => colors.mapRoad;
+  Color get _canal => colors.mapCanal;
+  Color get _plot => colors.mapPlot;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(size.width / 350, size.height / 130);
+
+    canvas.drawRect(
+      const Rect.fromLTWH(0, 0, 350, 130),
+      Paint()..color = _field,
+    );
+    canvas.drawLine(
+      const Offset(0, 35),
+      const Offset(350, 60),
+      Paint()
+        ..color = _road
+        ..strokeWidth = 10,
+    );
+    canvas.drawLine(
+      const Offset(0, 100),
+      const Offset(350, 112),
+      Paint()
+        ..color = _canal
+        ..strokeWidth = 6,
+    );
+    final plotPaint = Paint()..color = _plot;
+    canvas
+      ..drawRect(const Rect.fromLTWH(20, 68, 70, 26), plotPaint)
+      ..drawRect(const Rect.fromLTWH(250, 8, 80, 34), plotPaint);
+
+    final parcel = Path()
+      ..moveTo(120, 50)
+      ..lineTo(230, 62)
+      ..lineTo(220, 102)
+      ..lineTo(112, 94)
+      ..close();
+    canvas
+      ..drawPath(
+        parcel,
+        Paint()..color = colors.primary.withValues(alpha: 0.22),
+      )
+      ..drawPath(
+        parcel,
+        Paint()
+          ..color = colors.primary
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..strokeJoin = StrokeJoin.round,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_ParcelMapPainter oldDelegate) =>
+      oldDelegate.colors != colors;
+}
+
+/// Mapa pequeño de la chacra (`.mapa-btn` de `semi_app.html`), decorativo:
+/// los datos van en el texto de al lado.
+class ParcelMapThumbnail extends StatelessWidget {
+  /// Crea la miniatura.
+  const ParcelMapThumbnail({this.width = 96, super.key});
+
+  /// Ancho, en dp; el alto guarda la proporción del mapa.
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: SizedBox(
+          width: width,
+          height: width * 130 / 350,
+          child: CustomPaint(painter: _ParcelMapPainter(context.colors)),
+        ),
+      ),
+    );
+  }
 }

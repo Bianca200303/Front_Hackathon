@@ -3,6 +3,8 @@ import 'package:siembra_segura/core/l10n/app_localizations_es.dart';
 import 'package:siembra_segura/features/crop_planning/data/mock_crop_planning_repository.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/custom_rotation_card.dart';
+import 'package:siembra_segura/features/crop_planning/presentation/widgets/plan_blocks.dart';
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
@@ -20,23 +22,30 @@ void main() {
   late CropPlanningData reference;
   setUpAll(() async => reference = await referencePlanningData());
 
+  Finder richText(String text) => find.textContaining(text, findRichText: true);
+
   Future<void> openTab(WidgetTester tester, String tab) async {
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(tab);
   }
 
-  Finder richText(String text) => find.textContaining(text, findRichText: true);
-
   group('Qué sembrar', () {
-    testWidgets('recomienda para el escenario normal', (tester) async {
+    testWidgets('recomienda para el escenario normal, sin dinero', (
+      tester,
+    ) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);
 
-      expect(find.text(l10n.recommendationHeadline), findsOneWidget);
+      expect(find.text(l10n.recoOverline), findsOneWidget);
       expect(find.text('Frejol y después maíz'), findsOneWidget);
-      expect(richText('Agua de riego: 13,800 m³'), findsOneWidget);
-      expect(richText('Riesgo de clima: bajo'), findsOneWidget);
-      expect(find.text('SI SIEMBRAS ARROZ OTRA VEZ'), findsOneWidget);
+      // Tres indicadores: riesgo de clima, agua y tierra.
+      expect(find.text(l10n.climateRiskLow), findsOneWidget);
+      // 13,800 m³ frente a los 29,000 m³ del arroz.
+      expect(find.text(l10n.waterLess('52%')), findsOneWidget);
+      expect(find.text(l10n.soilGood), findsOneWidget);
+      expect(find.text('15 de diciembre'), findsOneWidget);
+      expect(find.text(l10n.whyMore), findsOneWidget);
+      expect(find.textContaining('S/'), findsNothing);
     });
 
     testWidgets('cambia al instante con la prioridad', (tester) async {
@@ -49,7 +58,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Maíz y después frejol'), findsOneWidget);
-      expect(richText('recuperar tu tierra'), findsOneWidget);
+      expect(richText('recuperar tu tierra'), findsWidgets);
     });
 
     testWidgets('explora otros escenarios', (tester) async {
@@ -67,7 +76,8 @@ void main() {
 
       expect(find.text(l10n.recommendationIfDry), findsOneWidget);
       expect(find.text('Frejol y después maíz'), findsOneWidget);
-      expect(richText('Agua de riego: 16,560 m³'), findsOneWidget);
+      // 16,560 m³ frente a los 34,800 m³ del arroz en un año seco.
+      expect(find.text(l10n.waterLess('52%')), findsOneWidget);
     });
 
     testWidgets('muestra la lluvia que ya midió el satélite', (tester) async {
@@ -138,7 +148,7 @@ void main() {
     testWidgets('muestra fecha, calendario y razones', (tester) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);
-      await tester.tapText(l10n.actionWhenToPlant);
+      await tester.tapText(l10n.scheduleDecideBefore);
 
       expect(find.text('15 de diciembre'), findsOneWidget);
       expect(find.text('Frejol y después maíz'), findsOneWidget);
@@ -168,7 +178,7 @@ void main() {
           .read(campaignContextProvider.notifier)
           .selectScenario(ClimateScenario.heavyRains);
       await openTab(tester, l10n.tabWhatToPlant);
-      await tester.tapText(l10n.actionWhenToPlant);
+      await tester.tapText(l10n.scheduleDecideBefore);
 
       expect(
         find.text(
@@ -187,7 +197,7 @@ void main() {
         ],
       );
       await openTab(tester, l10n.tabWhatToPlant);
-      await tester.tapText(l10n.actionWhenToPlant);
+      await tester.tapText(l10n.scheduleDecideBefore);
 
       await tester.tapText('Sembré frejol');
 
@@ -206,7 +216,7 @@ void main() {
         ],
       );
       await openTab(tester, l10n.tabWhatToPlant);
-      await tester.tapText(l10n.actionWhenToPlant);
+      await tester.tapText(l10n.scheduleDecideBefore);
 
       await tester.tapText(l10n.feedbackOther);
 
@@ -216,41 +226,42 @@ void main() {
   });
 
   group('Rotación', () {
-    testWidgets('compara lo actual con dos opciones', (tester) async {
+    testWidgets('compara lo actual con dos opciones, como filas', (
+      tester,
+    ) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabRotation);
 
+      expect(find.text(l10n.soilTodayOverline), findsOneWidget);
+      // A la vista solo la recomendada; las otras, a un toque.
+      expect(find.text(l10n.optionCurrentLabel), findsNothing);
+      await tester.tapText(l10n.otherOptionsMore);
       expect(find.text(l10n.soilTired), findsOneWidget);
       expect(find.text(l10n.rotationCompareTitle(3)), findsOneWidget);
-      expect(find.text(l10n.optionCurrent), findsOneWidget);
-      expect(find.text(l10n.optionRecommended), findsOneWidget);
-      expect(find.text(l10n.optionOther), findsOneWidget);
-      expect(find.text('Arroz y arroz'), findsOneWidget);
+      expect(find.text(l10n.optionCurrentLabel), findsOneWidget);
+      expect(find.text(l10n.optionRecommendedLabel), findsOneWidget);
+      expect(find.text(l10n.optionOtherLabel), findsOneWidget);
       expect(find.text('29,000 m³'), findsOneWidget);
       expect(find.text('13,800 m³'), findsOneWidget);
       expect(find.text(l10n.climateRiskLow), findsWidgets);
-    });
-
-    testWidgets('muestra el plan de largo plazo', (tester) async {
-      await tester.pumpSiembraSeguraApp();
-      await openTab(tester, l10n.tabRotation);
-
-      await tester.ensureVisible(find.text(l10n.rotationPlanTitle));
-      expect(
-        find.text('Frejol y después maíz y después menestra y algodón.'),
-        findsOneWidget,
-      );
-      expect(find.text('Dic–Feb'), findsOneWidget);
-      expect(find.text('Tierra: buena'), findsWidgets);
+      // Cada fila con su franja de 4 siembras.
+      expect(find.byType(CropStrip), findsNWidgets(3));
     });
 
     testWidgets('arma una rotación propia y ve cómo cambia', (tester) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabRotation);
 
-      // La secuencia arranca con la recomendada: frejol y después maíz.
-      await tester.tapText(l10n.rotationCustomTitle);
-      await tester.tapText(MockCatalog.bean.name);
+      // "Prueba tu propio plan" arranca con la recomendada: frejol y maíz.
+      await tester.tapText(l10n.simTitle);
+      await tester.tapVisible(
+        find
+            .descendant(
+              of: find.byType(CustomRotationCard),
+              matching: find.text(MockCatalog.bean.name),
+            )
+            .first,
+      );
       // Cada cultivo del selector dice qué pide y qué deja.
       expect(find.text('Mucha agua · 5 meses'), findsOneWidget);
       expect(
@@ -276,14 +287,14 @@ void main() {
       expect(find.text(l10n.optionCustom), findsNothing);
     });
 
-    testWidgets('despliega la ficha de una opción', (tester) async {
+    testWidgets('despliega "Ver por qué" de una opción', (tester) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabRotation);
 
-      await tester.tapText(l10n.factsheetToggle);
+      await tester.tapText(l10n.seeWhy);
 
-      expect(find.text(l10n.factsheetWhy), findsOneWidget);
-      expect(find.text(l10n.factsheetRisks), findsOneWidget);
+      expect(find.text(l10n.fichaWhy), findsOneWidget);
+      expect(find.text(l10n.fichaCheck), findsOneWidget);
     });
   });
 }

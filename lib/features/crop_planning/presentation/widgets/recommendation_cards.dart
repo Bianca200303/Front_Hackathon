@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -37,8 +37,8 @@ class PriorityContextRow extends StatelessWidget {
           child: HighlightedText(
             text: l10n.recommendationThinkingOf(phrase),
             highlight: phrase,
-            style: AppTypography.muted,
-            highlightStyle: AppTypography.mutedEmphasis,
+            style: context.text.muted,
+            highlightStyle: context.text.mutedEmphasis,
           ),
         ),
         SelectableChip(
@@ -72,7 +72,10 @@ class RecommendedOptionCard extends StatelessWidget {
       child: AppCard(
         variant: AppCardVariant.highlighted,
         children: [
-          OverlineText(recommendation.headline(l10n), color: AppColors.primary),
+          OverlineText(
+            recommendation.headline(l10n),
+            color: context.colors.primary,
+          ),
           Text(
             best.name(l10n),
             style: Theme.of(context).textTheme.headlineSmall,
@@ -88,17 +91,17 @@ class RecommendedOptionCard extends StatelessWidget {
               _OutcomeLine(
                 label: l10n.outcomeWater,
                 value: recommendation.water(),
-                color: AppColors.water,
+                color: context.colors.water,
               ),
               _OutcomeLine(
                 label: l10n.outcomeClimateRisk,
                 value: result.climateRisk.label(l10n).toLowerCase(),
-                color: result.climateRisk.tone.foreground,
+                color: result.climateRisk.tone(context.colors).foreground,
               ),
               _OutcomeLine(
                 label: l10n.outcomeSoil,
                 value: best.soilImpact.label(l10n),
-                color: AppColors.primary,
+                color: context.colors.primary,
               ),
             ],
           ),
@@ -166,7 +169,7 @@ class RepeatCropCard extends StatelessWidget {
           value: AppFormatters.cubicMeters(
             recommendation.currentResult.waterUseM3,
           ),
-          color: AppColors.water,
+          color: context.colors.water,
         ),
       ],
     );
@@ -241,7 +244,7 @@ class _MeasuredRain extends StatelessWidget {
       spacing: AppSpacing.sm,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.water_drop_outlined, color: AppColors.water, size: 20),
+        Icon(Icons.water_drop_outlined, color: context.colors.water, size: 20),
         Expanded(
           child: Text(note, style: Theme.of(context).textTheme.bodyMedium),
         ),

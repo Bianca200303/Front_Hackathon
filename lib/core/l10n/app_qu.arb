@@ -1,0 +1,98 @@
+{
+  "@@locale": "qu",
+  "@@x-status": "BORRADOR (quechua sureño). Debe revisarlo un hablante antes de publicar. Los textos que faltan se muestran en español: ver docs/l10n_qu_pendientes.json.",
+
+  "appTitle": "Siembra Segura",
+
+  "tabClimate": "Pacha",
+  "tabWhatToPlant": "Ima tarpuy",
+  "tabRotation": "Muyuchiy",
+  "tabAlerts": "Willakuy",
+  "tabAlertsUnreadSemantics": "Willakuykuna, musuq willakuykuna kan",
+
+  "actionBack": "Kutiy",
+  "actionDone": "Chayllam",
+  "actionRetry": "Musuqmanta",
+  "actionListen": "Uyariy",
+  "actionListenSemantics": "Kay pantallapi kaqta uyariy",
+  "actionChange": "Tikray",
+
+  "farmTitle": "Chakraykimanta",
+  "climateTitle": "Wayq'oykipi pacha",
+  "recommendationTitle": "¿Imatataq tarpuyman?",
+  "plantingScheduleTitle": "¿Haykapitaq tarpusaq?",
+  "rotationTitle": "Tarpuy muyuchiy",
+  "alertsTitle": "Willakuykuna",
+  "alertMessageTitle": "Willakuy",
+
+  "loading": "Suyariy…",
+  "errorNetwork": "Mana internet kanchu. Señalniykita qhawariy, hinaspa musuqmanta ruray.",
+
+  "scenarioHeavyRains": "Sinchi para",
+  "scenarioDry": "Ch'aki",
+
+  "soilVeryTired": "Ancha sayk'usqa",
+  "soilTired": "Sayk'usqa",
+  "soilRegular": "Chawpi",
+  "soilGood": "Allin",
+  "soilWithLabel": "Allpa: {condition}",
+
+  "farmGreeting": "Napaykullayki, {name}",
+  "farmValley": "Wayq'o",
+
+  "weatherSunny": "Inti",
+  "weatherCloudy": "Phuyu",
+  "weatherRain": "Para",
+  "weatherModerateRain": "Chawpi para",
+  "weatherHeavyRain": "Sinchi para",
+  "weatherHeavyRainShort": "Sinchi",
+
+  "climateThisWeek": "Kay semana",
+
+  "semiAvatarSemantics": "Semi, chakra yanapaqniyki",
+  "appModeSwitchSemantics": "Imayna llamk'achiy",
+  "appModeAssistedTitle": "Yanapaywan",
+  "appModeManualTitle": "Kikiyki huntay",
+
+  "semiFarmGuide": "¡Napaykullayki! Ñuqam Semi kani. Willaway qayna kutipi ima tarpusqaykita, imatataq aswanta munanki. Chaywan yanapasqayki.",
+  "semiClimateGuide": "NASA-q satelitenkunawan hanaq pachata qhawarqani. Kaypi willasqayki chakraykipaq pacha imayna hamuchkasqanta.",
+  "semiRecommendationGuide": "Allpaykiwan pachawan qhawaspa, kaymi aswan allin tarpunaykipaq. Sapa akllanata llapiy imarayku kasqanta rikunaykipaq.",
+  "semiPlantingScheduleGuide": "Allin pachapi tarpuyqa ancham yanapan. Kaypi rikunki haykapi tarpunaykita.",
+  "semiRotationGuide": "Sapa tarpuypi hukniray tarpuyqa allpatam samachin. Qhaway imaynam allpayki kanman sapa akllanawan.",
+  "semiAlertsGuide": "Kaypi willasqayki sinchi para, rupay utaq plagakuna hamuptin. ¡Sapa kuti qhawariy!",
+
+  "settingsLanguageTitle": "Simi",
+  "languageAutomatic": "Kikinmanta: {language}",
+  "languageSpanish": "Español",
+  "languageEnglish": "English",
+  "languageQuechua": "Runasimi",
+  "languageButton": "Simi: {language}",
+
+  "welcomeTitle": "Napaykullayki, Semi kani",
+  "welcomeBody": "Yanapasqayki ima tarpunaykita akllanaykipaq, allpaykita yakuykitapas waqaychanaykipaq.",
+  "welcomeQuestion": "¿Imaynatataq qallariyta munanki?",
+  "welcomeAssistedTitle": "Semi tapuwachun",
+  "welcomeAssistedBody": "Yanapaywan: huch'uy tapukuykunata sapankamanta tapusqayki, tukuytam willasqayki.",
+  "welcomeManualTitle": "Kikiy huntasaq",
+  "welcomeManualBody": "Kikiyki huntay: tukuy huk pantallallapi, utqaylla, app-ta riqsispaqa.",
+  "themeSystem": "Kikinmanta",
+
+  "chatTitle": "Semiwan rimanakuspa",
+  "chatSubtitle": "Huch'uy tapukuykunata tapusqayki",
+  "chatYouSaid": "Qam: {answer}",
+  "chatParcelYes": "Arí, chakraymi",
+  "chatParcelNo": "Manam, hukmi",
+  "chatLastCropYes": "Arí, {crop}",
+  "chatLastCropNo": "Manam, {crop} karqan",
+  "chatRestrictionNone": "Manam imapas",
+  "chatDone": "¡Chayllam! Planniykiqa kachkanñam.",
+  "actionSeePlan": "Planniyta qhaway",
+
+  "farmSatelliteBadge": "Satelite",
+
+  "helpButton": "Yanapay",
+  "helpTitle": "Semita tapuy",
+  "helpLanguageQ": "Simita tikray",
+
+  "simTitle": "Kikiyki planniykita churay"
+}

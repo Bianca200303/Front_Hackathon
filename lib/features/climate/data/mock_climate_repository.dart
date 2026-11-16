@@ -1,3 +1,4 @@
+import 'package:siembra_segura/core/l10n/app_language.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/climate/domain/climate_overview.dart';
@@ -9,6 +10,7 @@ class MockClimateRepository implements ClimateRepository {
   const MockClimateRepository({
     required this.clock,
     this.latency = Duration.zero,
+    this.language = AppLanguage.spanish,
   });
 
   /// Hora actual, para fechar el pronóstico de ejemplo.
@@ -16,6 +18,9 @@ class MockClimateRepository implements ClimateRepository {
 
   /// Espera simulada antes de responder.
   final Duration latency;
+
+  /// Idioma de los textos de ejemplo.
+  final AppLanguage language;
 
   static const _week = [
     (WeatherCondition.rain, 12.0),
@@ -26,6 +31,17 @@ class MockClimateRepository implements ClimateRepository {
     (WeatherCondition.sunny, 0.0),
     (WeatherCondition.sunny, 0.0),
   ];
+
+  /// Consejo con el día en que se puede volver a sembrar (va después de
+  /// "Qué hacer:").
+  String _advice(String weekday) => switch (language) {
+    AppLanguage.english =>
+      "don't plant or fertilize until $weekday. "
+          'Your soil is already very wet.',
+    _ =>
+      'no siembres ni abones hasta el $weekday. '
+          'Tu suelo ya está muy húmedo.',
+  };
 
   @override
   Future<ClimateOverview> getOverview() async {
@@ -51,10 +67,7 @@ class MockClimateRepository implements ClimateRepository {
             rainMm: rain,
           ),
       ],
-      advice:
-          'no siembres ni abones hasta el '
-          '${AppFormatters.weekday(dayAfterStorm)}. '
-          'Tu suelo ya está muy húmedo.',
+      advice: _advice(AppFormatters.weekday(dayAfterStorm)),
       anomalies: const [
         ClimateAnomaly(
           metric: ClimateMetric.rainfall,

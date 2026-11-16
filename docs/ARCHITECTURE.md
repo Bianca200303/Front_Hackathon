@@ -44,7 +44,7 @@ lib/
 │   ├── l10n/              # app_es.arb → AppLocalizations (generado)
 │   ├── network/           # ApiClient + HttpApiClient (package:http), ApiEndpoints, JsonObject, reintentos
 │   ├── router/            # AppRoutes: paths de la app (constantes)
-│   ├── services/speech/   # SpeechService (abstracto) + implementación TTS
+│   ├── services/speech/   # SpeechService (abstracto) + TTS del dispositivo + voz de Semi (backend)
 │   ├── theme/             # Tokens: colores, tipografía, espaciado, breakpoints, ThemeData
 │   └── utils/             # Formateadores, reloj inyectable, combinación de AsyncValue
 ├── shared/                # Compartido por varios features
@@ -53,7 +53,7 @@ lib/
 │   │                      # almacén de preferencias (SharedPreferences / memoria) y su codec JSON
 │   ├── state/             # campaignContextProvider, campaignCatalogProvider, farmLocationProvider
 │   ├── presentation/      # Textos y colores del vocabulario
-│   └── widgets/           # Design system (ver §5)
+│   └── widgets/           # Design system (ver §5); semi/: el personaje Semi
 └── features/
     ├── farm/              # Pantalla 0: Mi parcela
     ├── climate/           # Pantalla 1: Clima
@@ -223,7 +223,7 @@ Abrir la recomendación desde el mensaje del ENFEN fija el escenario del aviso
   Clima.
 - Con configuración guardada: la app abre directamente en Clima.
 - Desde cualquier pestaña: el botón de ajustes de la cabecera
-  (`FarmSettingsButton`) abre Mi parcela con `push`; muestra "Volver" y el
+  (`AppSettingsButton`) abre Mi parcela con `push`; muestra "Volver" y el
   botón "Listo" regresa a la misma pestaña. "Cambiar" en Qué sembrar hace lo
   mismo.
 - "Volver a los valores sugeridos" borra lo guardado y ofrece "Deshacer".
@@ -260,17 +260,133 @@ Abrir la recomendación desde el mensaje del ENFEN fija el escenario del aviso
 | `NoticeTile` | `.aviso-item` |
 | `AdviceBox`, `GuideDisclaimer`, `SourceNote`, `BulletList` | `.consejo`, `.guia`, `.nota`, `.razones` |
 | `AsyncValueView` (carga / error / vacío) | — (no existía en la referencia) |
-| `FarmSettingsButton` | — (acceso a Mi parcela desde las pestañas) |
+| `AppSettingsButton` | — (acceso a Mi parcela desde las pestañas) |
+| `SemiAvatar`, `SemiGuide`, `AppSettingsButton` / `showAppSettings` | — (Semi y los modos de uso; ver §5b) |
 | `ResponsiveColumns` | — (dos columnas en tablets) |
 
 `SourceNote` añade "Cifras de ejemplo." salvo en las notas con
 `backedByRemote: true` cuando `DATA_SOURCE=remote` (ver §4).
 
 **Tokens:** los widgets no escriben tamaños de letra ni colores. Usan el
-`TextTheme` o los estilos con nombre de `AppTypography` (`muted`, `caption`,
-`cardTitle`, `metricValue`, `pill`…), los colores de `AppColors` y las
-medidas de `AppSpacing` / `AppRadii` / `AppSizes`. Para variar solo el color
+`TextTheme`, los estilos con color de `context.text` (`muted`, `caption`,
+`cardTitle`, `metricValue`…) o los sin color de `AppTypography` (`pill`,
+`chip`…), los colores de `context.colors` (`AppPalette`) y las medidas de `AppSpacing` / `AppRadii` / `AppSizes`. Para variar solo el color
 se usa `copyWith(color: …)`.
+
+## 5b. Semi y los modos de uso
+
+La app tiene dos modos con **las mismas funciones y los mismos datos**; solo
+cambia la presentación (`AppMode`, guardado en el dispositivo con
+`AppModeStore`):
+
+| Modo | Qué ve la persona |
+|---|---|
+| **Asistencia** (por defecto) | Semi presenta cada pantalla con un mensaje y su voz (`SemiGuide`) |
+| **Llenado manual** | Las pantallas directas, sin guía |
+
+- **Primera vez:** pantalla de bienvenida (§5d), hay que elegir para seguir.
+- **Cambiar después:** selector **[Asistencia | Llenado manual]** arriba de
+  todas las pantallas, en los dos modos. Es la única forma de cambiar, a
+  propósito: una carita sin texto en la cabecera resultó difícil de encontrar.
+- `SemiGuide` (selector + tarjeta de Semi) va en `ScreenLayout.guide` y se
+  desplaza con el contenido
+  (`NestedScrollView`): con letra grande o en horizontal no tapa la pantalla.
+  Con poco alto o letra > 1.3× se muestra compacto (cabeza y dos líneas; al
+  tocarlo, el mensaje completo).
+- Semi se dibuja con `CustomPainter` (`SemiPainter`), copiando las formas del
+  SVG de su ficha (`Personaje bot – App de agricultura.html`). Así se animan
+  piezas sueltas (parpadeo, saludo, saltito) sin dependencias. Las
+  animaciones son cortas y no se repiten en bucle (no bloquean
+  `pumpAndSettle`) y se apagan si el sistema pide reducir movimiento.
+- Expresiones: feliz, pensando, alerta, celebra. Sus colores están en
+  `SemiColors`.
+- **Voz:** con `VOICE_SOURCE=backend`, `ClipSpeechService` pide cada frase a
+  `POST v1/speech` (`BackendSpeechClient`, contrato en `docs/contracts/voz.md`),
+  la guarda en caché (archivo temporal por hash de URL + texto) y la reproduce
+  con `audioplayers`. Sin red o con error, cae a `flutter_tts`, ajustado para
+  sonar cercano (tono 1.12, ritmo 0.42, mejor voz en español sin internet).
+  Antes de hablar, `SpeechText` cambia símbolos por palabras (`mm` → milímetros,
+  `°C` → grados). Todos los botones "Escuchar" usan esta misma voz.
+
+## 5c. Idiomas
+
+- **Idiomas:** español (base), inglés y quechua. El quechua es un
+  **borrador** (quechua sureño): solo están traducidas las pantallas
+  principales, los botones y las frases de Semi; lo demás se muestra en
+  español (gen-l10n usa el texto base). La lista de lo que falta está en
+  `docs/l10n_qu_pendientes.json` y se regenera con `flutter gen-l10n`.
+  **Debe revisarlo un hablante antes de publicar.**
+- **Cómo se elige** (`AppLanguage.resolve`): el primer idioma del celular que
+  la app tenga (acepta `qu`, `quz`, `quy`…); si no tiene ninguno, la región
+  del celular (país hispanohablante → español); si no, inglés. Sin GPS.
+- **A mano:** Ajustes → Idioma, y el botón "Idioma" de la bienvenida (los
+  celulares casi nunca ofrecen quechua como idioma del sistema). Se guarda en
+  el dispositivo; "Automático" vuelve a seguir al celular.
+- **Lo que sigue al idioma** (`appLanguageProvider`): textos (ARB), fechas
+  (`AppFormatters.useLanguage`; en quechua, nombres de días y meses en
+  español porque `intl` no los tiene), textos de Flutter (en quechua, los de
+  español: `FallbackLocalizations`), datos de ejemplo (`MockText`, tabla
+  `mock_text_translations.dart`) y la voz de Semi (voz en inglés; en quechua,
+  la de español de Perú, porque los celulares no traen voz quechua).
+- **Responsive:** `test/app/languages_test.dart` recorre todas las pantallas
+  en los 3 idiomas en teléfono pequeño (320×568), con texto al doble, en
+  horizontal y en tablet; un desborde hace fallar la prueba.
+
+## 5d. Bienvenida y apariencia
+
+- **Bienvenida** (`AppRoutes.welcome`, feature `onboarding`): la primera vez
+  (sin modo guardado) la app abre ahí, como `#v-inicio` de `semi_app.html`:
+  Semi se presenta, aviso "personaje creado con IA", "Escuchar" y dos
+  opciones grandes: "Que Semi me pregunte" (asistido) y "Llenar yo mismo"
+  (manual). Arriba, idioma y claro/oscuro. Por ahora ambas opciones llevan a
+  la conversación con Semi (asistido) o a "Mi parcela" (manual).
+- **Conversación con Semi** (`AppRoutes.farmChat`, `FarmChatScreen` en el
+  feature `farm`, como `#v-chat`): las mismas preguntas que "Mi parcela", una
+  por una, con el porqué de cada una, barra de progreso, "Escuchar" y la
+  respuesta del agricultor a la vista. Pasos: confirmar la chacra (mapa del
+  satélite), último cultivo (lo del satélite primero), prioridad y
+  restricción (una sola; el formulario permite varias). Guarda lo mismo que
+  el formulario (`campaignContextProvider`). Semi "piensa" 0,75 s antes de
+  hablar (nada si el celular pide reducir movimiento). En tablet u
+  horizontal, Semi va a la izquierda. Ajustes → "Cambiar los datos" abre la
+  conversación o el formulario según el modo. El valle, el nombre de la
+  chacra y las varias chacras del prototipo esperan a B14.
+- **Apariencia:** Automático (sigue al celular), Claro u Oscuro, en Ajustes y
+  en la bienvenida. Se guarda en el dispositivo (`themeModeProvider`).
+- **Contraste:** `test/app/dark_mode_test.dart` recorre todas las pantallas
+  en oscuro con la guía de contraste de Flutter.
+
+## 5e. Ayuda de Semi
+
+- Botón **"Ayuda"** con la cara de Semi en las 4 pestañas (`SemiHelpButton`
+  en `AppShell`, como `.semi-fab`). Las listas dejan espacio al final
+  (`AppSizes.helpButtonClearance`) para que no tape el último contenido.
+- **Sin IA:** preguntas y respuestas fijas en los ARB (funcionan sin internet
+  y en los 3 idiomas). Grupos: "Qué significa" (según la pestaña), "Cambiar
+  algo" (pantalla clara/oscura, modo, datos de la chacra, idioma: Semi lo
+  hace) y "Cómo se usa".
+- **Escribir una duda:** se busca por palabras clave (`help*K` en los ARB,
+  separadas por comas) en todas las preguntas, sin tildes ni mayúsculas
+  (`normalizeForSearch`); gana la que más letras coinciden. Si nada
+  coincide, Semi lo dice y ofrece las preguntas.
+- Para agregar una pregunta: claves `helpXQ`, `helpXA`, `helpXK` en los ARB y
+  una entrada en `_topics` de `semi_help.dart`.
+
+## 5f. Prueba tu propio plan
+
+- En Rotación (`PlanSimulatorCard`, como `#r-campanas`): las 4 campañas del
+  plan recomendado; se toca una y se elige el cultivo de una lista (más
+  simple que "cultivo y después campaña" del prototipo). Los cultivos que una
+  restricción descarta aparecen bloqueados con el motivo.
+- "Ver cómo te iría" muestra campaña por campaña la cosecha (o "Abona la
+  tierra" para el abono verde) y al final cosecha promedio, agua en 2 años y
+  tierra, comparado con el plan recomendado calculado con las mismas reglas.
+  La revelación usa una animación corta (nada si se pide reducir movimiento).
+- El cálculo está detrás de `PlanSimulator` (dominio). `MockPlanSimulator`
+  (datos) usa las reglas de `semi_app.html`: repetir familia cansa la tierra
+  y baja la cosecha, las leguminosas y el abono verde abonan, con menos agua
+  rinde menos y cada cultivo aguanta distinto las lluvias fuertes. Primera
+  campaña con el escenario elegido; las siguientes, año normal. Sin precios.
 
 ## 6. Decisiones técnicas (ADR resumido)
 
@@ -284,7 +400,7 @@ se usa `copyWith(color: …)`.
 | 6 | Config con `--dart-define-from-file` | Nativo, sin dependencias; valida al arrancar | flutter_dotenv |
 | 7 | Figtree incluida en assets | Funciona offline | google_fonts (descarga en runtime) |
 | 8 | `flutter_tts` detrás de `SpeechService` | "Escuchar" es central; permite cambiar a audio del servidor (B8) | TTS directo en widgets |
-| 9 | Colores como constantes (`AppColors`) | La referencia no tiene modo oscuro: KISS | ThemeExtension (se migra si llega el modo oscuro) |
+| 9 | Colores en una `ThemeExtension` (`AppPalette`, claro y oscuro), leídos con `context.colors`; estilos de texto con color con `context.text` | `semi_app.html` trae modo oscuro; el cambio conserva el estado de cada pantalla. En oscuro, verde y azul pasan a tonos claros con texto oscuro (Material 3) para cumplir contraste AA | Constantes `AppColors` (versión anterior, sin modo oscuro) |
 | 10 | Strings en ARB (gen-l10n) | Sin texto fijo en widgets; formatos centralizados | Strings sueltos |
 | 11 | Agrupación de miles con coma (`15,600 m³`) | Convención peruana y de la referencia; `intl` usa punto para `es_PE` | `NumberFormat.decimalPattern('es_PE')` |
 | 12 | Material Symbols para iconos | Incluidos en el SDK, cero dependencias | lucide / flutter_svg |
@@ -314,6 +430,17 @@ se usa `copyWith(color: …)`.
 | 36 | Las tres tierras se dibujan con `CustomPainter` (granos, migas, terrones agrietados), no con fotos | Cumple "¿tu tierra se parece a esta?" sin sumar megas de imágenes a una app que se usa sin señal, y escala con el texto grande. Si producto consigue fotos reales del valle, se cambia el `leading` de la opción | Fotos en `assets/` (peso, y una foto equivocada confunde más que una ilustración) |
 | 37 | SMAP llega como un hallazgo más de `soilHealth.findings` y la app no lo modela | Es una observación que el backend decidió **no** meter en el cálculo del riego (los primeros 5 cm no son el agua de las raíces); como texto no obliga a tocar la app (decisión 34) | Campos estructurados de humedad en el dominio |
 | 38 | La lluvia medida (GPM IMERG) se muestra en "Explorar otros escenarios", no en Clima | Es la respuesta medida a "¿a qué escenario se parece este año?", justo donde el agricultor elige el escenario | Una tarjeta aparte en Clima (duplicaría el tema del agua) |
+| 39 | Dos modos de uso (Asistencia / Llenado manual) sobre las mismas pantallas y providers | Niños y quien necesita guía, y agricultores que quieren ir rápido, sin duplicar lógica | Dos apps o dos juegos de pantallas |
+| 40 | Semi dibujado con `CustomPainter` | Animar ojos, brazo y brote; cero dependencias; colores por tokens | `flutter_svg` (imagen estática), Rive/Lottie (requiere animador) |
+| 41 | Voz de Semi generada en el **backend** (`POST v1/speech`) detrás de `SpeechService`, con caché local y respaldo `flutter_tts`; **`audioplayers`** para reproducir | El clima y los datos cambian por día y por valle: no alcanzan audios grabados. La app se usa con red; el backend guarda la clave del motor de voz y cachea por texto | ElevenLabs llamado desde la app (la clave viajaría en el APK), voz neural dentro de la app (sherpa-onnx, +20–80 MB), solo audios grabados |
+| 42 | `http://` permitido solo en el manifiesto de **debug** de Android | Probar el backend local desde el emulador (`10.0.2.2`); release exige `https://` | Permitirlo en todas las builds |
+| 43 | Idioma automático por idioma y región del celular, con selector manual; quechua como borrador con respaldo en español | Funciona en cualquier país sin pedir permisos; el quechua llega aunque falte traducir | Elegir por GPS/IP (permisos, red); esperar la traducción completa |
+| 44 | Los datos de ejemplo se traducen con una tabla (`MockText`) con el español como clave | Los textos de contenido los mandará el backend ya traducidos (B18); el mock solo imita eso | Duplicar los datos por idioma |
+| 45 | Los estilos de texto de los botones nombran la fuente (`Figtree`) | Flutter no hereda la fuente del tema en los botones: salían con la del sistema | Confiar en `ThemeData.fontFamily` |
+| 46 | **Sin dinero ni cosecha estimada** (al unir `semi-rediseno` con `main`): las opciones se comparan por agua de riego (m³), riesgo de clima y estado de la tierra (decisión 28); la prioridad es "Menos riesgo de clima" | Es lo que calcula el backend (`POST /app/recommendation`); la "cosecha esperada" de `semi_app.html` no tiene fuente en el servidor | Cosecha esperada en % de una buena campaña (solo existía en los datos de ejemplo) |
+| 47 | Llenado manual en una sola pantalla con chips (`#v-manual`): chacra (miniatura del mapa), último cultivo con etiqueta "Satélite", prioridad y restricciones | Rápido para quien ya conoce la app; mismas preguntas y mismos datos que la conversación | Tarjetas separadas (versión anterior) |
+| 48 | "Prueba tu propio plan" usa `CustomRotationCard` (secuencia propia calculada por el servidor, decisión 33) dentro del bloque desplegable del rediseño | El backend acepta `custom_rotation` y devuelve agua, riesgo y tierra por campaña; no existe un endpoint de simulador | Simulador de `semi_app.html` con cosecha por campaña (solo datos de ejemplo) |
+| 49 | Sin probabilidades por escenario en Clima ni en "Qué sembrar"; el agricultor elige el escenario con `ScenarioExplorer` | El backend no publica las probabilidades del ENFEN (decisión 28) | Pronóstico estacional con porcentajes de ejemplo |
 
 ### Dependencias pospuestas
 
@@ -335,13 +462,16 @@ se usa `copyWith(color: …)`.
 | B5 | Preferencias | Hoy en el dispositivo. ¿También en el perfil del servidor (cambio de teléfono)? | `CampaignPreferencesStore` |
 | B6 | Feedback | Endpoint "qué sembré" y nivel de detalle | `crop_planning` |
 | B7 | Avisos | ¿Polling, push o SMS? ¿Estado de leído (badge)? | `alerts`, `AppShell` |
-| B8 | Audio | ¿TTS en el dispositivo o audio del servidor? ¿Narraciones del backend? | `SpeechService` |
+| B8 | Audio | Propuesta del front: `POST v1/speech` (texto → MP3) en `docs/contracts/voz.md`. ¿Lo confirma el backend y con qué motor (Azure `es-PE`, Google, Piper)? | `BackendSpeechClient` |
 | B9 | Chat | ¿Existe asistente conversacional? (hoy: deshabilitado, "Próximamente") | `alerts` |
 | B10 | Offline | ¿Caché y antigüedad de datos aceptable? | `data/` de cada feature |
 | B11 | Contenido | ¿Textos explicativos (fichas, razones) del servidor? | entidades de dominio |
 | B12 | Catálogo | **Resuelto en parte:** `GET /app/catalog` entrega prioridades, restricciones y cultivos; la prioridad sugerida es la primera. Pendiente: ¿varía por valle o por campaña? | `CampaignCatalogRepository` |
 | B13 | Color de cultivo | ¿Producto quiere un color fijo por cultivo? Si es así, el backend lo envía | `CropTone` |
 | B14 | Varias parcelas | Ver propuesta en §8b (pendiente de aprobación) | `farm`, estado de campaña, todos los repositorios |
+| B18 | Idioma del contenido | Propuesta: el front mandará `Accept-Language` (`es-PE`, `en-US` o `qu-PE`). ¿El backend devuelve los textos de contenido (razones, avisos, fichas, nombres de cultivos) en ese idioma, con español como respaldo? | todos los repositorios remotos, `MockText` |
+| B16 | ~~Cosecha esperada~~ | **Descartado** al unir `semi-rediseno` con `main`: se comparan agua de riego, riesgo de clima y tierra (decisión 46) | — |
+| B17 | ~~Simulador~~ | **Descartado:** "Prueba tu propio plan" usa `custom_rotation` de `POST /app/recommendation` (decisión 48) | — |
 
 ## 8. Huecos de la referencia (no se inventan soluciones)
 
@@ -416,3 +546,4 @@ Hoy la app asume una sola parcela. Propuesta para soportar de 1 a N:
 | 2026-11-14 | Motor de recomendación en el servidor (B3): agua de riego y riesgo de clima en lugar de ganancias y probabilidades, escenario elegido por el agricultor, hectáreas/fecha de siembra/campañas seguidas como entradas, y `CropPlanningRepository` + `CampaignCatalogRepository` contra el backend |
 | 2026-11-14 | Los cuatro insumos del reto: chacra marcada en el mapa, suelo del punto (SoilGrids) y verdor (MODIS NDVI) en el estado de la tierra, y "Arma tu rotación" para explorar secuencias propias |
 | 2026-11-15 | "¿A cuál de estas se parece tu tierra?" con tres ilustraciones (manda sobre SoilGrids), ficha de cada cultivo al armar la rotación (agua, duración, si abona la tierra) y la lluvia ya medida por GPM IMERG al explorar escenarios |
+| 2026-11-15 | Unión de `semi-rediseno` (Semi, modos de uso, idiomas, modo oscuro, diseño de `semi_app.html`) con la integración del backend: agua y riesgo en lugar de cosecha, sin probabilidades por escenario, `CustomRotationCard` en lugar del simulador y las tarjetas de Mi parcela con el diseño nuevo (decisiones 46 a 49) |

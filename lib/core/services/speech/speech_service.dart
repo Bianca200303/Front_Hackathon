@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:siembra_segura/core/config/app_config.dart';
+import 'package:siembra_segura/core/l10n/app_language_provider.dart';
+import 'package:siembra_segura/core/services/speech/audio_clip_player.dart';
+import 'package:siembra_segura/core/services/speech/backend_speech_client.dart';
+import 'package:siembra_segura/core/services/speech/clip_speech_service.dart';
 import 'package:siembra_segura/core/services/speech/flutter_tts_speech_service.dart';
 
 /// Lectura en voz alta del contenido de cada pantalla ("Escuchar").
 ///
-/// Hoy usa el TTS del dispositivo. Si el backend termina entregando audio
-/// pregrabado o generado (decisión B8), basta con otra implementación.
+/// Con `VOICE_SOURCE=backend` habla con la voz que genera el backend
+/// (decisión B8); si no, o si falla la red, usa el TTS del dispositivo.
 abstract interface class SpeechService {
   /// Lee [text] en voz alta, interrumpiendo cualquier lectura anterior.
   ///
@@ -27,9 +34,34 @@ class SpeechUnavailableException implements Exception {
   String toString() => 'SpeechUnavailableException(cause: $cause)';
 }
 
-/// Servicio de lectura en voz alta del dispositivo.
+/// Servicio de lectura en voz alta: la voz de Semi generada por el backend
+/// (`VOICE_SOURCE=backend`) o, si no, la del celular.
 final speechServiceProvider = Provider<SpeechService>((ref) {
-  final service = FlutterTtsSpeechService();
-  ref.onDispose(service.stop);
+  final language = ref.watch(appLanguageProvider);
+  final device = FlutterTtsSpeechService(language: language);
+  final config = ref.watch(appConfigProvider);
+  final baseUrl = config.apiBaseUrl;
+  if (config.voiceSource != VoiceSource.backend || baseUrl == null) {
+    ref.onDispose(device.stop);
+    return device;
+  }
+
+  final client = BackendSpeechClient(baseUrl, appLanguage: language);
+  final player = AudioplayersClipPlayer();
+  final service = ClipSpeechService(
+    synthesize: client.synthesize,
+    player: player,
+    fallback: device,
+    cacheDirectory: Directory(
+      '${Directory.systemTemp.path}${Platform.pathSeparator}semi_voice',
+    ),
+    voiceKey: '${client.endpoint} ${client.language}',
+    language: language,
+  );
+  ref.onDispose(() async {
+    await service.stop();
+    await player.dispose();
+    client.close();
+  });
   return service;
 });

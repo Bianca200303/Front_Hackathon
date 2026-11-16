@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:siembra_segura/core/l10n/app_localizations_es.dart';
+import 'package:siembra_segura/shared/data/app_mode_stores.dart';
 import 'package:siembra_segura/shared/data/in_memory_campaign_preferences_store.dart';
 import 'package:siembra_segura/shared/data/mock_catalog.dart';
 import 'package:siembra_segura/shared/domain/agro_vocabulary.dart';
+import 'package:siembra_segura/shared/domain/app_mode.dart';
 import 'package:siembra_segura/shared/domain/campaign_context.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 import 'package:siembra_segura/shared/state/farm_location_provider.dart';
+import 'package:siembra_segura/shared/widgets/screen_layout.dart';
 
 import '../../helpers/pump_app.dart';
 
@@ -21,6 +24,8 @@ void main() {
     expect(find.text('Hola, Doña Rosa'), findsOneWidget);
     expect(find.text('Medio Piura'), findsOneWidget);
     expect(find.text('Poechos'), findsOneWidget);
+    // El satélite marca su sugerencia.
+    expect(find.text(l10n.farmSatelliteBadge), findsOneWidget);
     expect(
       find.textContaining(
         'Por el satélite creemos que fue Arroz',
@@ -183,7 +188,14 @@ void main() {
     final speech = await tester.pumpSiembraSeguraApp();
 
     await tester.tapText(MockCatalog.cotton.name);
-    await tester.tapText(l10n.actionListen);
+    // El "Escuchar" de la cabecera (Semi tiene el suyo en su tarjeta).
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ScreenHeader),
+        matching: find.byTooltip(l10n.actionListenSemantics),
+      ),
+    );
+    await tester.pumpAndSettle();
 
     expect(speech.spoken.single, contains('Hola Doña Rosa'));
     expect(speech.spoken.single, contains('sembraste algodón'));
@@ -192,7 +204,7 @@ void main() {
   testWidgets('"Empezar" lleva a Clima', (tester) async {
     await tester.pumpSiembraSeguraApp();
 
-    await tester.tapText(l10n.actionStart);
+    await tester.tapText(l10n.actionSeePlan);
 
     expect(find.text(l10n.climateTitle), findsOneWidget);
   });
@@ -249,15 +261,19 @@ void main() {
     );
   });
 
-  testWidgets('se abre desde una pestaña y "Listo" vuelve a ella', (
+  testWidgets('se abre desde Ajustes en una pestaña y "Listo" vuelve a ella', (
     tester,
   ) async {
-    await tester.pumpSiembraSeguraApp();
-    await tester.tapText(l10n.actionStart);
+    await tester.pumpSiembraSeguraApp(
+      // En modo asistido Ajustes abre la conversación (farm_chat_test).
+      appModeStore: InMemoryAppModeStore(AppMode.manual),
+    );
+    await tester.tapText(l10n.actionSeePlan);
     await tester.tapTab(l10n.tabRotation);
 
-    await tester.tap(find.byTooltip(l10n.farmSettingsTooltip));
+    await tester.tap(find.byTooltip(l10n.settingsTooltip));
     await tester.pumpAndSettle();
+    await tester.tapText(l10n.settingsEditFarm);
 
     expect(find.text(l10n.farmTitle), findsOneWidget);
     expect(find.byTooltip(l10n.actionBack), findsOneWidget);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
@@ -58,7 +58,10 @@ class PlantingCalendar extends StatelessWidget {
             ],
           ),
         ),
-        Row(spacing: _columnGap, children: _periodBlocks(l10n, months.length)),
+        Row(
+          spacing: _columnGap,
+          children: _periodBlocks(context, l10n, months.length),
+        ),
         if (riskIndexes.isNotEmpty)
           ExcludeSemantics(
             child: Row(
@@ -70,7 +73,7 @@ class PlantingCalendar extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         color: riskIndexes.contains(i)
-                            ? AppColors.water
+                            ? context.colors.water
                             : Colors.transparent,
                         borderRadius: const BorderRadius.all(
                           Radius.circular(4),
@@ -93,7 +96,7 @@ class PlantingCalendar extends StatelessWidget {
             ),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.water,
+              color: context.colors.water,
             ),
           ),
       ],
@@ -102,7 +105,11 @@ class PlantingCalendar extends StatelessWidget {
 
   /// Bloques de cultivo con su ancho proporcional a los meses que ocupan.
   /// Los meses sin cultivo quedan como espacio vacío.
-  List<Widget> _periodBlocks(AppLocalizations l10n, int totalMonths) {
+  List<Widget> _periodBlocks(
+    BuildContext context,
+    AppLocalizations l10n,
+    int totalMonths,
+  ) {
     final blocks = <Widget>[];
     var cursor = 0;
     for (final period in schedule.periods) {
@@ -119,7 +126,7 @@ class PlantingCalendar extends StatelessWidget {
               excludeSemantics: true,
               child: ColoredBlock(
                 label: label,
-                tone: period.crop.tone,
+                tone: period.crop.tone(context.colors),
                 compact: true,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 6,

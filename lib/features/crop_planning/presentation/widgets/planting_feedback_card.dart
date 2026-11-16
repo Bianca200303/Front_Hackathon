@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/error/error_messages.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
@@ -34,7 +34,7 @@ class PlantingFeedbackCard extends ConsumerWidget {
             ? [
                 SectionTitle(
                   l10n.feedbackThanksTitle,
-                  color: AppColors.primary,
+                  color: context.colors.primary,
                 ),
                 Text(
                   l10n.feedbackThanksBody,
@@ -76,7 +76,7 @@ class PlantingFeedbackCard extends ConsumerWidget {
                 if (status case AsyncError(:final error))
                   Text(
                     userMessageFor(error, l10n),
-                    style: const TextStyle(color: AppColors.negative),
+                    style: TextStyle(color: context.colors.negative),
                   ),
               ],
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
-import 'package:siembra_segura/core/theme/app_colors.dart';
+import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
@@ -20,12 +20,12 @@ class TodayWeatherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    const onWater = AppColors.onPrimary;
+    final onWater = context.colors.onPrimary;
     return MergeSemantics(
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: const BoxDecoration(
-          color: AppColors.water,
+        decoration: BoxDecoration(
+          color: context.colors.water,
           borderRadius: AppRadii.card,
         ),
         child: Row(
@@ -40,7 +40,7 @@ class TodayWeatherCard extends StatelessWidget {
                 children: [
                   Text(
                     l10n.climateToday(AppFormatters.weekday(today.date)),
-                    style: AppTypography.muted.copyWith(
+                    style: context.text.muted.copyWith(
                       color: onWater.withValues(alpha: 0.9),
                     ),
                   ),
@@ -168,12 +168,12 @@ class _DayTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final background = day.isHeavyRain
-        ? AppColors.waterStrongTone.background
+        ? context.colors.waterStrongTone.background
         : day.isRainy
-        ? AppColors.waterTone.background
-        : AppColors.surfaceSubtle;
+        ? context.colors.waterTone.background
+        : context.colors.surfaceSubtle;
     final detailStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-      color: day.isHeavyRain ? AppColors.water : AppColors.textMuted,
+      color: day.isHeavyRain ? context.colors.water : context.colors.textMuted,
       fontWeight: day.isHeavyRain ? FontWeight.w800 : FontWeight.w400,
     );
 
@@ -192,21 +192,31 @@ class _DayTile extends StatelessWidget {
           children: [
             Text(
               AppFormatters.shortWeekday(day.date),
-              style: AppTypography.captionStrong,
+              style: context.text.captionStrong,
             ),
-            Text(
-              day.condition.shortLabel(l10n),
-              style: detailStyle,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              AppFormatters.millimeters(day.rainMm),
-              style: detailStyle,
-              textAlign: TextAlign.center,
-            ),
+            // Una sola palabra por línea: si no cabe ("Cloudy" en una
+            // columna angosta), se achica en vez de partirse en dos.
+            _OneLine(day.condition.shortLabel(l10n), style: detailStyle),
+            _OneLine(AppFormatters.millimeters(day.rainMm), style: detailStyle),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Texto de una línea que se achica si no cabe, sin partir palabras.
+class _OneLine extends StatelessWidget {
+  const _OneLine(this.text, {this.style});
+
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(text, style: style, maxLines: 1, softWrap: false),
     );
   }
 }

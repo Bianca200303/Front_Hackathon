@@ -4,8 +4,14 @@
 /// Vive en `core` (sin dependencias de features) para que los features
 /// puedan navegar sin importar la composición del router.
 abstract final class AppRoutes {
+  /// Bienvenida de la primera vez: elegir cómo usar la app.
+  static const welcome = '/bienvenida';
+
   /// "Mi parcela": configuración de la campaña.
   static const farm = '/parcela';
+
+  /// "Mi parcela" en modo asistido: Semi pregunta una cosa a la vez.
+  static const farmChat = '/conversar';
 
   // Pestañas
   /// Pestaña Clima.

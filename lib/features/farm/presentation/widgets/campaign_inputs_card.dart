@@ -123,7 +123,7 @@ class _StepperRow extends StatelessWidget {
                 child: Text(
                   value,
                   textAlign: TextAlign.center,
-                  style: AppTypography.metricValue,
+                  style: context.text.metricValue,
                 ),
               ),
             ),
@@ -209,7 +209,7 @@ class _PlantingDateField extends ConsumerWidget {
           icon: Icons.calendar_month_outlined,
           onPressed: pick,
         ),
-        Text(l10n.farmPlantingDateHint, style: AppTypography.muted),
+        Text(l10n.farmPlantingDateHint, style: context.text.muted),
       ],
     );
   }
