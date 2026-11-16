@@ -72,9 +72,14 @@ String cropSequenceName(List<Crop> crops, AppLocalizations l10n) {
   final first = crops.first.name;
   if (crops.length == 1) return first;
   final second = crops[1].name.toLowerCase();
-  return crops[0] == crops[1]
-      ? l10n.rotationNameRepeated(first, second)
-      : l10n.rotationNameSequence(first, second);
+  if (crops.length == 2 && crops[0] == crops[1]) {
+    return l10n.rotationNameRepeated(first, second);
+  }
+  // Tres o más: "Maíz y después frijol y después camote".
+  return crops
+      .skip(1)
+      .map((crop) => crop.name.toLowerCase())
+      .fold(first, l10n.rotationNameSequence);
 }
 
 /// Une una lista con comas y "y": "maíz, frejol y algodón".
