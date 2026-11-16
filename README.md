@@ -190,3 +190,18 @@ flutter test
 
 Las pruebas recorren todas las pantallas en los 3 idiomas, con texto al
 doble, en horizontal, en tablet y en modo oscuro.
+
+## Uso de IA
+
+Como permiten las reglas de NASA Space Apps, el equipo usó Claude de
+Anthropic (Claude Code y Claude chat) para:
+
+- **Programación, depuración y solución de problemas:** escribir y revisar
+  código, y la configuración de producción.
+- **Redacción y edición:** la documentación, incluido este README, y los
+  textos de la postulación.
+- **Diseño visual:** Semi, el personaje guía, se diseñó con IA. La app lo
+  indica en la bienvenida ("Semi es un personaje creado con IA").
+
+La app no usa IA mientras funciona: la ayuda de Semi son preguntas y
+respuestas fijas, y su voz es el lector de texto del celular.
