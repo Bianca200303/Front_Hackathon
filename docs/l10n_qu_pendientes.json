@@ -309,6 +309,11 @@
     "chatLocationFound",
     "chatLocationOutside",
     "chatLocationDenied",
-    "chatLocationUnavailable"
+    "chatLocationUnavailable",
+    "mapScreenTitle",
+    "mapScreenHint",
+    "mapOpenSatellite",
+    "mapOutsideValley",
+    "mapSemantics"
   ]
 }

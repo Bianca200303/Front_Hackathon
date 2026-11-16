@@ -12,6 +12,7 @@ import 'package:siembra_segura/core/services/location/device_location.dart';
 import 'package:siembra_segura/core/services/speech/speech_service.dart';
 import 'package:siembra_segura/core/theme/theme_mode_provider.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
+import 'package:siembra_segura/features/farm/presentation/screens/satellite_map_screen.dart';
 import 'package:siembra_segura/shared/data/app_mode_stores.dart';
 import 'package:siembra_segura/shared/data/in_memory_campaign_preferences_store.dart';
 import 'package:siembra_segura/shared/domain/app_mode.dart';
@@ -44,6 +45,8 @@ List<Override> baseTestOverrides(
   AppConfig config = testConfig,
   DeviceLocationService? deviceLocation,
 }) => [
+  // Sin red en las pruebas: el mapa satelital no pide teselas.
+  satelliteTilesProvider.overrideWithValue(false),
   // Ningún test llama al GPS real.
   deviceLocationServiceProvider.overrideWithValue(
     deviceLocation ?? FakeLocationService(),

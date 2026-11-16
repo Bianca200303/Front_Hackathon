@@ -14,11 +14,13 @@ import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/async_value_combine.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
 import 'package:siembra_segura/features/farm/presentation/providers/farm_providers.dart';
+import 'package:siembra_segura/features/farm/presentation/screens/satellite_map_screen.dart';
 import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_card.dart';
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 import 'package:siembra_segura/shared/state/farm_location_provider.dart';
+import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/listen_button.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
@@ -57,14 +59,40 @@ class _ChatMap extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadii.md),
-      child: ValleyMapPicker(
-        location: ref.watch(farmLocationProvider),
-        onPicked: (latitude, longitude) => ref
-            .read(campaignContextProvider.notifier)
-            .selectFarmLocation(latitude: latitude, longitude: longitude),
-      ),
+    final l10n = AppLocalizations.of(context);
+    final location = ref.watch(farmLocationProvider);
+    final notifier = ref.read(campaignContextProvider.notifier);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
+      children: [
+        // Dibujo del valle: funciona sin señal.
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadii.md),
+          child: ValleyMapPicker(
+            location: location,
+            onPicked: (latitude, longitude) => notifier.selectFarmLocation(
+              latitude: latitude,
+              longitude: longitude,
+            ),
+          ),
+        ),
+        // La foto del satélite, para reconocer la chacra de verdad.
+        AppButton(
+          label: l10n.mapOpenSatellite,
+          icon: Icons.satellite_alt_rounded,
+          variant: AppButtonVariant.outline,
+          compact: true,
+          onPressed: () async {
+            final picked = await pickFarmOnSatelliteMap(context, location);
+            if (picked == null) return;
+            notifier.selectFarmLocation(
+              latitude: picked.latitude,
+              longitude: picked.longitude,
+            );
+          },
+        ),
+      ],
     );
   }
 }

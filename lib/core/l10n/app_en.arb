@@ -419,5 +419,10 @@
   "chatLocationFound": "Found you! I marked your field on the map. If it's not there, tap it.",
   "chatLocationOutside": "You seem to be outside the Chira valley. Tap your field on the map.",
   "chatLocationDenied": "You didn't let me see where you are. That's fine: tap your field on the map.",
-  "chatLocationUnavailable": "I couldn't find your location. Tap your field on the map."
+  "chatLocationUnavailable": "I couldn't find your location. Tap your field on the map.",
+  "mapScreenTitle": "Mark your field",
+  "mapScreenHint": "Zoom in with two fingers, find your field on the satellite photo and tap it.",
+  "mapOpenSatellite": "Open satellite map",
+  "mapOutsideValley": "That spot is outside the Chira valley. Tap your field inside the valley.",
+  "mapSemantics": "Satellite map of the Chira valley. Tap your field to mark it."
 }

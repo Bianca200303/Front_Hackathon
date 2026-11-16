@@ -1394,4 +1394,22 @@ class AppLocalizationsQu extends AppLocalizations {
   @override
   String get chatLocationUnavailable =>
       'No pude encontrar tu ubicación. Toca tu chacra en el mapa.';
+
+  @override
+  String get mapScreenTitle => 'Marca tu chacra';
+
+  @override
+  String get mapScreenHint =>
+      'Acerca con dos dedos, busca tu chacra en la foto del satélite y tócala.';
+
+  @override
+  String get mapOpenSatellite => 'Ver mapa satelital';
+
+  @override
+  String get mapOutsideValley =>
+      'Ese punto queda fuera del valle del Chira. Toca tu chacra dentro del valle.';
+
+  @override
+  String get mapSemantics =>
+      'Mapa satelital del valle del Chira. Toca tu chacra para marcarla.';
 }

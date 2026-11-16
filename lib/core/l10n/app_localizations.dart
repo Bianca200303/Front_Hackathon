@@ -2405,6 +2405,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No pude encontrar tu ubicación. Toca tu chacra en el mapa.'**
   String get chatLocationUnavailable;
+
+  /// No description provided for @mapScreenTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca tu chacra'**
+  String get mapScreenTitle;
+
+  /// No description provided for @mapScreenHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Acerca con dos dedos, busca tu chacra en la foto del satélite y tócala.'**
+  String get mapScreenHint;
+
+  /// No description provided for @mapOpenSatellite.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mapa satelital'**
+  String get mapOpenSatellite;
+
+  /// No description provided for @mapOutsideValley.
+  ///
+  /// In es, this message translates to:
+  /// **'Ese punto queda fuera del valle del Chira. Toca tu chacra dentro del valle.'**
+  String get mapOutsideValley;
+
+  /// No description provided for @mapSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Mapa satelital del valle del Chira. Toca tu chacra para marcarla.'**
+  String get mapSemantics;
 }
 
 class _AppLocalizationsDelegate

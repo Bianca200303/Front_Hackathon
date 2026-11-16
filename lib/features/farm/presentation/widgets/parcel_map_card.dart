@@ -6,10 +6,12 @@ import 'package:siembra_segura/core/theme/app_spacing.dart';
 import 'package:siembra_segura/core/theme/app_typography.dart';
 import 'package:siembra_segura/core/utils/formatters.dart';
 import 'package:siembra_segura/features/farm/domain/farm.dart';
+import 'package:siembra_segura/features/farm/presentation/screens/satellite_map_screen.dart';
 import 'package:siembra_segura/shared/data/pilot_farm_location.dart';
 import 'package:siembra_segura/shared/domain/farm_location.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 import 'package:siembra_segura/shared/state/farm_location_provider.dart';
+import 'package:siembra_segura/shared/widgets/app_button.dart';
 import 'package:siembra_segura/shared/widgets/app_card.dart';
 import 'package:siembra_segura/shared/widgets/text_blocks.dart';
 
@@ -73,6 +75,25 @@ class ParcelMapCard extends ConsumerWidget {
               ),
               ExcludeSemantics(
                 child: Text(coordinates, style: context.text.captionMuted),
+              ),
+              AppButton(
+                label: l10n.mapOpenSatellite,
+                icon: Icons.satellite_alt_rounded,
+                variant: AppButtonVariant.outline,
+                compact: true,
+                onPressed: () async {
+                  final picked = await pickFarmOnSatelliteMap(
+                    context,
+                    location,
+                  );
+                  if (picked == null) return;
+                  ref
+                      .read(campaignContextProvider.notifier)
+                      .selectFarmLocation(
+                        latitude: picked.latitude,
+                        longitude: picked.longitude,
+                      );
+                },
               ),
             ],
           ),

@@ -1387,4 +1387,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get chatLocationUnavailable =>
       'I couldn\'t find your location. Tap your field on the map.';
+
+  @override
+  String get mapScreenTitle => 'Mark your field';
+
+  @override
+  String get mapScreenHint =>
+      'Zoom in with two fingers, find your field on the satellite photo and tap it.';
+
+  @override
+  String get mapOpenSatellite => 'Open satellite map';
+
+  @override
+  String get mapOutsideValley =>
+      'That spot is outside the Chira valley. Tap your field inside the valley.';
+
+  @override
+  String get mapSemantics =>
+      'Satellite map of the Chira valley. Tap your field to mark it.';
 }

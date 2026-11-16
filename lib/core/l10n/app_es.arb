@@ -475,5 +475,10 @@
   "chatLocationFound": "¡Te encontré! Marqué tu chacra en el mapa. Si no es ahí, tócala.",
   "chatLocationOutside": "Te ubiqué fuera del valle del Chira. Toca tu chacra en el mapa.",
   "chatLocationDenied": "No me diste permiso para ver dónde estás. No pasa nada: toca tu chacra en el mapa.",
-  "chatLocationUnavailable": "No pude encontrar tu ubicación. Toca tu chacra en el mapa."
+  "chatLocationUnavailable": "No pude encontrar tu ubicación. Toca tu chacra en el mapa.",
+  "mapScreenTitle": "Marca tu chacra",
+  "mapScreenHint": "Acerca con dos dedos, busca tu chacra en la foto del satélite y tócala.",
+  "mapOpenSatellite": "Ver mapa satelital",
+  "mapOutsideValley": "Ese punto queda fuera del valle del Chira. Toca tu chacra dentro del valle.",
+  "mapSemantics": "Mapa satelital del valle del Chira. Toca tu chacra para marcarla."
 }
