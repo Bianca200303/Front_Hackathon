@@ -1,0 +1,6 @@
+{
+  "APP_ENV": "prod",
+  "DATA_SOURCE": "remote",
+  "API_BASE_URL": "https://spaceapps-2026-core-production.up.railway.app/",
+  "VOICE_SOURCE": "device"
+}
