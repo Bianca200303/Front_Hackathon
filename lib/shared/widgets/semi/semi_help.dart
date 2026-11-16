@@ -157,11 +157,6 @@ class _SemiHelpSheetState extends ConsumerState<_SemiHelpSheet> {
       l10n.helpMoistureA,
       l10n.helpMoistureK,
     );
-    final harvest = info(
-      l10n.helpHarvestQ,
-      l10n.helpHarvestA,
-      l10n.helpHarvestK,
-    );
     final water = info(l10n.helpWaterQ, l10n.helpWaterA, l10n.helpWaterK);
     final soil = info(l10n.helpSoilQ, l10n.helpSoilA, l10n.helpSoilK);
     final deadline = info(
@@ -241,8 +236,8 @@ class _SemiHelpSheetState extends ConsumerState<_SemiHelpSheet> {
 
     return (
       meaning: switch (widget.section) {
-        HelpSection.climate => [probable, source, rainMm, moisture],
-        HelpSection.whatToPlant => [harvest, water, soil, deadline],
+        HelpSection.climate => [source, rainMm, moisture],
+        HelpSection.whatToPlant => [probable, water, soil, deadline],
         HelpSection.rotation => [blocks, rotate, greenManure, water],
         HelpSection.alerts => [alerts, source],
       },
@@ -254,7 +249,6 @@ class _SemiHelpSheetState extends ConsumerState<_SemiHelpSheet> {
         source,
         rainMm,
         moisture,
-        harvest,
         water,
         soil,
         deadline,

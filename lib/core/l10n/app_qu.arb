@@ -55,7 +55,6 @@
   "appModeManualTitle": "Kikiyki huntay",
 
   "semiFarmGuide": "¡Napaykullayki! Ñuqam Semi kani. Willaway qayna kutipi ima tarpusqaykita, imatataq aswanta munanki. Chaywan yanapasqayki.",
-  "semiClimateGuide": "NASA-q satelitenkunawan hanaq pachata qhawarqani. Kaypi willasqayki chakraykipaq pacha imayna hamuchkasqanta.",
   "semiRecommendationGuide": "Allpaykiwan pachawan qhawaspa, kaymi aswan allin tarpunaykipaq. Sapa akllanata llapiy imarayku kasqanta rikunaykipaq.",
   "semiPlantingScheduleGuide": "Allin pachapi tarpuyqa ancham yanapan. Kaypi rikunki haykapi tarpunaykita.",
   "semiRotationGuide": "Sapa tarpuypi hukniray tarpuyqa allpatam samachin. Qhaway imaynam allpayki kanman sapa akllanawan.",
@@ -88,7 +87,6 @@
   "chatDone": "¡Chayllam! Planniykiqa kachkanñam.",
   "actionSeePlan": "Planniyta qhaway",
 
-  "farmSatelliteBadge": "Satelite",
 
   "helpButton": "Yanapay",
   "helpTitle": "Semita tapuy",

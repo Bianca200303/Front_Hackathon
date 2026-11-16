@@ -26,19 +26,10 @@ const mockTextsEn = <String, String>{
   'En un año seco, ': 'In a dry year, ',
   'Lleva 3 campañas seguidas de arroz.':
       'It has had 3 seasons of rice in a row.',
-  'El verdor de tus cultivos bajó en los últimos 5 años (satélite NASA).':
-      'The greenness of your crops has dropped over the last 5 years '
-      '(NASA satellite).',
   'Tiene poca materia orgánica.': 'It has little organic matter.',
   'Es lo que siembras hoy. Lo comparamos para que veas la diferencia.':
       "It's what you plant today. We compare it so you can see the "
       'difference.',
-  'Tu parcela lleva 3 campañas de arroz y su verdor bajó en 5 años '
-          '(Landsat). Es el cultivo que más agua consume (ECOSTRESS y '
-          'FAO-56).':
-      'Your plot has had 3 seasons of rice and its greenness dropped over 5 '
-      'years (Landsat). It is the crop that uses the most water (ECOSTRESS '
-      'and FAO-56).',
   'Depende de cuánta agua tenga Poechos este año.':
       'It depends on how much water Poechos has this year.',
   'usa la mitad que el arroz': 'uses half as much as rice',
@@ -46,12 +37,6 @@ const mockTextsEn = <String, String>{
           'clima que el arroz.':
       'Beans give strength back to your soil and maize handles the weather '
       'better than rice.',
-  'En los años con El Niño (1998, 2017 y 2023) el maíz del valle perdió '
-          'menos verdor que el arroz (lluvia GPM y verdor MODIS). El frejol '
-          'fija nitrógeno en la tierra (FAO).':
-      'In El Niño years (1998, 2017 and 2023) maize in the valley lost less '
-      'greenness than rice (GPM rainfall and MODIS greenness). Beans fix '
-      'nitrogen in the soil (FAO).',
   'Devuelve nitrógeno a la tierra, corta las plagas del arroz y usa la '
           'mitad de agua.':
       'It returns nitrogen to the soil, breaks the rice pest cycle and uses '
@@ -61,10 +46,6 @@ const mockTextsEn = <String, String>{
       'Plant the maize between December 1 and 20. Harvest before the '
       'heaviest rains in March.',
   'usa menos que el arroz': 'uses less than rice',
-  'El algodón tolera bien el calor (FAO ECOCROP) y tiene historia en el '
-          'valle. La menestra fija nitrógeno.':
-      'Cotton tolerates heat well (FAO ECOCROP) and has a history in the '
-      'valley. Pulses fix nitrogen.',
   'En años lluviosos aumentan las plagas del algodón: revisa con tu '
           'técnico cómo controlarlas.':
       'In rainy years cotton pests increase: check with your extension agent '
@@ -84,10 +65,6 @@ const mockTextsEn = <String, String>{
           'maíz.':
       'It is the option that uses the least water, and the beans prepare '
       'the soil for the maize.',
-  'Con lluvias muy fuertes el frejol rinde menos. Los datos de suelo son '
-          'estimados (SoilGrids).':
-      'With very heavy rains beans yield less. The soil data are estimates '
-      '(SoilGrids).',
   'Confirma tu turno de riego con la junta de usuarios antes de sembrar.':
       "Confirm your irrigation turn with the water users' board before "
       'planting.',
@@ -133,24 +110,8 @@ const mockTextsEn = <String, String>{
   'Tu suelo está muy húmedo': 'Your soil is very wet',
   'No riegues esta semana. Espera hasta el jueves para sembrar.':
       "Don't irrigate this week. Wait until Thursday to plant.",
-  'Satélite NASA (humedad del suelo)': 'NASA satellite (soil moisture)',
-  'Cambió el pronóstico de El Niño': 'The El Niño forecast changed',
-  'Tu recomendación cambió de arroz a maíz. Toca para escuchar.':
-      'Your recommendation changed from rice to maize. Tap to listen.',
-  'Comunicado ENFEN': 'ENFEN bulletin',
-  'CAMBIÓ EL PRONÓSTICO': 'THE FORECAST CHANGED',
-  'Doña Rosa, el ENFEN anunció que El Niño vendría más fuerte.':
-      'Doña Rosa, ENFEN announced that El Niño would come stronger.',
-  'Para su parcela ya no le recomendamos **arroz**. Ahora le conviene '
-          '**maíz y después frejol**.':
-      'For your plot we no longer recommend **rice**. Now your best option '
-      'is **maize, then beans**.',
-  'Tiene hasta el **15 de diciembre** para decidir.':
-      'You have until **December 15** to decide.',
   // Datos de ejemplo de la integración con el backend (agua, riesgo,
   // rotación propia y textura de la tierra).
-  'En tu chacra llovieron 4.2 mm en los últimos 30 días medidos por el satélite GPM: la lluvia va como en un año seco.':
-      'In your field 4.2 mm of rain fell in the last 30 days measured by the GPM satellite: rain is tracking a dry year.',
   'Con lluvias fuertes, ': 'With heavy rains, ',
   'Con lluvias fuertes el arroz puede inundarse y pierdes la campaña; además tu tierra se cansa más.':
       'With heavy rains the rice can flood and you lose the season; your soil also gets more tired.',
@@ -171,8 +132,6 @@ const mockTextsEn = <String, String>{
   'No sabemos si tienes comprador o desmotadora cerca. Los precios del algodón varían mucho.':
       'We don\'t know if you have a buyer or a cotton gin nearby. Cotton prices vary a lot.',
   'Es la secuencia que armaste tú.': 'It\'s the sequence you built.',
-  'Se calcula con los mismos datos que las demás opciones: lluvia y temperatura de la NASA, suelo del valle y el agua que pide cada cultivo.':
-      'It\'s calculated with the same data as the other options: NASA rain and temperature, the valley\'s soil and the water each crop needs.',
   'Puedes probar combinaciones y ver cómo cambian agua y tierra.':
       'You can try combinations and see how water and soil change.',
   'No sabemos si tienes comprador para todos estos cultivos ni si tu turno de riego alcanza.':
@@ -194,6 +153,33 @@ const mockTextsEn = <String, String>{
       'It sticks to your hand and splits into hard clods when dry. It gets waterlogged.',
   '¿A cuál de estas se parece tu tierra?':
       'Which of these does your soil look like?',
+  // Frases corregidas: sin mediciones de satélite que no existen.
+  'Dato de ejemplo: con datos reales, aquí verás cuánta lluvia midió el satélite en tu chacra en los últimos 30 días.':
+      'Sample data: with real data, here you\'ll see how much rain the satellite measured in your field over the last 30 days.',
+  'Se calcula igual que las demás opciones, con el agua que pide cada cultivo.':
+      'It\'s calculated like the other options, with the water each crop needs.',
+  'Tu parcela lleva 3 campañas de arroz. Es el cultivo que más agua pide.':
+      'Your plot has had 3 rice seasons in a row. It\'s the crop that needs the most water.',
+  'El maíz aguanta mejor que el arroz los años muy lluviosos o muy secos, y el frejol le deja nitrógeno a la tierra.':
+      'Maize handles very wet or very dry years better than rice, and beans leave nitrogen in the soil.',
+  'El algodón tolera bien el calor y tiene historia en el valle. La menestra fija nitrógeno.':
+      'Cotton tolerates heat well and has a history in the valley. Pulses fix nitrogen.',
+  'Frejol y maíz necesitan menos riego que el arroz.':
+      'Beans and maize need less irrigation than rice.',
+  'Con lluvias muy fuertes el frejol rinde menos. Los datos de tu tierra son estimados.':
+      'With very heavy rains beans yield less. The data about your soil are estimates.',
+  'Aviso de ejemplo': 'Sample alert',
+  // Aviso del ENFEN rotulado como ejemplo.
+  'Ejemplo: cambió el pronóstico de El Niño':
+      'Example: the El Niño forecast changed',
+  'Así te avisaremos si cambia tu recomendación. Toca para escuchar.':
+      'This is how we\'ll let you know if your recommendation changes. Tap to listen.',
+  'AVISO DE EJEMPLO': 'SAMPLE ALERT',
+  'Doña Rosa, este es un ejemplo de cómo te avisaremos cuando el ENFEN cambie su pronóstico de El Niño.':
+      'Doña Rosa, this is an example of how we\'ll let you know when ENFEN changes its El Niño forecast.',
+  'Si vienen **lluvias fuertes**, te mostraremos qué te conviene sembrar en ese caso.':
+      'If **heavy rains** are coming, we\'ll show you what suits you best to plant in that case.',
+  'Toca el botón para verlo ahora.': 'Tap the button to see it now.',
 };
 
 /// Quechua (borrador, pendiente de revisión): solo nombres de cultivos. El

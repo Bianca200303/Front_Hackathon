@@ -16,21 +16,16 @@ import '../../helpers/pump_app.dart';
 void main() {
   final l10n = AppLocalizationsEs();
 
-  testWidgets('muestra la parcela y lo que infirió el satélite', (
-    tester,
-  ) async {
+  testWidgets('muestra la parcela y el último cultivo anotado', (tester) async {
     await tester.pumpSiembraSeguraApp();
 
     expect(find.text('Hola, Doña Rosa'), findsOneWidget);
     expect(find.text('Medio Piura'), findsOneWidget);
     expect(find.text('Poechos'), findsOneWidget);
-    // El satélite marca su sugerencia.
+    // La sugerencia se marca como tal.
     expect(find.text(l10n.farmSatelliteBadge), findsOneWidget);
     expect(
-      find.textContaining(
-        'Por el satélite creemos que fue Arroz',
-        findRichText: true,
-      ),
+      find.textContaining('Tenemos anotado Arroz', findRichText: true),
       findsOneWidget,
     );
   });

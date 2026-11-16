@@ -26,7 +26,7 @@ const testConfig = AppConfig(
 );
 
 /// Domingo, como en la referencia: el miércoles es el día de lluvia fuerte
-/// y el aviso del ENFEN llegó el viernes.
+/// y el aviso de ejemplo del ENFEN llegó el viernes.
 final testNow = DateTime(2026, 11, 8, 9);
 
 Future<void> initTestLocale() => initializeDateFormatting();

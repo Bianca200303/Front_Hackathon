@@ -216,8 +216,7 @@ class AppLocalizationsQu extends AppLocalizations {
   String get farmMapQuestion => '¿Dónde está tu chacra?';
 
   @override
-  String get farmMapHint =>
-      'Toca el mapa para marcarla: los datos de la NASA se piden para ese punto.';
+  String get farmMapHint => 'Toca el mapa para marcar dónde está tu chacra.';
 
   @override
   String farmMapCoordinates(String lat, String lon) {
@@ -245,7 +244,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String farmLastCropHint(String crop) {
-    return 'Por el satélite creemos que fue $crop. Si no es así, toca el correcto.';
+    return 'Tenemos anotado $crop. Si no es así, toca el correcto.';
   }
 
   @override
@@ -311,7 +310,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get farmSoilTextureHint =>
-      'Agarra un puñado de tierra de tu chacra y toca la que se parezca. Lo que tú ves manda sobre lo que estima el satélite.';
+      'Agarra un puñado de tierra de tu chacra y toca la que se parezca. Lo que tú ves manda sobre lo que estiman los mapas de suelo.';
 
   @override
   String get farmSoilTextureGroupSemantics => 'Cómo es tu tierra';
@@ -321,11 +320,11 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get farmSoilTextureUnknownHint =>
-      'Usamos la tierra que estima el satélite para tu punto.';
+      'Usamos la tierra que estiman los mapas de suelo para tu punto.';
 
   @override
   String farmNarration(String name, String crop) {
-    return 'Hola $name. Por el satélite creemos que la última campaña sembraste $crop. Si no es así, toca el cultivo correcto. Luego dinos cuántas hectáreas vas a sembrar, cuándo quieres sembrar y qué te importa más esta campaña.';
+    return 'Hola $name. Tenemos anotado que la última campaña sembraste $crop. Si no es así, toca el cultivo correcto. Luego dinos cuántas hectáreas vas a sembrar, cuándo quieres sembrar y qué te importa más esta campaña.';
   }
 
   @override
@@ -383,7 +382,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get climateComparisonNote =>
-      'La raya negra marca lo normal para este mes. Datos de satélite NASA (lluvia y humedad del suelo) y pronóstico del día.';
+      'La raya negra marca lo normal para este mes. Datos de clima de la NASA (NASA POWER) y pronóstico del día.';
 
   @override
   String get anomalyRainfall => 'Lluvia del mes';
@@ -439,7 +438,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get climateExplainerSoilMoistureBody =>
-      'cuánta agua tiene tu tierra. La mide el satélite SMAP de la NASA.';
+      'cuánta agua tiene tu tierra. La estimamos con datos de clima de la NASA (NASA POWER).';
 
   @override
   String get climateExplainerNormalTerm => 'Lo normal:';
@@ -449,11 +448,11 @@ class AppLocalizationsQu extends AppLocalizations {
       'el promedio de los últimos 20 años para este mes en tu valle.';
 
   @override
-  String get climateExplainerSatelliteTerm => 'Satélite vs tu chacra:';
+  String get climateExplainerSatelliteTerm => 'Datos de la NASA vs tu chacra:';
 
   @override
   String get climateExplainerSatelliteBody =>
-      'el satélite mide toda la zona desde el espacio, así que puede diferir un poco de lo que ves en tu campo. Por eso te pedimos confirmar lo que sembraste: tu respuesta corrige al satélite.';
+      'los datos de la NASA cubren toda la zona, así que pueden diferir un poco de lo que ves en tu campo.';
 
   @override
   String climateNarration(String condition, String probability) {
@@ -598,14 +597,14 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get rotationExplainerGreennessBody =>
-      'el satélite Landsat de la NASA mide qué tan verde y fuerte está tu cultivo (índice NDVI). Si baja año tras año, la tierra se está cansando.';
+      'los satélites de la NASA miden qué tan verde y fuerte crece lo sembrado. Si baja año tras año, la tierra se está cansando.';
 
   @override
   String get rotationExplainerOrganicMatterTerm => 'Materia orgánica:';
 
   @override
   String get rotationExplainerOrganicMatterBody =>
-      'restos de plantas que alimentan la tierra. Es un dato estimado (SoilGrids); un análisis de suelo lo confirmaría.';
+      'restos de plantas que alimentan la tierra. Es un dato estimado con mapas de suelo; un análisis de suelo lo confirmaría.';
 
   @override
   String rotationCompareTitle(int count) {
@@ -793,7 +792,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get semiClimateGuide =>
-      'NASA-q satelitenkunawan hanaq pachata qhawarqani. Kaypi willasqayki chakraykipaq pacha imayna hamuchkasqanta.';
+      'Te cuento cómo viene el clima para tu chacra: el pronóstico de la semana y cómo va este mes comparado con lo normal.';
 
   @override
   String get semiRecommendationGuide =>
@@ -927,7 +926,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get chatParcelWhy =>
-      'La veo en las fotos del satélite: sus bordes, surcos y caminos.';
+      'Es el punto que tengo marcado para tu chacra en el valle. Si no es, dime y lo cambiamos.';
 
   @override
   String get chatParcelYes => 'Arí, chakraymi';
@@ -941,12 +940,12 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String chatLastCropQuestion(String crop) {
-    return 'Miré cómo creció lo verde en tu chacra la última vez. Parece que sembraste $crop. ¿Es así?';
+    return '¿Qué sembraste la última campaña? Tengo anotado $crop. ¿Es así?';
   }
 
   @override
   String get chatLastCropWhy =>
-      'Cada cultivo crece distinto. Si me corriges, aprendo y te ayudo mejor a ti y a tus vecinos.';
+      'Cada cultivo deja la tierra distinta. Con tu respuesta calculo mejor qué te conviene.';
 
   @override
   String chatLastCropYes(String crop) {
@@ -983,7 +982,7 @@ class AppLocalizationsQu extends AppLocalizations {
   String get actionSeePlan => 'Planniyta qhaway';
 
   @override
-  String get farmSatelliteBadge => 'Satelite';
+  String get farmSatelliteBadge => 'Sugerido';
 
   @override
   String get helpButton => 'Yanapay';
@@ -1039,21 +1038,22 @@ class AppLocalizationsQu extends AppLocalizations {
       'Uy, eso no lo sé todavía. Toca una de estas preguntas y te explico.';
 
   @override
-  String get helpProbableQ => '¿Qué quiere decir \"lo más probable\"?';
+  String get helpProbableQ => '¿Por qué hay varios escenarios de clima?';
 
   @override
   String get helpProbableA =>
-      'Miramos cómo vino la lluvia en tu valle en años parecidos a este. \"Lo más probable\" es lo que pasó más veces. No es seguro: por eso también te muestro las otras posibilidades.';
+      'Nadie sabe seguro cómo vendrá el año. Por eso calculamos cada opción para tres casos: año normal, lluvias fuertes y año seco. Empezamos por el año normal y tú puedes ver los otros en \"Explorar otros escenarios\".';
 
   @override
-  String get helpProbableK => 'probable,seguro,acierta,porcentaje,posibilidad';
+  String get helpProbableK =>
+      'probable,seguro,escenario,escenarios,lluvias,seco,normal,niño,posibilidad';
 
   @override
   String get helpSourceQ => '¿De dónde sale el pronóstico?';
 
   @override
   String get helpSourceA =>
-      'La lluvia de esta semana viene del pronóstico del día. Lo de los próximos meses lo calculamos con satélites de la NASA: lluvia (GPM), calor (NASA POWER) y humedad de la tierra (SMAP) en tu valle. También revisamos los comunicados del ENFEN sobre El Niño.';
+      'La lluvia de esta semana viene del pronóstico del día. Para comparar este mes con lo normal y calcular el riego usamos NASA POWER: datos de clima de la NASA para tu punto.';
 
   @override
   String get helpSourceK =>
@@ -1070,25 +1070,14 @@ class AppLocalizationsQu extends AppLocalizations {
   String get helpRainMmK => 'mm,milimetro,cuanta lluvia,cuanto llueve';
 
   @override
-  String get helpMoistureQ =>
-      '¿Cómo sabe el satélite si mi tierra está mojada?';
+  String get helpMoistureQ => '¿Cómo sé si mi tierra está mojada?';
 
   @override
   String get helpMoistureA =>
-      'El satélite SMAP de la NASA mide la humedad de la tierra desde el espacio, cada pocos días. Mide toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.';
+      'La estimamos con NASA POWER, datos de clima de la NASA que combinan satélites y modelos. Cubre toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.';
 
   @override
   String get helpMoistureK => 'humedad,mojada,humeda,seca,smap';
-
-  @override
-  String get helpHarvestQ => '¿Qué es la cosecha esperada?';
-
-  @override
-  String get helpHarvestA =>
-      'Es cuánto se espera cosechar comparado con una buena campaña de ese cultivo en tu valle. 100% sería una cosecha completa. Si sale menos, es porque el clima o la tierra le pueden quitar algo. La calculamos con el verdor que vieron los satélites en años parecidos.';
-
-  @override
-  String get helpHarvestK => 'cosecha,rinde,rendimiento,produccion,esperada';
 
   @override
   String get helpWaterQ => '¿Qué significa el agua?';
@@ -1285,7 +1274,7 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get compareSubtitle =>
-      'Para las próximas 4 siembras (2 años), con el clima más probable.';
+      'Para las próximas 4 siembras (2 años), en el escenario de clima que estás viendo.';
 
   @override
   String get optionCurrentLabel => 'Si sigues como ahora';

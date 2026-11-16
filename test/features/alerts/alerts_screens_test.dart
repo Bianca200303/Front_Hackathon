@@ -12,7 +12,7 @@ import '../../helpers/pump_app.dart';
 
 void main() {
   final l10n = AppLocalizationsEs();
-  const forecastChange = 'Cambió el pronóstico de El Niño';
+  const forecastChange = 'Ejemplo: cambió el pronóstico de El Niño';
 
   Future<void> openAlerts(WidgetTester tester) async {
     await tester.tapText(l10n.actionSeePlan);
@@ -32,11 +32,8 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(
-      find.text('Ayer · Satélite NASA (humedad del suelo)'),
-      findsOneWidget,
-    );
-    expect(find.text('Viernes · Comunicado ENFEN'), findsOneWidget);
+    expect(find.text('Ayer · Aviso de ejemplo'), findsOneWidget);
+    expect(find.text('Viernes · Aviso de ejemplo'), findsOneWidget);
   });
 
   testWidgets('la pestaña indica que hay avisos nuevos', (tester) async {
@@ -59,7 +56,7 @@ void main() {
     await openAlerts(tester);
 
     await tester.tapText(forecastChange);
-    expect(find.text('CAMBIÓ EL PRONÓSTICO'), findsOneWidget);
+    expect(find.text('AVISO DE EJEMPLO'), findsOneWidget);
     expect(find.text('0:42'), findsOneWidget);
     expect(
       find.text('Viernes, 7:00 a.${AppFormatters.nonBreakingSpace}m.'),
@@ -69,11 +66,11 @@ void main() {
 
     await tester.tap(find.byTooltip(l10n.messagePlayAudio));
     await tester.pumpAndSettle();
-    expect(speech.spoken.last, contains('el ENFEN anunció'));
+    expect(speech.spoken.last, contains('este es un ejemplo'));
     expect(speech.spoken.last, isNot(contains('**')));
 
     await tester.tapText(l10n.actionSeeMyRecommendation);
-    // El aviso devuelve el escenario de lluvias fuertes (el más probable).
+    // El aviso de ejemplo abre el escenario de lluvias fuertes.
     expect(find.text(l10n.recommendationIfHeavyRains), findsOneWidget);
     expect(
       tester.container.read(campaignContextProvider).selectedScenario,

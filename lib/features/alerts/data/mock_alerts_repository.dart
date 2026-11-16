@@ -54,17 +54,19 @@ class MockAlertsRepository implements AlertsRepository {
         title: t('Tu suelo está muy húmedo'),
         body: t('No riegues esta semana. Espera hasta el jueves para sembrar.'),
         receivedAt: _today.subtract(const Duration(hours: 18)),
-        source: t('Satélite NASA (humedad del suelo)'),
+        source: t('Aviso de ejemplo'),
         destination: AlertDestination.climate,
         isRead: true,
       ),
       Alert(
         id: _forecastChangeId,
         type: AlertType.forecastChange,
-        title: t('Cambió el pronóstico de El Niño'),
-        body: t('Tu recomendación cambió de arroz a maíz. Toca para escuchar.'),
+        title: t('Ejemplo: cambió el pronóstico de El Niño'),
+        body: t(
+          'Así te avisaremos si cambia tu recomendación. Toca para escuchar.',
+        ),
         receivedAt: _forecastChangeSentAt,
-        source: t('Comunicado ENFEN'),
+        source: t('Aviso de ejemplo'),
         destination: AlertDestination.message,
       ),
     ];
@@ -78,14 +80,17 @@ class MockAlertsRepository implements AlertsRepository {
     return AlertMessage(
       alertId: alertId,
       sentAt: _forecastChangeSentAt,
-      headline: t('CAMBIÓ EL PRONÓSTICO'),
+      headline: t('AVISO DE EJEMPLO'),
       paragraphs: [
-        t('Doña Rosa, el ENFEN anunció que El Niño vendría más fuerte.'),
         t(
-          'Para su parcela ya no le recomendamos **arroz**. Ahora le conviene '
-          '**maíz y después frejol**.',
+          'Doña Rosa, este es un ejemplo de cómo te avisaremos cuando el ENFEN '
+          'cambie su pronóstico de El Niño.',
         ),
-        t('Tiene hasta el **15 de diciembre** para decidir.'),
+        t(
+          'Si vienen **lluvias fuertes**, te mostraremos qué te conviene '
+          'sembrar en ese caso.',
+        ),
+        t('Toca el botón para verlo ahora.'),
       ],
       audioDuration: const Duration(seconds: 42),
       relatedScenario: ClimateScenario.heavyRains,

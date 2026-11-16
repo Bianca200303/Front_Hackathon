@@ -80,16 +80,15 @@ void main() {
       expect(find.text(l10n.waterLess('52%')), findsOneWidget);
     });
 
-    testWidgets('muestra la lluvia que ya midió el satélite', (tester) async {
+    testWidgets('el espacio de la lluvia medida se rotula como ejemplo', (
+      tester,
+    ) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);
 
       await tester.tapText(l10n.recommendationExploreScenarios);
 
-      expect(
-        find.textContaining('medidos por el satélite GPM'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Dato de ejemplo'), findsOneWidget);
     });
 
     testWidgets('las restricciones descartan opciones', (tester) async {

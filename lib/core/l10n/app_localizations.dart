@@ -487,7 +487,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmMapHint.
   ///
   /// In es, this message translates to:
-  /// **'Toca el mapa para marcarla: los datos de la NASA se piden para ese punto.'**
+  /// **'Toca el mapa para marcar dónde está tu chacra.'**
   String get farmMapHint;
 
   /// No description provided for @farmMapCoordinates.
@@ -529,7 +529,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmLastCropHint.
   ///
   /// In es, this message translates to:
-  /// **'Por el satélite creemos que fue {crop}. Si no es así, toca el correcto.'**
+  /// **'Tenemos anotado {crop}. Si no es así, toca el correcto.'**
   String farmLastCropHint(String crop);
 
   /// No description provided for @farmLastCropGroupSemantics.
@@ -637,7 +637,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmSoilTextureHint.
   ///
   /// In es, this message translates to:
-  /// **'Agarra un puñado de tierra de tu chacra y toca la que se parezca. Lo que tú ves manda sobre lo que estima el satélite.'**
+  /// **'Agarra un puñado de tierra de tu chacra y toca la que se parezca. Lo que tú ves manda sobre lo que estiman los mapas de suelo.'**
   String get farmSoilTextureHint;
 
   /// No description provided for @farmSoilTextureGroupSemantics.
@@ -655,13 +655,13 @@ abstract class AppLocalizations {
   /// No description provided for @farmSoilTextureUnknownHint.
   ///
   /// In es, this message translates to:
-  /// **'Usamos la tierra que estima el satélite para tu punto.'**
+  /// **'Usamos la tierra que estiman los mapas de suelo para tu punto.'**
   String get farmSoilTextureUnknownHint;
 
   /// No description provided for @farmNarration.
   ///
   /// In es, this message translates to:
-  /// **'Hola {name}. Por el satélite creemos que la última campaña sembraste {crop}. Si no es así, toca el cultivo correcto. Luego dinos cuántas hectáreas vas a sembrar, cuándo quieres sembrar y qué te importa más esta campaña.'**
+  /// **'Hola {name}. Tenemos anotado que la última campaña sembraste {crop}. Si no es así, toca el cultivo correcto. Luego dinos cuántas hectáreas vas a sembrar, cuándo quieres sembrar y qué te importa más esta campaña.'**
   String farmNarration(String name, String crop);
 
   /// No description provided for @weatherSunny.
@@ -755,7 +755,7 @@ abstract class AppLocalizations {
   /// No description provided for @climateComparisonNote.
   ///
   /// In es, this message translates to:
-  /// **'La raya negra marca lo normal para este mes. Datos de satélite NASA (lluvia y humedad del suelo) y pronóstico del día.'**
+  /// **'La raya negra marca lo normal para este mes. Datos de clima de la NASA (NASA POWER) y pronóstico del día.'**
   String get climateComparisonNote;
 
   /// No description provided for @anomalyRainfall.
@@ -845,7 +845,7 @@ abstract class AppLocalizations {
   /// No description provided for @climateExplainerSoilMoistureBody.
   ///
   /// In es, this message translates to:
-  /// **'cuánta agua tiene tu tierra. La mide el satélite SMAP de la NASA.'**
+  /// **'cuánta agua tiene tu tierra. La estimamos con datos de clima de la NASA (NASA POWER).'**
   String get climateExplainerSoilMoistureBody;
 
   /// No description provided for @climateExplainerNormalTerm.
@@ -863,13 +863,13 @@ abstract class AppLocalizations {
   /// No description provided for @climateExplainerSatelliteTerm.
   ///
   /// In es, this message translates to:
-  /// **'Satélite vs tu chacra:'**
+  /// **'Datos de la NASA vs tu chacra:'**
   String get climateExplainerSatelliteTerm;
 
   /// No description provided for @climateExplainerSatelliteBody.
   ///
   /// In es, this message translates to:
-  /// **'el satélite mide toda la zona desde el espacio, así que puede diferir un poco de lo que ves en tu campo. Por eso te pedimos confirmar lo que sembraste: tu respuesta corrige al satélite.'**
+  /// **'los datos de la NASA cubren toda la zona, así que pueden diferir un poco de lo que ves en tu campo.'**
   String get climateExplainerSatelliteBody;
 
   /// No description provided for @climateNarration.
@@ -1087,7 +1087,7 @@ abstract class AppLocalizations {
   /// No description provided for @rotationExplainerGreennessBody.
   ///
   /// In es, this message translates to:
-  /// **'el satélite Landsat de la NASA mide qué tan verde y fuerte está tu cultivo (índice NDVI). Si baja año tras año, la tierra se está cansando.'**
+  /// **'los satélites de la NASA miden qué tan verde y fuerte crece lo sembrado. Si baja año tras año, la tierra se está cansando.'**
   String get rotationExplainerGreennessBody;
 
   /// No description provided for @rotationExplainerOrganicMatterTerm.
@@ -1099,7 +1099,7 @@ abstract class AppLocalizations {
   /// No description provided for @rotationExplainerOrganicMatterBody.
   ///
   /// In es, this message translates to:
-  /// **'restos de plantas que alimentan la tierra. Es un dato estimado (SoilGrids); un análisis de suelo lo confirmaría.'**
+  /// **'restos de plantas que alimentan la tierra. Es un dato estimado con mapas de suelo; un análisis de suelo lo confirmaría.'**
   String get rotationExplainerOrganicMatterBody;
 
   /// No description provided for @rotationCompareTitle.
@@ -1395,7 +1395,7 @@ abstract class AppLocalizations {
   /// No description provided for @semiClimateGuide.
   ///
   /// In es, this message translates to:
-  /// **'Miré el cielo con los satélites de la NASA. Aquí te cuento cómo viene el clima para tu chacra.'**
+  /// **'Te cuento cómo viene el clima para tu chacra: el pronóstico de la semana y cómo va este mes comparado con lo normal.'**
   String get semiClimateGuide;
 
   /// No description provided for @semiRecommendationGuide.
@@ -1623,7 +1623,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatParcelWhy.
   ///
   /// In es, this message translates to:
-  /// **'La veo en las fotos del satélite: sus bordes, surcos y caminos.'**
+  /// **'Es el punto que tengo marcado para tu chacra en el valle. Si no es, dime y lo cambiamos.'**
   String get chatParcelWhy;
 
   /// No description provided for @chatParcelYes.
@@ -1647,13 +1647,13 @@ abstract class AppLocalizations {
   /// No description provided for @chatLastCropQuestion.
   ///
   /// In es, this message translates to:
-  /// **'Miré cómo creció lo verde en tu chacra la última vez. Parece que sembraste {crop}. ¿Es así?'**
+  /// **'¿Qué sembraste la última campaña? Tengo anotado {crop}. ¿Es así?'**
   String chatLastCropQuestion(String crop);
 
   /// No description provided for @chatLastCropWhy.
   ///
   /// In es, this message translates to:
-  /// **'Cada cultivo crece distinto. Si me corriges, aprendo y te ayudo mejor a ti y a tus vecinos.'**
+  /// **'Cada cultivo deja la tierra distinta. Con tu respuesta calculo mejor qué te conviene.'**
   String get chatLastCropWhy;
 
   /// No description provided for @chatLastCropYes.
@@ -1713,7 +1713,7 @@ abstract class AppLocalizations {
   /// No description provided for @farmSatelliteBadge.
   ///
   /// In es, this message translates to:
-  /// **'Satélite'**
+  /// **'Sugerido'**
   String get farmSatelliteBadge;
 
   /// No description provided for @helpButton.
@@ -1815,19 +1815,19 @@ abstract class AppLocalizations {
   /// No description provided for @helpProbableQ.
   ///
   /// In es, this message translates to:
-  /// **'¿Qué quiere decir \"lo más probable\"?'**
+  /// **'¿Por qué hay varios escenarios de clima?'**
   String get helpProbableQ;
 
   /// No description provided for @helpProbableA.
   ///
   /// In es, this message translates to:
-  /// **'Miramos cómo vino la lluvia en tu valle en años parecidos a este. \"Lo más probable\" es lo que pasó más veces. No es seguro: por eso también te muestro las otras posibilidades.'**
+  /// **'Nadie sabe seguro cómo vendrá el año. Por eso calculamos cada opción para tres casos: año normal, lluvias fuertes y año seco. Empezamos por el año normal y tú puedes ver los otros en \"Explorar otros escenarios\".'**
   String get helpProbableA;
 
   /// No description provided for @helpProbableK.
   ///
   /// In es, this message translates to:
-  /// **'probable,seguro,acierta,porcentaje,posibilidad'**
+  /// **'probable,seguro,escenario,escenarios,lluvias,seco,normal,niño,posibilidad'**
   String get helpProbableK;
 
   /// No description provided for @helpSourceQ.
@@ -1839,7 +1839,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpSourceA.
   ///
   /// In es, this message translates to:
-  /// **'La lluvia de esta semana viene del pronóstico del día. Lo de los próximos meses lo calculamos con satélites de la NASA: lluvia (GPM), calor (NASA POWER) y humedad de la tierra (SMAP) en tu valle. También revisamos los comunicados del ENFEN sobre El Niño.'**
+  /// **'La lluvia de esta semana viene del pronóstico del día. Para comparar este mes con lo normal y calcular el riego usamos NASA POWER: datos de clima de la NASA para tu punto.'**
   String get helpSourceA;
 
   /// No description provided for @helpSourceK.
@@ -1869,13 +1869,13 @@ abstract class AppLocalizations {
   /// No description provided for @helpMoistureQ.
   ///
   /// In es, this message translates to:
-  /// **'¿Cómo sabe el satélite si mi tierra está mojada?'**
+  /// **'¿Cómo sé si mi tierra está mojada?'**
   String get helpMoistureQ;
 
   /// No description provided for @helpMoistureA.
   ///
   /// In es, this message translates to:
-  /// **'El satélite SMAP de la NASA mide la humedad de la tierra desde el espacio, cada pocos días. Mide toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.'**
+  /// **'La estimamos con NASA POWER, datos de clima de la NASA que combinan satélites y modelos. Cubre toda la zona, así que puede ser un poco distinto a lo que ves en tu chacra.'**
   String get helpMoistureA;
 
   /// No description provided for @helpMoistureK.
@@ -1883,24 +1883,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'humedad,mojada,humeda,seca,smap'**
   String get helpMoistureK;
-
-  /// No description provided for @helpHarvestQ.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Qué es la cosecha esperada?'**
-  String get helpHarvestQ;
-
-  /// No description provided for @helpHarvestA.
-  ///
-  /// In es, this message translates to:
-  /// **'Es cuánto se espera cosechar comparado con una buena campaña de ese cultivo en tu valle. 100% sería una cosecha completa. Si sale menos, es porque el clima o la tierra le pueden quitar algo. La calculamos con el verdor que vieron los satélites en años parecidos.'**
-  String get helpHarvestA;
-
-  /// No description provided for @helpHarvestK.
-  ///
-  /// In es, this message translates to:
-  /// **'cosecha,rinde,rendimiento,produccion,esperada'**
-  String get helpHarvestK;
 
   /// No description provided for @helpWaterQ.
   ///
@@ -2241,7 +2223,7 @@ abstract class AppLocalizations {
   /// No description provided for @compareSubtitle.
   ///
   /// In es, this message translates to:
-  /// **'Para las próximas 4 siembras (2 años), con el clima más probable.'**
+  /// **'Para las próximas 4 siembras (2 años), en el escenario de clima que estás viendo.'**
   String get compareSubtitle;
 
   /// No description provided for @optionCurrentLabel.

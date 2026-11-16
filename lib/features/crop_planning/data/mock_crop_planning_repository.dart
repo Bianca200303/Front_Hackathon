@@ -149,8 +149,7 @@ RotationOption? _customOption(CropPlanningQuery query, MockText t) {
     factsheet: OptionFactsheet(
       rationale: t('Es la secuencia que armaste tú.'),
       evidence: t(
-        'Se calcula con los mismos datos que las demás opciones: lluvia y '
-        'temperatura de la NASA, suelo del valle y el agua que pide cada '
+        'Se calcula igual que las demás opciones, con el agua que pide cada '
         'cultivo.',
       ),
       benefits: t(
@@ -215,8 +214,8 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
   irrigationSource: 'Poechos',
   areaHectares: 2,
   measuredRainNote: t(
-    'En tu chacra llovieron 4.2 mm en los últimos 30 días medidos por el '
-    'satélite GPM: la lluvia va como en un año seco.',
+    'Dato de ejemplo: con datos reales, aquí verás cuánta lluvia midió el '
+    'satélite en tu chacra en los últimos 30 días.',
   ),
   availableCrops: [
     t.crop(MockCatalog.rice),
@@ -239,9 +238,6 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
     condition: SoilCondition.tired,
     findings: [
       t('Lleva 3 campañas seguidas de arroz.'),
-      t(
-        'El verdor de tus cultivos bajó en los últimos 5 años (satélite NASA).',
-      ),
       t('Tiene poca materia orgánica.'),
     ],
   ),
@@ -268,8 +264,8 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
         'Es lo que siembras hoy. Lo comparamos para que veas la diferencia.',
       ),
       evidence: t(
-        'Tu parcela lleva 3 campañas de arroz y su verdor bajó en 5 años '
-        '(Landsat). Es el cultivo que más agua consume (ECOSTRESS y FAO-56).',
+        'Tu parcela lleva 3 campañas de arroz. Es el cultivo que más agua '
+        'pide.',
       ),
       benefits: t('Ya conoces el cultivo y tienes comprador.'),
       unknowns: t('Depende de cuánta agua tenga Poechos este año.'),
@@ -292,9 +288,8 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
           'el clima que el arroz.',
         ),
         evidence: t(
-          'En los años con El Niño (1998, 2017 y 2023) el maíz del valle '
-          'perdió menos verdor que el arroz (lluvia GPM y verdor MODIS). El '
-          'frejol fija nitrógeno en la tierra (FAO).',
+          'El maíz aguanta mejor que el arroz los años muy lluviosos o muy '
+          'secos, y el frejol le deja nitrógeno a la tierra.',
         ),
         benefits: t(
           'Devuelve nitrógeno a la tierra, corta las plagas del arroz y usa '
@@ -370,8 +365,8 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
           'tierra.',
         ),
         evidence: t(
-          'El algodón tolera bien el calor (FAO ECOCROP) y tiene historia en '
-          'el valle. La menestra fija nitrógeno.',
+          'El algodón tolera bien el calor y tiene historia en el valle. La '
+          'menestra fija nitrógeno.',
         ),
         benefits: t(
           'Su raíz profunda mejora la estructura de la tierra y la menestra '
@@ -444,18 +439,14 @@ CropPlanningData _buildData(MockText t) => CropPlanningData(
           'Son los cultivos que menos riego necesitan, y el frejol prepara la '
           'tierra para el maíz.',
         ),
-        evidence: t(
-          'Frejol y maíz necesitan menos agua (evapotranspiración de '
-          'ECOSTRESS y FAO-56). El agua subterránea del valle viene bajando '
-          '(GRACE).',
-        ),
+        evidence: t('Frejol y maíz necesitan menos riego que el arroz.'),
         benefits: t(
           'Es la opción que menos agua usa y el frejol prepara la tierra para '
           'el maíz.',
         ),
         unknowns: t(
-          'Con lluvias muy fuertes el frejol rinde menos. Los datos de suelo '
-          'son estimados (SoilGrids).',
+          'Con lluvias muy fuertes el frejol rinde menos. Los datos de tu '
+          'tierra son estimados.',
         ),
         risks: t(
           'Confirma tu turno de riego con la junta de usuarios antes de '
