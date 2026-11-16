@@ -179,6 +179,20 @@ Map<String, Object?> _recommendationJson() => {
     'finding': 'Llovieron 4.2 mm: la lluvia va como en un año seco.',
     'source': 'gpm_imerg',
   },
+  'water_availability': {
+    'level': 'low',
+    'window_start': '2024-05-01',
+    'window_end': '2024-10-31',
+    'rain_mm': 2.0,
+    'rain_normal_mm': 17.8,
+    'rain_percentile': 0.0,
+    'root_wetness': 0.3,
+    'root_wetness_normal': 0.4,
+    'root_wetness_percentile': 10.0,
+    'reference_years': [2014, 2023],
+    'finding': 'En tu zona llovió menos de la mitad de lo normal estos meses.',
+    'source': 'nasa_power',
+  },
 };
 
 void main() {
@@ -344,6 +358,30 @@ void main() {
     final data = await repository.getPlanningData(_query);
 
     expect(data.measuredRainNote, isNull);
+  });
+
+  test('trae el semáforo de agua, o nada si el backend no lo tiene', () async {
+    final data = await RemoteCropPlanningRepository(
+      apiClient: _FakeApiClient(_recommendationJson()),
+    ).getPlanningData(_query);
+
+    expect(
+      data.waterAvailability,
+      WaterAvailability(
+        level: WaterLevel.low,
+        finding:
+            'En tu zona llovió menos de la mitad de lo normal estos meses.',
+        windowStart: DateTime(2024, 5),
+        windowEnd: DateTime(2024, 10, 31),
+      ),
+    );
+
+    final withoutWater = await RemoteCropPlanningRepository(
+      apiClient: _FakeApiClient(
+        _recommendationJson()..['water_availability'] = null,
+      ),
+    ).getPlanningData(_query);
+    expect(withoutWater.waterAvailability, isNull);
   });
 
   test('trae el orden de cada prioridad y escenario', () async {

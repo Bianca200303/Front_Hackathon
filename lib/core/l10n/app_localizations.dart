@@ -2339,6 +2339,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Datos de ejemplo: no son mediciones reales de tu chacra'**
   String get sampleDataBanner;
+
+  /// No description provided for @waterTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua en tu zona'**
+  String get waterTitle;
+
+  /// No description provided for @waterLevelLow.
+  ///
+  /// In es, this message translates to:
+  /// **'Poca agua'**
+  String get waterLevelLow;
+
+  /// No description provided for @waterLevelMedium.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua como en un año común'**
+  String get waterLevelMedium;
+
+  /// No description provided for @waterLevelHigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Más agua que de costumbre'**
+  String get waterLevelHigh;
+
+  /// No description provided for @waterSemantics.
+  ///
+  /// In es, this message translates to:
+  /// **'Agua en tu zona: {level}'**
+  String waterSemantics(String level);
+
+  /// No description provided for @waterSource.
+  ///
+  /// In es, this message translates to:
+  /// **'Lluvia y humedad de la tierra de {start} a {end}, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).'**
+  String waterSource(String start, String end);
 }
 
 class _AppLocalizationsDelegate

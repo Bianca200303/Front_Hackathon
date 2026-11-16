@@ -295,6 +295,12 @@
     "climateMore",
     "whyMore",
     "otherOptionsMore",
-    "sampleDataBanner"
+    "sampleDataBanner",
+    "waterTitle",
+    "waterLevelLow",
+    "waterLevelMedium",
+    "waterLevelHigh",
+    "waterSemantics",
+    "waterSource"
   ]
 }

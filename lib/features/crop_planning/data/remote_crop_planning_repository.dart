@@ -87,6 +87,12 @@ const _waterNeeds = {
   'high': CropWaterNeed.high,
 };
 
+const _waterLevels = {
+  'low': WaterLevel.low,
+  'medium': WaterLevel.medium,
+  'high': WaterLevel.high,
+};
+
 const _soilConditions = {
   'very_tired': SoilCondition.veryTired,
   'tired': SoilCondition.tired,
@@ -123,6 +129,15 @@ class _PlanningResponse {
     options: [for (final option in json.objects('options')) _option(option)],
     ranking: _ranking(json.object('ranking')),
     measuredRainNote: json.objectOrNull('recent_rain')?.string('finding'),
+    waterAvailability: switch (json.objectOrNull('water_availability')) {
+      final water? => WaterAvailability(
+        level: water.oneOf('level', _waterLevels),
+        finding: water.string('finding'),
+        windowStart: water.date('window_start'),
+        windowEnd: water.date('window_end'),
+      ),
+      null => null,
+    },
   );
 
   Crop _crop(String id) =>

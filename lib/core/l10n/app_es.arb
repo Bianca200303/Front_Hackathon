@@ -458,5 +458,14 @@
   "whyMore": "¿Por qué te lo recomiendo?",
   "otherOptionsMore": "Ver las otras opciones",
 
-  "sampleDataBanner": "Datos de ejemplo: no son mediciones reales de tu chacra"
+  "sampleDataBanner": "Datos de ejemplo: no son mediciones reales de tu chacra",
+
+  "waterTitle": "Agua en tu zona",
+  "waterLevelLow": "Poca agua",
+  "waterLevelMedium": "Agua como en un año común",
+  "waterLevelHigh": "Más agua que de costumbre",
+  "waterSemantics": "Agua en tu zona: {level}",
+  "@waterSemantics": {"placeholders": {"level": {"type": "String"}}},
+  "waterSource": "Lluvia y humedad de la tierra de {start} a {end}, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).",
+  "@waterSource": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
 }

@@ -406,5 +406,12 @@
   "rotationCustomPositionSemantics": "Crop {position} of {total}",
   "@rotationCustomPositionSemantics": {"placeholders": {"position": {"type": "int"}, "total": {"type": "int"}}},
 
-  "sampleDataBanner": "Sample data: not real measurements of your field"
+  "sampleDataBanner": "Sample data: not real measurements of your field",
+
+  "waterTitle": "Water in your area",
+  "waterLevelLow": "Little water",
+  "waterLevelMedium": "Water like a usual year",
+  "waterLevelHigh": "More water than usual",
+  "waterSemantics": "Water in your area: {level}",
+  "waterSource": "Rain and soil moisture from {start} to {end}, compared with the same months of the previous 10 years. NASA data (NASA POWER)."
 }

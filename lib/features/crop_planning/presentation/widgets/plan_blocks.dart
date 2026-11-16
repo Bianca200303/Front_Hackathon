@@ -625,3 +625,76 @@ class SoilTodaySection extends StatelessWidget {
     );
   }
 }
+
+/// Semáforo de agua de la zona (NASA POWER), con la frase que arma el
+/// backend a partir de las cifras. Solo aparece con datos reales.
+class WaterLightCard extends StatelessWidget {
+  /// Crea el semáforo.
+  const WaterLightCard({required this.water, super.key});
+
+  /// Indicador calculado por el backend.
+  final WaterAvailability water;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.colors;
+    final lights = [
+      (WaterLevel.low, colors.negative),
+      (WaterLevel.medium, colors.amber),
+      (WaterLevel.high, colors.positive),
+    ];
+    final label = switch (water.level) {
+      WaterLevel.low => l10n.waterLevelLow,
+      WaterLevel.medium => l10n.waterLevelMedium,
+      WaterLevel.high => l10n.waterLevelHigh,
+    };
+    final lit = lights.firstWhere((light) => light.$1 == water.level).$2;
+    return AppCard(
+      children: [
+        Overline(l10n.waterTitle),
+        Semantics(
+          label: l10n.waterSemantics(label),
+          excludeSemantics: true,
+          child: Row(
+            spacing: AppSpacing.sm,
+            children: [
+              for (final (level, color) in lights)
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: level == water.level ? color : colors.surfaceMuted,
+                    border: Border.all(color: color, width: 2),
+                  ),
+                ),
+              const SizedBox(width: AppSpacing.xs),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: lit,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          water.finding,
+          style: TextStyle(fontSize: 15, height: 1.4, color: colors.textBody),
+        ),
+        Text(
+          l10n.waterSource(
+            AppFormatters.monthName(water.windowStart),
+            AppFormatters.monthName(water.windowEnd),
+          ),
+          style: TextStyle(fontSize: 12, color: colors.textMuted),
+        ),
+      ],
+    );
+  }
+}

@@ -162,6 +162,47 @@ class CampaignStep extends Equatable {
   List<Object?> get props => [start, end, crop, soilAfter];
 }
 
+/// Nivel del semáforo de agua.
+enum WaterLevel {
+  /// Menos agua que en la mayoría de años: rojo.
+  low,
+
+  /// Como en un año común: ámbar.
+  medium,
+
+  /// Más agua que en la mayoría de años: verde.
+  high,
+}
+
+/// Agua disponible en la zona de la chacra (NASA POWER): lluvia y humedad
+/// de la tierra de los últimos meses frente a los mismos meses de los 10
+/// años anteriores. Lo calcula el backend; con datos de ejemplo no hay.
+class WaterAvailability extends Equatable {
+  /// Crea el indicador.
+  const WaterAvailability({
+    required this.level,
+    required this.finding,
+    required this.windowStart,
+    required this.windowEnd,
+  });
+
+  /// Nivel del semáforo.
+  final WaterLevel level;
+
+  /// Frase armada con las cifras reales (p. ej., "En tu zona llovió menos
+  /// de la mitad de lo normal estos meses…").
+  final String finding;
+
+  /// Primer día de los meses observados.
+  final DateTime windowStart;
+
+  /// Último día de los meses observados.
+  final DateTime windowEnd;
+
+  @override
+  List<Object?> get props => [level, finding, windowStart, windowEnd];
+}
+
 /// Rotación de cultivos que se puede recomendar.
 class RotationOption extends Equatable {
   /// Crea una opción de rotación.
@@ -379,6 +420,7 @@ class CropPlanningData extends Equatable {
     this.availableCrops = const [],
     this.ranking = const {},
     this.measuredRainNote,
+    this.waterAvailability,
   });
 
   /// Id de la opción que arma el agricultor.
@@ -416,6 +458,9 @@ class CropPlanningData extends Equatable {
   /// parece, en una frase. `null` si la fuente todavía no la tiene.
   final String? measuredRainNote;
 
+  /// Semáforo de agua de la zona; `null` si la fuente no lo tiene.
+  final WaterAvailability? waterAvailability;
+
   /// Orden que manda la fuente para [priorityId] en [scenario]; vacío si no
   /// lo manda.
   List<String> orderFor(String priorityId, ClimateScenario scenario) =>
@@ -437,6 +482,7 @@ class CropPlanningData extends Equatable {
     availableCrops,
     ranking,
     measuredRainNote,
+    waterAvailability,
   ];
 }
 

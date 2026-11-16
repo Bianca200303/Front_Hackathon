@@ -48,6 +48,48 @@ void main() {
       expect(find.textContaining('S/'), findsNothing);
     });
 
+    testWidgets('el semáforo de agua solo aparece con datos reales', (
+      tester,
+    ) async {
+      await tester.pumpSiembraSeguraApp();
+      await openTab(tester, l10n.tabWhatToPlant);
+      // Los datos de ejemplo no traen indicador: no se inventa uno.
+      expect(find.text(l10n.waterTitle), findsNothing);
+    });
+
+    testWidgets('muestra el semáforo con la frase del backend', (tester) async {
+      final withWater = CropPlanningData(
+        options: reference.options,
+        currentPractice: reference.currentPractice,
+        soilHealth: reference.soilHealth,
+        scenarioNotes: reference.scenarioNotes,
+        riskMonths: reference.riskMonths,
+        irrigationSource: reference.irrigationSource,
+        areaHectares: reference.areaHectares,
+        waterAvailability: WaterAvailability(
+          level: WaterLevel.low,
+          finding: 'En tu zona llovió menos de la mitad de lo normal.',
+          windowStart: DateTime(2026, 5),
+          windowEnd: DateTime(2026, 10, 31),
+        ),
+      );
+      await tester.pumpSiembraSeguraApp(
+        overrides: [
+          cropPlanningRepositoryProvider.overrideWithValue(
+            FixedCropPlanningRepository(withWater),
+          ),
+        ],
+      );
+      await openTab(tester, l10n.tabWhatToPlant);
+
+      expect(find.text(l10n.waterTitle), findsOneWidget);
+      expect(find.text(l10n.waterLevelLow), findsOneWidget);
+      expect(
+        find.text('En tu zona llovió menos de la mitad de lo normal.'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('cambia al instante con la prioridad', (tester) async {
       await tester.pumpSiembraSeguraApp();
       await openTab(tester, l10n.tabWhatToPlant);

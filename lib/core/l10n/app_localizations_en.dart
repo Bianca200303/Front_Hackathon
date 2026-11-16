@@ -1332,4 +1332,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sampleDataBanner =>
       'Sample data: not real measurements of your field';
+
+  @override
+  String get waterTitle => 'Water in your area';
+
+  @override
+  String get waterLevelLow => 'Little water';
+
+  @override
+  String get waterLevelMedium => 'Water like a usual year';
+
+  @override
+  String get waterLevelHigh => 'More water than usual';
+
+  @override
+  String waterSemantics(String level) {
+    return 'Water in your area: $level';
+  }
+
+  @override
+  String waterSource(String start, String end) {
+    return 'Rain and soil moisture from $start to $end, compared with the same months of the previous 10 years. NASA data (NASA POWER).';
+  }
 }
