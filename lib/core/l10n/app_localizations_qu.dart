@@ -1266,15 +1266,22 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String soilReason(int count, String crop) {
-    return 'Lleva $count siembras seguidas de $crop.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Lleva $count siembras seguidas de $crop.',
+      one: 'La última siembra fue de $crop.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get howDoIKnow => '¿Cómo lo sé?';
 
   @override
-  String get compareSubtitle =>
-      'Para las próximas 4 siembras (2 años), en el escenario de clima que estás viendo.';
+  String compareSubtitle(int count, String years) {
+    return 'Para las próximas $count siembras ($years), en el escenario de clima que estás viendo.';
+  }
 
   @override
   String get optionCurrentLabel => 'Si sigues como ahora';
@@ -1359,5 +1366,20 @@ class AppLocalizationsQu extends AppLocalizations {
   @override
   String waterSource(String start, String end) {
     return 'Lluvia y humedad de la tierra de $start a $end, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).';
+  }
+
+  @override
+  String get loadingSatellite =>
+      'Estoy mirando tu chacra con los datos de los satélites de la NASA. La primera vez puede tardar hasta un minuto.';
+
+  @override
+  String yearsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count años',
+      one: '1 año',
+    );
+    return '$_temp0';
   }
 }

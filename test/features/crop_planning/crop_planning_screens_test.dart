@@ -274,6 +274,11 @@ void main() {
       await openTab(tester, l10n.tabRotation);
 
       expect(find.text(l10n.soilTodayOverline), findsOneWidget);
+      // El subtítulo cuenta las siembras del plan real (dic 2026 a ago 2028).
+      expect(
+        find.text(l10n.compareSubtitle(4, l10n.yearsCount(2))),
+        findsOneWidget,
+      );
       // A la vista solo la recomendada; las otras, a un toque.
       expect(find.text(l10n.optionCurrentLabel), findsNothing);
       await tester.tapText(l10n.otherOptionsMore);

@@ -1260,15 +1260,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String soilReason(int count, String crop) {
-    return '$count plantings of $crop in a row.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plantings of $crop in a row.',
+      one: 'The last planting was $crop.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get howDoIKnow => 'How do I know?';
 
   @override
-  String get compareSubtitle =>
-      'For the next 4 plantings (2 years), in the weather scenario you are viewing.';
+  String compareSubtitle(int count, String years) {
+    return 'For the next $count plantings ($years), in the weather scenario you are viewing.';
+  }
 
   @override
   String get optionCurrentLabel => 'If you keep going as now';
@@ -1353,5 +1360,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String waterSource(String start, String end) {
     return 'Rain and soil moisture from $start to $end, compared with the same months of the previous 10 years. NASA data (NASA POWER).';
+  }
+
+  @override
+  String get loadingSatellite =>
+      'I\'m looking at your field with NASA satellite data. The first time it can take up to a minute.';
+
+  @override
+  String yearsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0';
   }
 }

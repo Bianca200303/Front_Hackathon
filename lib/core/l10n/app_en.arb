@@ -332,9 +332,9 @@
   "semiPlantSay": "With {priority} in mind, I recommend {rotation}. I explain why below.",
   "semiRotationSay": "Here you compare what you plant today with two other options. Tap \"See why\" on each one. And if you like, build your own plan.",
   "soilTodayOverline": "Your soil today",
-  "soilReason": "{count} plantings of {crop} in a row.",
+  "soilReason": "{count, plural, =1{The last planting was {crop}.} other{{count} plantings of {crop} in a row.}}",
   "howDoIKnow": "How do I know?",
-  "compareSubtitle": "For the next 4 plantings (2 years), in the weather scenario you are viewing.",
+  "compareSubtitle": "For the next {count} plantings ({years}), in the weather scenario you are viewing.",
   "optionCurrentLabel": "If you keep going as now",
   "optionRecommendedLabel": "The one I recommend",
   "optionOtherLabel": "Another option",
@@ -413,5 +413,8 @@
   "waterLevelMedium": "Water like a usual year",
   "waterLevelHigh": "More water than usual",
   "waterSemantics": "Water in your area: {level}",
-  "waterSource": "Rain and soil moisture from {start} to {end}, compared with the same months of the previous 10 years. NASA data (NASA POWER)."
+  "waterSource": "Rain and soil moisture from {start} to {end}, compared with the same months of the previous 10 years. NASA data (NASA POWER).",
+
+  "loadingSatellite": "I'm looking at your field with NASA satellite data. The first time it can take up to a minute.",
+  "yearsCount": "{count, plural, =1{1 year} other{{count} years}}"
 }

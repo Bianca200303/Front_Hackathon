@@ -301,6 +301,8 @@
     "waterLevelMedium",
     "waterLevelHigh",
     "waterSemantics",
-    "waterSource"
+    "waterSource",
+    "loadingSatellite",
+    "yearsCount"
   ]
 }

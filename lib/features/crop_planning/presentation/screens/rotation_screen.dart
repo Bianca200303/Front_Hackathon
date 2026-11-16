@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
+import 'package:siembra_segura/features/crop_planning/domain/crop_planning_models.dart';
 import 'package:siembra_segura/features/crop_planning/domain/recommendation.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/crop_planning_texts.dart';
 import 'package:siembra_segura/features/crop_planning/presentation/providers/crop_planning_providers.dart';
@@ -67,7 +68,7 @@ class _RotationContent extends StatelessWidget {
           spacing: AppSpacing.xxs,
           children: [
             SectionTitle(l10n.rotationCompareTitle(r.comparedOptionsCount)),
-            MutedText(l10n.compareSubtitle),
+            MutedText(_horizonSubtitle(compared.first.longTermPlan, l10n)),
           ],
         ),
         // A la vista solo la recomendada; lo demás, a un toque.
@@ -116,4 +117,13 @@ class _RotationContent extends StatelessWidget {
       ],
     );
   }
+}
+
+/// "Para las próximas 6 siembras (2 años)…", con el plan real de la opción.
+String _horizonSubtitle(List<CampaignStep> plan, AppLocalizations l10n) {
+  if (plan.isEmpty) return l10n.compareSubtitle(0, l10n.yearsCount(0));
+  int monthIndex(DateTime date) => date.year * 12 + date.month;
+  final months = monthIndex(plan.last.end) - monthIndex(plan.first.start) + 1;
+  final years = (months / 12).round().clamp(1, 99);
+  return l10n.compareSubtitle(plan.length, l10n.yearsCount(years));
 }

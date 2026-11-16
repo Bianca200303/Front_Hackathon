@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/error/error_messages.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
+import 'package:siembra_segura/shared/widgets/semi/semi_painter.dart';
 
 /// Renderiza de forma uniforme los estados de un [AsyncValue]:
 /// carga, error (con reintento), vacío y datos.
@@ -48,18 +51,48 @@ class AsyncValueView<T> extends StatelessWidget {
 }
 
 /// Indicador de carga centrado y accesible.
-class LoadingView extends StatelessWidget {
+///
+/// Con datos reales Semi aparece pensando y avisa que está consultando los
+/// satélites (la primera vez puede tardar). Con datos de ejemplo no hay
+/// consulta a nadie: solo el indicador.
+class LoadingView extends ConsumerWidget {
   /// Crea el indicador.
   const LoadingView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    if (ref.watch(appConfigProvider).usesMocks) {
+      return Center(
+        child: Semantics(
+          label: l10n.loading,
+          child: const Padding(
+            padding: EdgeInsets.all(AppSpacing.xxl),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
     return Center(
       child: Semantics(
-        label: AppLocalizations.of(context).loading,
-        child: const Padding(
-          padding: EdgeInsets.all(AppSpacing.xxl),
-          child: CircularProgressIndicator(),
+        liveRegion: true,
+        label: l10n.loadingSatellite,
+        excludeSemantics: true,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: AppSpacing.md,
+            children: [
+              const SemiAvatar(expression: SemiExpression.thinking, size: 120),
+              Text(
+                l10n.loadingSatellite,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(width: 160, child: LinearProgressIndicator()),
+            ],
+          ),
         ),
       ),
     );

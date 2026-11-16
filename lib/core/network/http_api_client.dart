@@ -13,14 +13,16 @@ class HttpApiClient implements ApiClient {
   HttpApiClient({
     required ApiEndpoints endpoints,
     required http.Client client,
-    this.timeout = const Duration(seconds: 20),
+    this.timeout = const Duration(seconds: 60),
   }) : _endpoints = endpoints,
        _client = client;
 
   final ApiEndpoints _endpoints;
   final http.Client _client;
 
-  /// Espera máxima por respuesta.
+  /// Espera máxima por respuesta. La primera recomendación de un punto
+  /// nuevo junta NASA POWER y SoilGrids y puede tardar más de 30 s; las
+  /// siguientes salen de la caché del backend.
   final Duration timeout;
 
   static const _acceptJson = {'Accept': 'application/json'};

@@ -434,10 +434,11 @@
   "@semiPlantSay": { "placeholders": { "priority": { "type": "String" }, "rotation": { "type": "String" } } },
   "semiRotationSay": "Aquí comparas lo que siembras hoy con otras dos opciones. Toca \"Ver por qué\" en cada una. Y si quieres, arma tu propio plan.",
   "soilTodayOverline": "Tu tierra hoy",
-  "soilReason": "Lleva {count} siembras seguidas de {crop}.",
+  "soilReason": "{count, plural, =1{La última siembra fue de {crop}.} other{Lleva {count} siembras seguidas de {crop}.}}",
   "@soilReason": { "placeholders": { "count": { "type": "int" }, "crop": { "type": "String" } } },
   "howDoIKnow": "¿Cómo lo sé?",
-  "compareSubtitle": "Para las próximas 4 siembras (2 años), en el escenario de clima que estás viendo.",
+  "compareSubtitle": "Para las próximas {count} siembras ({years}), en el escenario de clima que estás viendo.",
+  "@compareSubtitle": {"placeholders": {"count": {"type": "int"}, "years": {"type": "String"}}},
   "optionCurrentLabel": "Si sigues como ahora",
   "optionRecommendedLabel": "La que te recomiendo",
   "optionOtherLabel": "Otra opción",
@@ -467,5 +468,9 @@
   "waterSemantics": "Agua en tu zona: {level}",
   "@waterSemantics": {"placeholders": {"level": {"type": "String"}}},
   "waterSource": "Lluvia y humedad de la tierra de {start} a {end}, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).",
-  "@waterSource": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
+  "@waterSource": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}},
+
+  "loadingSatellite": "Estoy mirando tu chacra con los datos de los satélites de la NASA. La primera vez puede tardar hasta un minuto.",
+  "yearsCount": "{count, plural, =1{1 año} other{{count} años}}",
+  "@yearsCount": {"placeholders": {"count": {"type": "int"}}}
 }

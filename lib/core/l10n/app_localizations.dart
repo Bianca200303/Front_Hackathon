@@ -2211,7 +2211,7 @@ abstract class AppLocalizations {
   /// No description provided for @soilReason.
   ///
   /// In es, this message translates to:
-  /// **'Lleva {count} siembras seguidas de {crop}.'**
+  /// **'{count, plural, =1{La última siembra fue de {crop}.} other{Lleva {count} siembras seguidas de {crop}.}}'**
   String soilReason(int count, String crop);
 
   /// No description provided for @howDoIKnow.
@@ -2223,8 +2223,8 @@ abstract class AppLocalizations {
   /// No description provided for @compareSubtitle.
   ///
   /// In es, this message translates to:
-  /// **'Para las próximas 4 siembras (2 años), en el escenario de clima que estás viendo.'**
-  String get compareSubtitle;
+  /// **'Para las próximas {count} siembras ({years}), en el escenario de clima que estás viendo.'**
+  String compareSubtitle(int count, String years);
 
   /// No description provided for @optionCurrentLabel.
   ///
@@ -2375,6 +2375,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Lluvia y humedad de la tierra de {start} a {end}, comparadas con los mismos meses de los 10 años anteriores. Datos de la NASA (NASA POWER).'**
   String waterSource(String start, String end);
+
+  /// No description provided for @loadingSatellite.
+  ///
+  /// In es, this message translates to:
+  /// **'Estoy mirando tu chacra con los datos de los satélites de la NASA. La primera vez puede tardar hasta un minuto.'**
+  String get loadingSatellite;
+
+  /// No description provided for @yearsCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 año} other{{count} años}}'**
+  String yearsCount(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -29,6 +29,9 @@ GoRouter createAppRouter({String initialLocation = AppRoutes.farm}) {
     navigatorKey: rootNavigatorKey,
     initialLocation: initialLocation,
     routes: [
+      // En web la URL raíz (`/`) no es una pantalla: lleva al inicio que
+      // corresponde (la bienvenida la primera vez).
+      GoRoute(path: '/', redirect: (context, state) => initialLocation),
       GoRoute(
         path: AppRoutes.welcome,
         builder: (context, state) => const WelcomeScreen(),

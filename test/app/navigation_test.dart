@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:siembra_segura/app/router/app_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations_es.dart';
+import 'package:siembra_segura/shared/data/app_mode_stores.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -12,6 +14,16 @@ void main() {
 
     expect(find.text(l10n.farmTitle), findsOneWidget);
     expect(findNavigationBar(), findsNothing);
+  });
+
+  testWidgets('la URL raíz lleva a la pantalla de inicio', (tester) async {
+    await tester.pumpSiembraSeguraApp(appModeStore: InMemoryAppModeStore());
+    expect(find.text(l10n.welcomeQuestion), findsOneWidget);
+
+    tester.container.read(appRouterProvider).go('/');
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.welcomeQuestion), findsOneWidget);
   });
 
   testWidgets('Empezar lleva a Clima y muestra las pestañas', (tester) async {
