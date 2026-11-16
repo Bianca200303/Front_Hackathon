@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:siembra_segura/core/l10n/app_localizations.dart';
 import 'package:siembra_segura/core/router/app_routes.dart';
+import 'package:siembra_segura/core/services/location/device_location.dart';
 import 'package:siembra_segura/core/services/speech/speech_service.dart';
 import 'package:siembra_segura/core/theme/app_palette.dart';
 import 'package:siembra_segura/core/theme/app_spacing.dart';
@@ -17,6 +18,7 @@ import 'package:siembra_segura/features/farm/presentation/widgets/parcel_map_car
 import 'package:siembra_segura/shared/domain/campaign_catalog.dart';
 import 'package:siembra_segura/shared/state/campaign_catalog_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
+import 'package:siembra_segura/shared/state/farm_location_provider.dart';
 import 'package:siembra_segura/shared/widgets/async_value_view.dart';
 import 'package:siembra_segura/shared/widgets/listen_button.dart';
 import 'package:siembra_segura/shared/widgets/semi/semi_avatar.dart';
@@ -44,6 +46,24 @@ class FarmChatScreen extends ConsumerWidget {
           ..invalidate(campaignCatalogProvider),
         data: (content) =>
             _Conversation(farm: content.farm, catalog: content.catalog),
+      ),
+    );
+  }
+}
+
+/// Mapa del valle dentro del globo de Semi: se toca para marcar la chacra.
+class _ChatMap extends ConsumerWidget {
+  const _ChatMap();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadii.md),
+      child: ValleyMapPicker(
+        location: ref.watch(farmLocationProvider),
+        onPicked: (latitude, longitude) => ref
+            .read(campaignContextProvider.notifier)
+            .selectFarmLocation(latitude: latitude, longitude: longitude),
       ),
     );
   }
@@ -93,8 +113,10 @@ class _Conversation extends ConsumerStatefulWidget {
 
 class _ConversationState extends ConsumerState<_Conversation>
     with SingleTickerProviderStateMixin {
-  /// Preguntas antes del cierre (para la barra de progreso).
-  static const _questionCount = 4;
+  /// Preguntas antes del cierre (para la barra de progreso): dónde está la
+  /// chacra, qué sembró y qué le importa. Las restricciones se cambian en
+  /// Mi parcela.
+  static const _questionCount = 3;
 
   /// Cuánto "piensa" Semi antes de hablar.
   static const _thinkingTime = Duration(milliseconds: 750);
@@ -113,6 +135,37 @@ class _ConversationState extends ConsumerState<_Conversation>
   String? _reply;
 
   bool _started = false;
+
+  /// Esperando al GPS del celular.
+  bool _locating = false;
+
+  /// Lo que Semi dice después de intentar ubicar el celular.
+  String? _locationNote;
+
+  Future<void> _useMyLocation() async {
+    if (_locating) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _locating = true);
+    final result = await ref.read(deviceLocationServiceProvider).current();
+    if (!mounted) return;
+    final note = switch (result) {
+      LocationFound(:final latitude, :final longitude)
+          when ValleyMapPicker.bounds.contains(latitude, longitude) =>
+        () {
+          ref
+              .read(campaignContextProvider.notifier)
+              .selectFarmLocation(latitude: latitude, longitude: longitude);
+          return l10n.chatLocationFound;
+        }(),
+      LocationFound() => l10n.chatLocationOutside,
+      LocationDenied() => l10n.chatLocationDenied,
+      LocationUnavailable() => l10n.chatLocationUnavailable,
+    };
+    setState(() {
+      _locating = false;
+      _locationNote = note;
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -180,21 +233,22 @@ class _ConversationState extends ConsumerState<_Conversation>
     String lower(String text) => text.toLowerCase();
 
     final step = switch (_step) {
+      // Dónde está la chacra: un toque con el GPS ("Estoy en mi chacra") o
+      // un toque en el mapa; "Es aquí" confirma el punto que se ve.
       0 => _Step(
         expression: SemiExpression.happy,
-        // Sin hectáreas: las indica el agricultor en Mi parcela (decisión
-        // 29), el satélite no las sabe.
-        message: l10n.chatParcelQuestion(farm.valleyName),
-        why: l10n.chatParcelWhy,
-        image: LayoutBuilder(
-          builder: (context, constraints) =>
-              ParcelMapThumbnail(width: constraints.maxWidth),
-        ),
+        message: _locationNote ?? l10n.chatMapQuestion(farm.valleyName),
+        why: l10n.chatMapWhy,
+        image: const _ChatMap(),
         answers: [
-          _Answer(l10n.chatParcelYes, () => _answer(l10n.chatParcelYes)),
           _Answer(
-            l10n.chatParcelNo,
-            () => _answer(l10n.chatParcelNo, reply: l10n.chatParcelNoReply),
+            _locating ? l10n.chatLocating : l10n.chatUseMyLocation,
+            _useMyLocation,
+          ),
+          _Answer(
+            l10n.chatMapConfirm,
+            () => _answer(l10n.chatMapConfirm),
+            primary: true,
           ),
         ],
       ),
@@ -237,28 +291,6 @@ class _ConversationState extends ConsumerState<_Conversation>
                 apply: () => notifier.selectPriority(priority.id),
               ),
             ),
-        ],
-      ),
-      3 => _Step(
-        expression: SemiExpression.happy,
-        message: l10n.chatRestrictionQuestion,
-        why: l10n.chatRestrictionWhy,
-        answers: [
-          for (final restriction in widget.catalog.restrictions)
-            _Answer(
-              restriction.name,
-              () => _answer(
-                restriction.name,
-                apply: () => notifier.setRestrictions({restriction.id}),
-              ),
-            ),
-          _Answer(
-            l10n.chatRestrictionNone,
-            () => _answer(
-              l10n.chatRestrictionNone,
-              apply: () => notifier.setRestrictions({}),
-            ),
-          ),
         ],
       ),
       _ => _Step(

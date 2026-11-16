@@ -55,6 +55,13 @@ class FarmBounds extends Equatable {
     ((north - location.latitude) / (north - south)).clamp(0.0, 1.0),
   );
 
+  /// `true` si el punto cae dentro del recuadro.
+  bool contains(double latitude, double longitude) =>
+      latitude >= south &&
+      latitude <= north &&
+      longitude >= west &&
+      longitude <= east;
+
   /// Coordenadas de un punto dado en fracciones de ancho y alto.
   (double, double) locationAt(double xFraction, double yFraction) => (
     north - (north - south) * yFraction.clamp(0.0, 1.0),

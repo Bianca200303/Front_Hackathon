@@ -186,15 +186,10 @@
     "themeSwitchSemantics",
     "chatProgressSemantics",
     "chatThinkingSemantics",
-    "chatParcelQuestion",
-    "chatParcelWhy",
-    "chatParcelNoReply",
     "chatLastCropQuestion",
     "chatLastCropWhy",
     "chatPriorityQuestion",
     "chatPriorityWhy",
-    "chatRestrictionQuestion",
-    "chatRestrictionWhy",
     "farmSatelliteBadge",
     "helpButtonSemantics",
     "helpClose",
@@ -305,6 +300,15 @@
     "yearsCount",
     "waterLocalTitle",
     "waterIrrigationTitle",
-    "waterIrrigationSource"
+    "waterIrrigationSource",
+    "chatMapQuestion",
+    "chatMapWhy",
+    "chatUseMyLocation",
+    "chatLocating",
+    "chatMapConfirm",
+    "chatLocationFound",
+    "chatLocationOutside",
+    "chatLocationDenied",
+    "chatLocationUnavailable"
   ]
 }

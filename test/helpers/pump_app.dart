@@ -8,6 +8,7 @@ import 'package:siembra_segura/core/config/app_config.dart';
 import 'package:siembra_segura/core/config/mock_latency.dart';
 import 'package:siembra_segura/core/l10n/app_language.dart';
 import 'package:siembra_segura/core/l10n/app_language_provider.dart';
+import 'package:siembra_segura/core/services/location/device_location.dart';
 import 'package:siembra_segura/core/services/speech/speech_service.dart';
 import 'package:siembra_segura/core/theme/theme_mode_provider.dart';
 import 'package:siembra_segura/core/utils/clock.dart';
@@ -18,6 +19,7 @@ import 'package:siembra_segura/shared/domain/campaign_preferences_store.dart';
 import 'package:siembra_segura/shared/state/app_mode_provider.dart';
 import 'package:siembra_segura/shared/state/campaign_context_provider.dart';
 
+import 'fake_location_service.dart';
 import 'fake_speech_service.dart';
 
 const testConfig = AppConfig(
@@ -40,7 +42,12 @@ List<Override> baseTestOverrides(
   AppLanguageStore? languageStore,
   ThemeModeStore? themeModeStore,
   AppConfig config = testConfig,
+  DeviceLocationService? deviceLocation,
 }) => [
+  // Ningún test llama al GPS real.
+  deviceLocationServiceProvider.overrideWithValue(
+    deviceLocation ?? FakeLocationService(),
+  ),
   // Por defecto la pantalla sigue al "celular" de la prueba (claro).
   themeModeStoreProvider.overrideWithValue(
     themeModeStore ?? InMemoryThemeModeStore(),
@@ -76,6 +83,7 @@ extension PumpApp on WidgetTester {
     AppLanguageStore? languageStore,
     ThemeModeStore? themeModeStore,
     AppConfig config = testConfig,
+    DeviceLocationService? deviceLocation,
   }) async {
     await initTestLocale();
     view
@@ -96,6 +104,7 @@ extension PumpApp on WidgetTester {
             languageStore: languageStore,
             themeModeStore: themeModeStore,
             config: config,
+            deviceLocation: deviceLocation,
           ),
           ...overrides,
         ],

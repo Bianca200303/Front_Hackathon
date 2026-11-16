@@ -113,10 +113,23 @@ void main() {
             appModeStore: InMemoryAppModeStore(),
           );
           await tester.tapText(texts.welcomeAssistedTitle);
-          // Responde siempre la primera opción hasta el final.
+          // Confirma la chacra en el mapa y después responde siempre la
+          // primera opción hasta el final.
           for (var step = 0; step < 5; step++) {
             expect(tester.takeException(), isNull, reason: 'paso $step');
-            final first = find.byType(OutlinedButton);
+            // Las respuestas, sin el botón "Escuchar" (también es outlined).
+            final answers = find.byWidgetPredicate(
+              (widget) =>
+                  widget is OutlinedButton &&
+                  find
+                      .descendant(
+                        of: find.byWidget(widget),
+                        matching: find.text(texts.actionListen),
+                      )
+                      .evaluate()
+                      .isEmpty,
+            );
+            final first = step == 0 ? find.text(texts.chatMapConfirm) : answers;
             if (first.evaluate().isEmpty) break;
             await tester.ensureVisible(first.first);
             await tester.tap(first.first);

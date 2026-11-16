@@ -1614,36 +1614,6 @@ abstract class AppLocalizations {
   /// **'Tú: {answer}'**
   String chatYouSaid(String answer);
 
-  /// No description provided for @chatParcelQuestion.
-  ///
-  /// In es, this message translates to:
-  /// **'¡Hola! Encontré tu chacra en {valley}. ¿Es esta?'**
-  String chatParcelQuestion(String valley);
-
-  /// No description provided for @chatParcelWhy.
-  ///
-  /// In es, this message translates to:
-  /// **'Es el punto que tengo marcado para tu chacra en el valle. Si no es, dime y lo cambiamos.'**
-  String get chatParcelWhy;
-
-  /// No description provided for @chatParcelYes.
-  ///
-  /// In es, this message translates to:
-  /// **'Sí, es mi chacra'**
-  String get chatParcelYes;
-
-  /// No description provided for @chatParcelNo.
-  ///
-  /// In es, this message translates to:
-  /// **'No, es otra'**
-  String get chatParcelNo;
-
-  /// No description provided for @chatParcelNoReply.
-  ///
-  /// In es, this message translates to:
-  /// **'Gracias por decirme. Pronto podrás marcarla en el mapa. Por ahora seguimos con esta.'**
-  String get chatParcelNoReply;
-
   /// No description provided for @chatLastCropQuestion.
   ///
   /// In es, this message translates to:
@@ -1679,24 +1649,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Con esto ordeno las opciones según lo que tú quieres.'**
   String get chatPriorityWhy;
-
-  /// No description provided for @chatRestrictionQuestion.
-  ///
-  /// In es, this message translates to:
-  /// **'Última pregunta: ¿hay algo que no puedas hacer?'**
-  String get chatRestrictionQuestion;
-
-  /// No description provided for @chatRestrictionWhy.
-  ///
-  /// In es, this message translates to:
-  /// **'Así no te recomiendo algo que no te sirve.'**
-  String get chatRestrictionWhy;
-
-  /// No description provided for @chatRestrictionNone.
-  ///
-  /// In es, this message translates to:
-  /// **'Nada, todo bien'**
-  String get chatRestrictionNone;
 
   /// No description provided for @chatDone.
   ///
@@ -2399,6 +2351,60 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Lluvia de diciembre a abril en Ayabaca, Pacaipampa, Cariamanga y Catamayo, comparada con las 10 temporadas anteriores. Datos de la NASA (NASA POWER).'**
   String get waterIrrigationSource;
+
+  /// No description provided for @chatMapQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Dónde está tu chacra? Tócala en el mapa del {valley}.'**
+  String chatMapQuestion(String valley);
+
+  /// No description provided for @chatMapWhy.
+  ///
+  /// In es, this message translates to:
+  /// **'Si ahora estás en tu chacra, toca \"Estoy en mi chacra\" y te ubico. Con ese punto miro el clima y la tierra.'**
+  String get chatMapWhy;
+
+  /// No description provided for @chatUseMyLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Estoy en mi chacra'**
+  String get chatUseMyLocation;
+
+  /// No description provided for @chatLocating.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscándote…'**
+  String get chatLocating;
+
+  /// No description provided for @chatMapConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Es aquí'**
+  String get chatMapConfirm;
+
+  /// No description provided for @chatLocationFound.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Te encontré! Marqué tu chacra en el mapa. Si no es ahí, tócala.'**
+  String get chatLocationFound;
+
+  /// No description provided for @chatLocationOutside.
+  ///
+  /// In es, this message translates to:
+  /// **'Te ubiqué fuera del valle del Chira. Toca tu chacra en el mapa.'**
+  String get chatLocationOutside;
+
+  /// No description provided for @chatLocationDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'No me diste permiso para ver dónde estás. No pasa nada: toca tu chacra en el mapa.'**
+  String get chatLocationDenied;
+
+  /// No description provided for @chatLocationUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No pude encontrar tu ubicación. Toca tu chacra en el mapa.'**
+  String get chatLocationUnavailable;
 }
 
 class _AppLocalizationsDelegate

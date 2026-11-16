@@ -920,25 +920,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String chatParcelQuestion(String valley) {
-    return '¡Hola! Encontré tu chacra en $valley. ¿Es esta?';
-  }
-
-  @override
-  String get chatParcelWhy =>
-      'Es el punto que tengo marcado para tu chacra en el valle. Si no es, dime y lo cambiamos.';
-
-  @override
-  String get chatParcelYes => 'Sí, es mi chacra';
-
-  @override
-  String get chatParcelNo => 'No, es otra';
-
-  @override
-  String get chatParcelNoReply =>
-      'Gracias por decirme. Pronto podrás marcarla en el mapa. Por ahora seguimos con esta.';
-
-  @override
   String chatLastCropQuestion(String crop) {
     return '¿Qué sembraste la última campaña? Tengo anotado $crop. ¿Es así?';
   }
@@ -964,16 +945,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get chatPriorityWhy =>
       'Con esto ordeno las opciones según lo que tú quieres.';
-
-  @override
-  String get chatRestrictionQuestion =>
-      'Última pregunta: ¿hay algo que no puedas hacer?';
-
-  @override
-  String get chatRestrictionWhy => 'Así no te recomiendo algo que no te sirve.';
-
-  @override
-  String get chatRestrictionNone => 'Nada, todo bien';
 
   @override
   String get chatDone => '¡Listo! Ya tengo tu plan.';
@@ -1389,4 +1360,38 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get waterIrrigationSource =>
       'Lluvia de diciembre a abril en Ayabaca, Pacaipampa, Cariamanga y Catamayo, comparada con las 10 temporadas anteriores. Datos de la NASA (NASA POWER).';
+
+  @override
+  String chatMapQuestion(String valley) {
+    return '¿Dónde está tu chacra? Tócala en el mapa del $valley.';
+  }
+
+  @override
+  String get chatMapWhy =>
+      'Si ahora estás en tu chacra, toca \"Estoy en mi chacra\" y te ubico. Con ese punto miro el clima y la tierra.';
+
+  @override
+  String get chatUseMyLocation => 'Estoy en mi chacra';
+
+  @override
+  String get chatLocating => 'Buscándote…';
+
+  @override
+  String get chatMapConfirm => 'Es aquí';
+
+  @override
+  String get chatLocationFound =>
+      '¡Te encontré! Marqué tu chacra en el mapa. Si no es ahí, tócala.';
+
+  @override
+  String get chatLocationOutside =>
+      'Te ubiqué fuera del valle del Chira. Toca tu chacra en el mapa.';
+
+  @override
+  String get chatLocationDenied =>
+      'No me diste permiso para ver dónde estás. No pasa nada: toca tu chacra en el mapa.';
+
+  @override
+  String get chatLocationUnavailable =>
+      'No pude encontrar tu ubicación. Toca tu chacra en el mapa.';
 }

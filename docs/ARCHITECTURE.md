@@ -441,6 +441,7 @@ cambia la presentación (`AppMode`, guardado en el dispositivo con
 | 47 | Llenado manual en una sola pantalla con chips (`#v-manual`): chacra (miniatura del mapa), último cultivo con etiqueta "Satélite", prioridad y restricciones | Rápido para quien ya conoce la app; mismas preguntas y mismos datos que la conversación | Tarjetas separadas (versión anterior) |
 | 48 | "Prueba tu propio plan" usa `CustomRotationCard` (secuencia propia calculada por el servidor, decisión 33) dentro del bloque desplegable del rediseño | El backend acepta `custom_rotation` y devuelve agua, riesgo y tierra por campaña; no existe un endpoint de simulador | Simulador de `semi_app.html` con cosecha por campaña (solo datos de ejemplo) |
 | 49 | Sin probabilidades por escenario en Clima ni en "Qué sembrar"; el agricultor elige el escenario con `ScenarioExplorer` | El backend no publica las probabilidades del ENFEN (decisión 28) | Pronóstico estacional con porcentajes de ejemplo |
+| 50 | **`geolocator`** para "Estoy en mi chacra" en la conversación, detrás de `DeviceLocationService`; el mapa sigue disponible y "Es aquí" confirma el punto | Un toque es lo más accesible, pero el agricultor puede no estar en su chacra o negar el permiso: el GPS solo propone el punto, nunca avanza solo, y fuera del valle del Chira pide tocar el mapa | Solo el mapa (más pasos); solo el GPS (punto equivocado si está en casa) |
 
 ### Dependencias pospuestas
 

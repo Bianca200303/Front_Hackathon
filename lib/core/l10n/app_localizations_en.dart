@@ -917,25 +917,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String chatParcelQuestion(String valley) {
-    return 'Hi! I found your field in $valley. Is this it?';
-  }
-
-  @override
-  String get chatParcelWhy =>
-      'It\'s the spot I have marked for your field in the valley. If it\'s not, tell me and we\'ll change it.';
-
-  @override
-  String get chatParcelYes => 'Yes, that\'s my field';
-
-  @override
-  String get chatParcelNo => 'No, it\'s another one';
-
-  @override
-  String get chatParcelNoReply =>
-      'Thanks for telling me. Soon you\'ll be able to mark it on the map. For now, let\'s go on with this one.';
-
-  @override
   String chatLastCropQuestion(String crop) {
     return 'What did you plant last season? I have $crop written down. Is that right?';
   }
@@ -960,17 +941,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get chatPriorityWhy =>
       'With this, I sort the options by what you want.';
-
-  @override
-  String get chatRestrictionQuestion =>
-      'Last question: is there anything you can\'t do?';
-
-  @override
-  String get chatRestrictionWhy =>
-      'That way I won\'t recommend something that doesn\'t work for you.';
-
-  @override
-  String get chatRestrictionNone => 'Nothing, all good';
 
   @override
   String get chatDone => 'Done! I have your plan.';
@@ -1383,4 +1353,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get waterIrrigationSource =>
       'December-April rain at Ayabaca, Pacaipampa, Cariamanga and Catamayo, compared with the previous 10 seasons. NASA data (NASA POWER).';
+
+  @override
+  String chatMapQuestion(String valley) {
+    return 'Where is your field? Tap it on the map of the $valley.';
+  }
+
+  @override
+  String get chatMapWhy =>
+      'If you are in your field now, tap \"I\'m in my field\" and I\'ll find you. I use that spot to look at the weather and the soil.';
+
+  @override
+  String get chatUseMyLocation => 'I\'m in my field';
+
+  @override
+  String get chatLocating => 'Finding you…';
+
+  @override
+  String get chatMapConfirm => 'It\'s here';
+
+  @override
+  String get chatLocationFound =>
+      'Found you! I marked your field on the map. If it\'s not there, tap it.';
+
+  @override
+  String get chatLocationOutside =>
+      'You seem to be outside the Chira valley. Tap your field on the map.';
+
+  @override
+  String get chatLocationDenied =>
+      'You didn\'t let me see where you are. That\'s fine: tap your field on the map.';
+
+  @override
+  String get chatLocationUnavailable =>
+      'I couldn\'t find your location. Tap your field on the map.';
 }

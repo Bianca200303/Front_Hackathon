@@ -48,9 +48,8 @@ class ParcelMapCard extends ConsumerWidget {
             ],
           ),
         ),
-        _ValleyMap(
+        ValleyMapPicker(
           location: location,
-          coordinates: coordinates,
           onPicked: (latitude, longitude) => ref
               .read(campaignContextProvider.notifier)
               .selectFarmLocation(latitude: latitude, longitude: longitude),
@@ -106,26 +105,32 @@ class _FarmFact extends StatelessWidget {
   }
 }
 
-/// Mapa del valle: se toca para mover el marcador de la chacra.
-class _ValleyMap extends StatelessWidget {
-  const _ValleyMap({
+/// Mapa del valle: se toca para mover el marcador de la chacra. Lo usan
+/// Mi parcela y la conversación con Semi.
+class ValleyMapPicker extends StatelessWidget {
+  /// Crea el mapa con el marcador en [location].
+  const ValleyMapPicker({
     required this.location,
-    required this.coordinates,
     required this.onPicked,
+    super.key,
   });
 
+  /// Dónde está marcada la chacra.
   final FarmLocation location;
-  final String coordinates;
+
+  /// Se llama con las coordenadas del punto tocado.
   final void Function(double latitude, double longitude) onPicked;
 
-  static const _bounds = pilotValleyBounds;
+  /// Recuadro del valle que dibuja el mapa.
+  static const bounds = pilotValleyBounds;
+
   static const _aspectRatio = 350 / 130;
   static const _pinSize = 34.0;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final (x, y) = _bounds.fractionOf(location);
+    final (x, y) = bounds.fractionOf(location);
 
     return Semantics(
       button: true,
@@ -140,7 +145,7 @@ class _ValleyMap extends StatelessWidget {
           builder: (context, constraints) => GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTapUp: (details) {
-              final (latitude, longitude) = _bounds.locationAt(
+              final (latitude, longitude) = bounds.locationAt(
                 details.localPosition.dx / constraints.maxWidth,
                 details.localPosition.dy / constraints.maxHeight,
               );

@@ -79,11 +79,8 @@
   "chatTitle": "Semiwan rimanakuspa",
   "chatSubtitle": "Huch'uy tapukuykunata tapusqayki",
   "chatYouSaid": "Qam: {answer}",
-  "chatParcelYes": "Arí, chakraymi",
-  "chatParcelNo": "Manam, hukmi",
   "chatLastCropYes": "Arí, {crop}",
   "chatLastCropNo": "Manam, {crop} karqan",
-  "chatRestrictionNone": "Manam imapas",
   "chatDone": "¡Chayllam! Planniykiqa kachkanñam.",
   "actionSeePlan": "Planniyta qhaway",
 
