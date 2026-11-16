@@ -1328,4 +1328,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otherOptionsMore => 'See the other options';
+
+  @override
+  String get sampleDataBanner =>
+      'Sample data: not real measurements of your field';
 }

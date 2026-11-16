@@ -456,5 +456,7 @@
   "@semiAlertsImportant": { "placeholders": { "title": { "type": "String" } } },
   "climateMore": "Ver más del clima",
   "whyMore": "¿Por qué te lo recomiendo?",
-  "otherOptionsMore": "Ver las otras opciones"
+  "otherOptionsMore": "Ver las otras opciones",
+
+  "sampleDataBanner": "Datos de ejemplo: no son mediciones reales de tu chacra"
 }

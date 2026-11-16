@@ -404,5 +404,7 @@
   "rotationCustomClear": "Back to the suggested rotations",
   "rotationCustomExcluded": "With what you said in Your plot, this sequence is ruled out.",
   "rotationCustomPositionSemantics": "Crop {position} of {total}",
-  "@rotationCustomPositionSemantics": {"placeholders": {"position": {"type": "int"}, "total": {"type": "int"}}}
+  "@rotationCustomPositionSemantics": {"placeholders": {"position": {"type": "int"}, "total": {"type": "int"}}},
+
+  "sampleDataBanner": "Sample data: not real measurements of your field"
 }

@@ -2333,6 +2333,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ver las otras opciones'**
   String get otherOptionsMore;
+
+  /// No description provided for @sampleDataBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos de ejemplo: no son mediciones reales de tu chacra'**
+  String get sampleDataBanner;
 }
 
 class _AppLocalizationsDelegate

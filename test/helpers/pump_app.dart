@@ -39,6 +39,7 @@ List<Override> baseTestOverrides(
   AppLanguage? language = AppLanguage.spanish,
   AppLanguageStore? languageStore,
   ThemeModeStore? themeModeStore,
+  AppConfig config = testConfig,
 }) => [
   // Por defecto la pantalla sigue al "celular" de la prueba (claro).
   themeModeStoreProvider.overrideWithValue(
@@ -57,7 +58,7 @@ List<Override> baseTestOverrides(
   campaignPreferencesStoreProvider.overrideWithValue(
     preferencesStore ?? InMemoryCampaignPreferencesStore(),
   ),
-  appConfigProvider.overrideWithValue(testConfig),
+  appConfigProvider.overrideWithValue(config),
   speechServiceProvider.overrideWithValue(speech),
   mockLatencyProvider.overrideWithValue(Duration.zero),
   clockProvider.overrideWithValue(() => testNow),
@@ -74,6 +75,7 @@ extension PumpApp on WidgetTester {
     AppLanguage? language = AppLanguage.spanish,
     AppLanguageStore? languageStore,
     ThemeModeStore? themeModeStore,
+    AppConfig config = testConfig,
   }) async {
     await initTestLocale();
     view
@@ -93,6 +95,7 @@ extension PumpApp on WidgetTester {
             language: language,
             languageStore: languageStore,
             themeModeStore: themeModeStore,
+            config: config,
           ),
           ...overrides,
         ],

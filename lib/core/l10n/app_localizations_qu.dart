@@ -1334,4 +1334,8 @@ class AppLocalizationsQu extends AppLocalizations {
 
   @override
   String get otherOptionsMore => 'Ver las otras opciones';
+
+  @override
+  String get sampleDataBanner =>
+      'Datos de ejemplo: no son mediciones reales de tu chacra';
 }
